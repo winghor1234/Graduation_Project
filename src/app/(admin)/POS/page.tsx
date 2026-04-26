@@ -387,7 +387,7 @@ export default function POSPage() {
       sale_details: cart.map(i => ({
         product_id: i.product_id,
         quantity: i.quantity,
-        price: i.price
+        price: i.sale_price
       }))
     })
 

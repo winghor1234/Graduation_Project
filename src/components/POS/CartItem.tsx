@@ -45,21 +45,20 @@
 //         </div>
 //     )
 // }
-
+'use client'
 import Image from "next/image"
 import { Minus, Plus, Trash2 } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { Product } from "@/modules/product/product.types"
+import { CartItemType } from "./type"
 
 
 type Props = {
-    item: Product
+    item: CartItemType
     onUpdate: (product_id: string, delta: number) => void
     onRemove: (product_id: string) => void
 }
 
 export default function CartItem({ item, onUpdate, onRemove }: Props) {
-    console.log("item : ",item)
     return (
         <div className="flex items-center justify-between gap-2 p-2 border rounded-lg">
 
@@ -106,7 +105,7 @@ export default function CartItem({ item, onUpdate, onRemove }: Props) {
 
                 {/* QTY */}
                 <span className="w-6 text-center text-sm">
-                    {}
+                    {item.quantity}
                 </span>
 
                 {/* PLUS */}

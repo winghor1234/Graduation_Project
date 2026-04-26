@@ -86,7 +86,7 @@ export const saleService = {
             const result = await tx.sale.create({
                 data: {
                     employee_id: userId,
-                    customer_id: data.customer_id,
+                    ...(data.customer_id && { customer_id: data.customer_id }),
                     total_amount: total,
                     sale_details: {
                         create: items

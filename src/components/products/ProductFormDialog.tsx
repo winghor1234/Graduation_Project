@@ -301,7 +301,7 @@ export function ProductFormDialog({
           <div className="grid grid-cols-2 gap-4">
 
             <div className="space-y-1">
-              <label className="text-sm font-medium">Purchase</label>
+              <label className="text-sm font-medium">Purchase price</label>
               <Controller
                 name="purchase_price"
                 control={control}
@@ -323,7 +323,7 @@ export function ProductFormDialog({
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium">Sale</label>
+              <label className="text-sm font-medium">Sale price</label>
               <Controller
                 name="sale_price"
                 control={control}

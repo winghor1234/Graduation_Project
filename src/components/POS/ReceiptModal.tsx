@@ -1,11 +1,19 @@
+'use client'
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas"
+import { CartItemType } from "./type"
 
 
 type Props = {
-    data: any
+    data: {
+        customer: string
+        date: string
+        items: CartItemType[]
+        total: number
+    }
     onClose: () => void
 }
+
 
 export default function ReceiptModal({ data, onClose }: Props) {
     const exportPDF = async () => {
@@ -34,10 +42,10 @@ export default function ReceiptModal({ data, onClose }: Props) {
 
                     <hr />
 
-                    {data.items.map((i: any) => (
+                    {data.items.map((i) => (
                         <div key={i.product_id} className="flex justify-between">
-                            <span>{i.name} x{i.quantity}</span>
-                            <span>{i.price * i.quantity}</span>
+                            <span>{i.product_name} x {i.quantity}</span>
+                            <span>{i.sale_price * i.quantity}</span>
                         </div>
                     ))}
 

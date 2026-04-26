@@ -1,11 +1,10 @@
+'use client'
+
+import { formatCurrency } from "@/utils/FormatCurrency"
+import { CartItemType } from './type';
+
 type Props = {
-    cart: {
-        product_id: string
-        name: string
-        price: number
-        quantity: number
-        image?: string
-    }[]
+    cart: CartItemType[]
     total: number
     onConfirm: () => void
     onClose: () => void
@@ -21,15 +20,15 @@ export default function ConfirmModal({ cart, total, onConfirm, onClose }: Props)
                 <div className="max-h-60 overflow-auto space-y-2">
                     {cart.map((i) => (
                         <div key={i.product_id} className="flex justify-between text-sm">
-                            <span>{i.name} x{i.quantity}</span>
-                            <span>{i.price * i.quantity}</span>
+                            <span>{i.product_name} x {i.quantity}</span>
+                            <span>{formatCurrency(i.sale_price * i.quantity)}</span>
                         </div>
                     ))}
                 </div>
 
                 <div className="flex justify-between font-bold">
                     <span>Total</span>
-                    <span>{total}</span>
+                    <span>{formatCurrency(total)}</span>
                 </div>
 
                 <div className="flex gap-2">

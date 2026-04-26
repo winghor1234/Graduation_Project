@@ -1,10 +1,12 @@
-
+'use client'
 import { Button } from "@/components/ui/button"
 import CartItem from "./CartItem"
-import { CartItem } from "./type"
+import { CartItemType } from "./type"
+import { formatCurrency } from "@/utils/FormatCurrency"
+
 
 type Props = {
-    cart: CartItem
+    cart: CartItemType[]
     update: (product_id: string, delta: number) => void
     remove: (product_id: string) => void
     subtotal: number
@@ -14,7 +16,6 @@ type Props = {
 }
 
 export default function CartPanel({ cart, update, remove, subtotal, tax, total, onCheckout}: Props) {
-    console.log("cart : ",cart)
     return (
         <div className="flex flex-col flex-1">
 
@@ -28,19 +29,19 @@ export default function CartPanel({ cart, update, remove, subtotal, tax, total, 
             {/* SUMMARY */}
             <div className="p-4 border-t bg-gray-50 space-y-2 text-sm">
 
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>{subtotal}</span>
-                </div>
+                    <span>{formatCurrency(subtotal)}</span>
+                </div> */}
 
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                     <span>Tax (8%)</span>
-                    <span>{tax}</span>
-                </div>
+                    <span>{formatCurrency(tax)}</span>
+                </div> */}
 
                 <div className="flex justify-between font-semibold text-lg">
                     <span>Total</span>
-                    <span>{total}</span>
+                    <span>{formatCurrency(total)}</span>
                 </div>
 
                 <Button

@@ -1,3 +1,4 @@
+'use client'
 import { Customer } from "@/modules/customer/customer.type"
 
 type Props = {
