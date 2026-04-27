@@ -1,5 +1,5 @@
 
 import { reportController } from "@/modules/report/report.controller";
 export async function GET() {
-    return reportController.revenueReport()
+    return await reportController.revenueReport()
 }

@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "src/app/api/report/sale-quantity"  ],
   "exclude": [
     "node_modules"
   ]

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { MonthlyRevenue, MonthlyRevenueRaw, RevenueSummary } from "./report.type"
 
 export const reportService = {
     // Product Report
@@ -100,31 +101,33 @@ export const reportService = {
     },
 
     // Revenue Report
-    async getRevenueReport() {
-        const revenue = await prisma.sale.aggregate({
+    async getRevenueReport(): Promise<RevenueSummary> {
+        const revenueResult = await prisma.sale.aggregate({
             _sum: {
                 total_amount: true
             }
         })
 
-        const cost = await prisma.importDetail.aggregate({
+        const costResult = await prisma.importDetail.aggregate({
             _sum: {
                 cost_price: true
             }
         })
 
-        const profit = (revenue._sum.total_amount || 0) - (cost._sum.cost_price || 0)
+        const revenue = Number(revenueResult._sum.total_amount ?? 0)
+        const cost = Number(costResult._sum.cost_price ?? 0)
+
+        const profit = revenue - cost
 
         return {
-            revenue: revenue._sum.total_amount || 0,
-            cost: cost._sum.cost_price || 0,
+            revenue,
+            cost,
             profit
         }
-
     },
-    async getMonthlyRevenue() {
 
-        const revenue = await prisma.$queryRaw`
+    async getMonthlyRevenue(): Promise<MonthlyRevenue[]> {
+        const revenue = await prisma.$queryRaw<MonthlyRevenueRaw[]>`
     SELECT 
       DATE_TRUNC('month', sale_date) AS month,
       SUM(total_amount) AS revenue
@@ -132,8 +135,14 @@ export const reportService = {
     GROUP BY month
     ORDER BY month ASC
   `
-        return revenue
+
+        return revenue.map(item => ({
+            month: new Date(item.month).toISOString().slice(0, 7),
+            revenue: Number(item.revenue)
+        }))
     },
+
+
     async getDashboardSummary() {
         const revenue = await prisma.sale.aggregate({
             _sum: {

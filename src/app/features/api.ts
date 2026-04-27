@@ -16,7 +16,7 @@ import { CreateImportInput, Import } from "@/modules/import/import.type"
 import { CreatePaymentInput, Payment, VerifyPaymentInput } from "@/modules/payment/payment.type"
 import { CreateDeliveryInput, Delivery, UpdateDeliveryInput } from '../../modules/delivery/delivery.type';
 import { Branch, CreateBranchInput, CreateDistrictInput, CreateProvinceInput, District, Province, updateBranchInput, updateDistrictInput, updateProvinceInput } from "@/modules/location/location.type"
-import { get } from "http"
+import { MonthlyRevenue, RevenueSummary } from "@/modules/report/report.type"
 
 
 export type GetParams = {
@@ -926,6 +926,170 @@ export const locationApi = {
 
 
 
+
+
 }
 // --------------------------------------------------------  Location end -----------------------------------------------------------------------
 
+
+
+
+
+// ----------------------------------------- Report start ---------------------------------------------------
+
+
+export const reportApi = {
+
+
+  getDashboardReport: async () => {
+    const res = await axiosInstance.get("/report/dashboard")
+    return res.data.data
+  },
+
+
+  getProductReport: async (params?: GetParams): Promise<{
+    data: Product[]
+    meta: {
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }
+  }> => {
+    const res = await axiosInstance.get("/report/products", {
+      params
+    })
+
+    return res.data.data
+  },
+
+  getTopProductsReport: async (params?: GetParams): Promise<{
+    data: Product[]
+    meta: {
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }
+  }> => {
+    const res = await axiosInstance.get("/report/top-products", {
+      params
+    })
+    return res.data.data
+  },
+
+
+  getLowStockProductsReport: async (params?: GetParams): Promise<{
+    data: Product[]
+    meta: {
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }
+  }> => {
+    const res = await axiosInstance.get("/report/low-stock", {
+      params
+    })
+    return res.data.data
+  },
+
+  getPurchaseReport: async (params?: GetParams): Promise<{
+    data: PurchaseOrder[]
+    meta: {
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }
+  }> => {
+    const res = await axiosInstance.get("/report/purchase", {
+      params
+    })
+
+    return res.data.data
+  },
+
+  getImportReport: async (params?: GetParams): Promise<{
+    data: Import[]
+    meta: {
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }
+  }> => {
+    const res = await axiosInstance.get("/report/imports", {
+      params
+    })
+    return res.data.data
+  },
+
+  getCustomerReport: async (params?: GetParams): Promise<{
+    data: Customer[]
+    meta: {
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }
+  }> => {
+    const res = await axiosInstance.get("/report/customers", {
+      params
+    })
+    return res.data.data
+  },
+
+  getSalesQuantityReport: async (params?: GetParams): Promise<{
+    data: Sale[]
+    meta: {
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }
+  }> => {
+    const res = await axiosInstance.get("/report/sale-quantity", {
+      params
+    })
+    return res.data.data
+  },
+
+
+
+  getRevenueSummaryReport: async (): Promise<RevenueSummary> => {
+    const res = await axiosInstance.get("/report/revenue")
+    return res.data
+  },
+
+
+
+  getMonthlyRevenueReport: async (): Promise<MonthlyRevenue[]> => {
+    const res = await axiosInstance.get("/report/monthly-revenue")
+    return res.data
+  },
+
+
+  getSalequantityReport: async (params?: GetParams): Promise<{
+    data: Sale[]
+    meta: {
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }
+  }> => {
+    const res = await axiosInstance.get("/report/sales", {
+      params
+    })
+    return res.data.data
+  },
+
+
+
+
+}
+
+
+
+// ----------------------------------------- Report end ---------------------------------------------------
