@@ -17,6 +17,7 @@ import { CreatePaymentInput, Payment, VerifyPaymentInput } from "@/modules/payme
 import { CreateDeliveryInput, Delivery, UpdateDeliveryInput } from '../../modules/delivery/delivery.type';
 import { Branch, CreateBranchInput, CreateDistrictInput, CreateProvinceInput, District, Province, updateBranchInput, updateDistrictInput, updateProvinceInput } from "@/modules/location/location.type"
 import { MonthlyRevenue, RevenueSummary } from "@/modules/report/report.type"
+import { get } from "http"
 
 
 export type GetParams = {
@@ -1025,33 +1026,13 @@ export const reportApi = {
     return res.data.data
   },
 
-  getCustomerReport: async (params?: GetParams): Promise<{
-    data: Customer[]
-    meta: {
-      total: number
-      page: number
-      limit: number
-      totalPages: number
-    }
-  }> => {
-    const res = await axiosInstance.get("/report/customers", {
-      params
-    })
-    return res.data.data
+  getCustomerReport: async () => {
+    const res = await axiosInstance.get("/report/customers")
+    return res.data
   },
 
-  getSalesQuantityReport: async (params?: GetParams): Promise<{
-    data: Sale[]
-    meta: {
-      total: number
-      page: number
-      limit: number
-      totalPages: number
-    }
-  }> => {
-    const res = await axiosInstance.get("/report/sale-quantity", {
-      params
-    })
+  getSalesQuantityReport: async () => {
+  const res = await axiosInstance.get("/report/sale")
     return res.data.data
   },
 
@@ -1066,11 +1047,11 @@ export const reportApi = {
 
   getMonthlyRevenueReport: async (): Promise<MonthlyRevenue[]> => {
     const res = await axiosInstance.get("/report/monthly-revenue")
-    return res.data
+    return res.data.data
   },
 
 
-  getSalequantityReport: async (params?: GetParams): Promise<{
+  getSaleQuantityReport: async (params?: GetParams): Promise<{
     data: Sale[]
     meta: {
       total: number
@@ -1093,3 +1074,19 @@ export const reportApi = {
 
 
 // ----------------------------------------- Report end ---------------------------------------------------
+
+
+
+// ----------------------------------------- dashboard start ---------------------------------------------------
+
+
+export const dashboardApi = {
+  getDashboard: async () => {
+    const res = await axiosInstance.get("/dashboard")
+    return res.data
+  }
+}
+
+
+
+// ----------------------------------------- dashboard end ---------------------------------------------------

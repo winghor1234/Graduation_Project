@@ -72,6 +72,7 @@ export interface Customer {
   address: string;
   city: string;
   gender: string;
+  role: string;
   joinDate: string;
   lastOrderDate: string;
   totalOrders: number;
