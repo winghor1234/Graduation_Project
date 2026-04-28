@@ -1,7 +1,7 @@
 
 "use client"
 
-import { adminApi, adminAuthApi, categoryApi, customerApi, DeliveryApi, importApi, locationApi, orderApi, paymentApi, productApi, purchaseApi, refundApi, reportApi, saleApi, supplierApi } from "./api"
+import { adminApi, adminAuthApi, categoryApi, customerApi, dashboardApi, DeliveryApi, importApi, locationApi, orderApi, paymentApi, productApi, purchaseApi, refundApi, saleApi, supplierApi } from "./api"
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { CreateCustomerInput, UpdateCustomerInput } from "@/modules/customer/customer.type"
 import { CreateEmployeeInput, UpdateEmployeeInput } from "@/modules/employee/employee.type"
@@ -16,7 +16,6 @@ import { CreateImportInput } from '@/modules/import/import.type';
 import { VerifyPaymentInput } from '@/modules/payment/payment.type';
 import { CreateDeliveryInput, UpdateDeliveryInput } from "@/modules/delivery/delivery.type"
 import { CreateBranchInput, CreateDistrictInput, CreateProvinceInput, updateBranchInput, updateDistrictInput, updateProvinceInput } from '@/modules/location/location.type';
-import { RevenueSummary } from "@/modules/report/report.type"
 
 
 export type UseGetParams = {
@@ -1163,133 +1162,26 @@ export const useDeleteBranch = () => {
 
 
 
-
 }
 
 // --------------------------------------------------------  Location end -----------------------------------------------------------------------
 
 
 
-// ----------------------------------------- Report start ---------------------------------------------------
+
+// --------------------------------------------------------  dashboard start -----------------------------------------------------------------------
 
 
-
-
-export const useGetDashboardReport = () => {
+export const useGetDashboard = () => {
     return useQuery({
-        queryKey: ["dashboard-report"],
-        queryFn: reportApi.getDashboardReport,
+        queryKey: ["dashboard"],
+        queryFn: () => dashboardApi.getDashboard(),
         placeholderData: keepPreviousData,
     })
 }
 
 
 
-export const useProductReport = (params?: UseGetParams) => {
-    return useQuery({
-        queryKey: ["product-report", params],
-        queryFn: () => reportApi.getProductReport(params),
-        placeholderData: keepPreviousData,
-    })
-}
-
-export const useGetTopProductsReport = (params?: UseGetParams) => {
-    return useQuery({
-        queryKey: ["top-products-report", params],
-        queryFn: () => reportApi.getTopProductsReport(params),
-        placeholderData: keepPreviousData,
-    })
-}
+// --------------------------------------------------------  dashboard end -----------------------------------------------------------------------
 
 
-export const useLowStockProductsReport = () => {
-    return useQuery({
-        queryKey: ["low-stock-report"],
-        queryFn: () => reportApi.getLowStockProductsReport(),
-        placeholderData: keepPreviousData,
-    })
-}
-
-
-
-
-export const usePurchaseReport = (params?: UseGetParams) => {
-    return useQuery({
-        queryKey: ["purchase-report", params],
-        queryFn: () => reportApi.getPurchaseReport(params),
-        placeholderData: keepPreviousData,
-    })
-}
-
-
-export const useImportReport = (params?: UseGetParams) => {
-    return useQuery({
-        queryKey: ["import-report", params],
-        queryFn: () => reportApi.getImportReport(params),
-        placeholderData: keepPreviousData,
-    })
-}
-
-
-export const useCustomerReport = (params?: UseGetParams) => {
-    return useQuery({
-        queryKey: ["customer-report", params],
-        queryFn: () => reportApi.getCustomerReport(params),
-        placeholderData: keepPreviousData,
-    })
-}
-
-export const useSalesQuantityReport = (params?: UseGetParams) => {
-    return useQuery({
-        queryKey: ["sales-quantity-report", params],
-        queryFn: () => reportApi.getSalesQuantityReport(params),
-        placeholderData: keepPreviousData,
-    })
-}
-
-// export const useRevenueSummaryReport = () => {
-//     return useQuery({
-//         queryKey: ["revenue-summary-report"],
-//         queryFn: () => reportApi.getRevenueSummaryReport(),
-//         placeholderData: keepPreviousData,
-//         onSuccess: () => {
-//             qc.invalidateQueries({ queryKey: ["customers"] })
-//         },
-//     }) 
-// }
-
-export const useRevenueSummaryReport = () => {
-    return useQuery({
-        queryKey: ["revenue-summary-report"],
-        queryFn: () => reportApi.getRevenueSummaryReport(),
-        placeholderData: keepPreviousData,
-    })
-}
-
-
-
-
-
-export const useMonthlyRevenueReport = () => {
-    return useQuery({
-        queryKey: ["monthly-revenue-report"],
-        queryFn: () => reportApi.getMonthlyRevenueReport(),
-        placeholderData: keepPreviousData,
-    })
-}
-
-
-export const useSaleQuantityReport = (params?: UseGetParams) => {
-    return useQuery({
-        queryKey: ["sale-quantity-report", params],
-        queryFn: () => reportApi.getSalequantityReport(params),
-        placeholderData: keepPreviousData,
-    })
-}
-
-
-
-
-
-
-// ----------------------------------------- Report end ---------------------------------------------------

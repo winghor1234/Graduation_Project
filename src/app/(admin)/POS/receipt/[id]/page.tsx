@@ -24,18 +24,14 @@ export default function ReceiptPage() {
                     <p>Tel: 020 XXXXXXXX</p>
                     <p>Vientiane, Laos</p>
                 </div>
-
                 <hr className="my-2 border-dashed" />
-
                 {/* INFO */}
                 <div>
                     <p>Date: {formatDate(data?.sale_date)}</p>
                     <p>Customer name: {data?.customer?.customer_name}</p>
                     {/* <p>Receipt:  {id}</p> */}
                 </div>
-
                 <hr className="my-2 border-dashed" />
-
                 {/* ITEMS */}
                 {data.sale_details?.map((i) => (
                     <div key={i.product_id} className="mb-1">
@@ -46,19 +42,15 @@ export default function ReceiptPage() {
                             <span>{i.quantity} x {formatCurrency(i.price)}</span>
                             <span>{i.quantity} * {formatCurrency(i.price)}</span>
                         </div>
-
                     </div>
                 ))}
-
                 <hr className="my-2 border-dashed" />
-
                 {/* TOTAL */}
                 <div className="space-y-1">
                     {/* <div className="flex justify-between">
                         <span>Subtotal</span>
                         <span>{data.total}</span>
                     </div> */}
-
                     <div className="flex justify-between font-bold text-sm">
                         <span>TOTAL</span>
                         <span>{formatCurrency(data.total_amount || 0)}</span>

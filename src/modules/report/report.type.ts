@@ -1,7 +1,7 @@
 export type RevenueSummary = {
-  revenue: number
-  cost: number
-  profit: number
+    revenue: number
+    cost: number
+    profit: number
 }
 
 
@@ -10,11 +10,11 @@ export type MonthlyRevenue = {
   revenue: number
 }
 
-
 export type MonthlyRevenueRaw = {
   month: Date
-  revenue: bigint
+  revenue: number
 }
+
 
 
 
