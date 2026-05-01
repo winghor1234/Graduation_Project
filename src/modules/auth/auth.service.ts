@@ -478,6 +478,7 @@ export const authService = {
         return { user, accessToken, refreshToken };
     },
     async adminForgotPassword(data: ForgotPasswordInput) {
+        console.log("data : ", data)
         const user = await prisma.employee.findUnique({
             where: { email: data.email }
         });

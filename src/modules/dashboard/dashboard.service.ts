@@ -1,8 +1,17 @@
 import { prisma } from "@/lib/prisma"
 import { MonthlyRevenueRaw } from "../report/report.type"
+import { calculateGrowthPercent } from "@/utils/metrics"
 
 export const dashboardService = {
     async getDashboardData() {
+        const now = new Date()
+
+        const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+        const endOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+
+        const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
         const [
             revenueResult,
             costResult,
@@ -10,7 +19,9 @@ export const dashboardService = {
             topProductsRaw,
             lowStock,
             customerCount,
-            orderCount,
+            order,
+            currentMonthOrder,
+            lastMonthOrder
         ] = await Promise.all([
 
             prisma.sale.aggregate({
@@ -49,7 +60,41 @@ export const dashboardService = {
 
             prisma.customer.count(),
 
-            prisma.order.count(),
+            prisma.order.findMany({
+                include: {
+                    customer: {
+                        select: {
+                            customer_id: true,
+                            customer_name: true,
+                            phone: true,
+                            email: true,
+                            address: true,
+                            gender: true,
+                            isActive: true,
+                        }
+                    }
+                },
+                take: 10,
+                orderBy: { order_date: "desc" }
+            }),
+            prisma.order.count({
+                where: {
+                    createdAt: {
+                        gte: startOfCurrentMonth,
+                        lt: endOfCurrentMonth
+                    }
+                }
+            }),
+
+            // 🔥 last month
+            prisma.order.count({
+                where: {
+                    createdAt: {
+                        gte: startOfLastMonth,
+                        lt: endOfLastMonth
+                    }
+                }
+            })
         ])
 
         // ✅ summary
@@ -86,19 +131,23 @@ export const dashboardService = {
             }
         })
 
+         const percent = calculateGrowthPercent(currentMonthOrder, lastMonthOrder)
+
+
         return {
             summary: {
                 revenue,
                 cost,
                 profit: revenue - cost
             },
-
             monthly,
-
             topProducts,
             lowStock,
             customers: customerCount,
-            orders: orderCount
+            orders: order,
+            currentMonthOrder,
+            lastMonthOrder,
+            percent
         }
     }
 }

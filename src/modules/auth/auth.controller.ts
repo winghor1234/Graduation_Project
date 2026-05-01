@@ -255,7 +255,8 @@ export const authController = {
         try {
             const ip = req.headers.get("x-forwarded-for") || "unknown"
             await otpLimiter.consume(ip)
-            const body: ForgotPasswordInput = await req.json()
+            const body = await req.json()
+            // console.log(body)
             const result = await authService.adminForgotPassword(body)
             return successResponse(result, "OTP sent", 200)
 
