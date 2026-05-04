@@ -1,7 +1,7 @@
 
 "use client"
 
-import { adminApi, adminAuthApi, categoryApi, customerApi, dashboardApi, DeliveryApi, importApi, locationApi, orderApi, paymentApi, productApi, purchaseApi, refundApi, saleApi, supplierApi } from "./api"
+import { adminApi, adminAuthApi, categoryApi, customerApi, dashboardApi, DeliveryApi, importApi, locationApi, orderApi, paymentApi, productApi, purchaseApi, refundApi, reportApi, saleApi, supplierApi } from "./api"
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { CreateCustomerInput, UpdateCustomerInput } from "@/modules/customer/customer.type"
 import { CreateEmployeeInput, UpdateEmployeeInput } from "@/modules/employee/employee.type"
@@ -1183,5 +1183,22 @@ export const useGetDashboard = () => {
 
 
 // --------------------------------------------------------  dashboard end -----------------------------------------------------------------------
+
+
+
+// --------------------------------------------------------  report start -----------------------------------------------------------------------
+
+
+export const useGetReport = () => {
+    return useQuery({
+        queryKey: ["report"],
+        queryFn: () => reportApi.getReport(),
+        placeholderData: keepPreviousData,
+    })
+}
+
+
+
+// --------------------------------------------------------  report end -----------------------------------------------------------------------
 
 
