@@ -5,7 +5,7 @@ import { useGetReport } from "@/app/features/hooks"
 import SalesChart from "@/components/report/SalesChart"
 import StatCard from "@/components/report/StatCard"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { DollarSign, ShoppingCart, Package, AlertTriangle } from "lucide-react"
+import { DollarSign, ShoppingCart, Package, AlertTriangle, Import, BaggageClaim } from "lucide-react"
 
 export default function Report() {
     const {data, isLoading, error} = useGetReport()
@@ -20,6 +20,22 @@ export default function Report() {
                 <StatCard
                     title="Total Revenue"
                     value={formatCurrency(report?.summary?.revenue || 0)}
+                    sub="$183.23 avg. order value"
+                    growth="14.4%"
+                    icon={<DollarSign size={20} />}
+                    color="green"
+                />
+                <StatCard
+                    title="Total Cost"
+                    value={formatCurrency(report?.summary?.cost || 0)}
+                    sub="$183.23 avg. order value"
+                    growth="14.4%"
+                    icon={<DollarSign size={20} />}
+                    color="green"
+                />
+                <StatCard
+                    title="Total Profit"
+                    value={formatCurrency(report?.summary?.profit || 0)}
                     sub="$183.23 avg. order value"
                     growth="14.4%"
                     icon={<DollarSign size={20} />}
@@ -44,17 +60,17 @@ export default function Report() {
                 />
 
                 <StatCard
-                    title="Inventory Alerts"
-                    value={formatCurrency(report?.lowStock.length || 0)}
+                    title="Purchases"
+                    value={formatCurrency(report?.purchases.length || 0)}
                     sub="43 low stock • 10 out of stock"
-                    icon={<AlertTriangle size={20} />}
+                    icon={<BaggageClaim size={20} />}
                     color="orange"
                 />
                 <StatCard
-                    title="Inventory Alerts"
-                    value={formatCurrency(report?.lowStock.length || 0)}
+                    title="Import "
+                    value={formatCurrency(report?.imports.length || 0)}
                     sub="43 low stock • 10 out of stock"
-                    icon={<AlertTriangle size={20} />}
+                    icon={<Import size={20} />}
                     color="orange"
                 />
                 <StatCard
@@ -86,7 +102,7 @@ export default function Report() {
                     Units sold over the last 30 days
                 </p>
 
-                <SalesChart />
+                <SalesChart data={report?.monthlyRevenue || []} />
             </div>
 
         </div>

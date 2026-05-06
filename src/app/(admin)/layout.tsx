@@ -1,28 +1,46 @@
-
-
-
 "use client"
+
 import { useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { getRedirectPath } from "@/utils/auth"
 import { useAuth, useAdminLogout } from "../features/hooks"
-import {  LayoutDashboard, ShoppingCart, ShoppingBag, Package, Store, Users, UserCog, BarChart3, Settings} from "lucide-react"
+
+import {
+    LayoutDashboard,
+    ShoppingCart,
+    ShoppingBag,
+    Package,
+    Store,
+    Users,
+    UserCog,
+    BarChart3,
+    Settings
+} from "lucide-react"
+
 import { Sidebar } from "@/components/adminLayout/Sidebar"
 import { Header } from "@/components/adminLayout/Header"
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN"] },
+    { name: "Purchase", href: "/purchase", icon: ShoppingBag, roles: ["ADMIN", "STAFF"] },
+    { name: "Import", href: "/import", icon: Package, roles: ["ADMIN", "STAFF"] },
+    { name: "Supplier", href: "/supplier", icon: Users, roles: ["ADMIN"] },
+    { name: "Category", href: "/category", icon: Store, roles: ["ADMIN"] },
     { name: "Point of Sale", href: "/POS", icon: ShoppingCart, roles: ["ADMIN", "STAFF"] },
     { name: "Orders", href: "/order", icon: ShoppingBag, roles: ["ADMIN", "STAFF"] },
     { name: "Product", href: "/product", icon: Package, roles: ["ADMIN"] },
     { name: "Customers", href: "/customer", icon: Users, roles: ["ADMIN"] },
     { name: "Employees", href: "/employee", icon: UserCog, roles: ["ADMIN"] },
-    {name : "Locations", href: "/location", icon: Store, roles: ["ADMIN"]},
+    { name: "Locations", href: "/location", icon: Store, roles: ["ADMIN"] },
     { name: "Reports", href: "/report", icon: BarChart3, roles: ["ADMIN"] },
     { name: "Settings", href: "/setting", icon: Settings, roles: ["ADMIN"] },
 ] as const
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+    children,
+}: {
+    children: React.ReactNode
+}) {
     const router = useRouter()
     const pathname = usePathname()
 
@@ -34,6 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         if (isLoading) return
+
         if (!user) return router.replace("/login")
 
         if (pathname === "/") {
@@ -44,8 +63,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (isLoading) return null
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="
+      flex h-screen
+      bg-[#f8fafc]
+      text-slate-900
+    ">
 
+            {/* SOFT BLUE GLOW */}
+            <div className="
+        fixed top-[-200px] left-[30%]
+        w-[500px] h-[500px]
+        bg-blue-500/10
+        blur-[120px]
+        rounded-full
+        z-0
+      " />
+
+            {/* SIDEBAR */}
             <Sidebar
                 navigation={navigation}
                 user={user}
@@ -54,22 +88,48 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 setCollapsed={setCollapsed}
                 setMobileOpen={setMobileOpen}
                 onLogout={() => {
-                    if (confirm("Logout?")) logout()
+                    if (confirm('Logout?')) logout()
                 }}
             />
 
+            {/* MOBILE OVERLAY */}
             {mobileOpen && (
                 <div
                     onClick={() => setMobileOpen(false)}
-                    className="fixed inset-0 bg-black/50 md:hidden z-30"
+                    className="
+            fixed inset-0
+            bg-black/20
+            backdrop-blur-sm
+            md:hidden
+            z-30
+          "
                 />
             )}
 
-            <div className="flex-1 flex flex-col">
-                <Header onOpenSidebar={() => setMobileOpen(true)} />
+            {/* CONTENT */}
+            <div className="flex-1 flex flex-col relative z-10">
 
-                <main className="flex-1 overflow-auto p-6">
-                    {children}
+                {/* HEADER */}
+                <Header
+                    onOpenSidebar={() => setMobileOpen(true)}
+                />
+
+                {/* MAIN */}
+                <main className="flex-1 overflow-auto p-5">
+
+                    {/* CONTENT WRAPPER */}
+                    <div className="
+            min-h-full
+            bg-white/80
+            backdrop-blur-xl
+            border border-gray-200
+            rounded-3xl
+            shadow-sm
+            p-5
+          ">
+                        {children}
+                    </div>
+
                 </main>
             </div>
         </div>

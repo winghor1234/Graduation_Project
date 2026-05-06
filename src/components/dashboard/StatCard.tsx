@@ -1,5 +1,8 @@
-'use client'
+"use client"
+
 import { ArrowUpRight, ArrowDownRight } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { theme } from "@/styles/theme"
 
 type Props = {
     title: string
@@ -7,44 +10,84 @@ type Props = {
     growth?: number
 }
 
-const StatCard = ({ title, value, growth = 0 }: Props) => {
+const StatCard = ({
+    title,
+    value,
+    growth = 0,
+}: Props) => {
     const isPositive = growth > 0
     const isZero = growth === 0
 
-    const color = isPositive
-        ? "text-green-500"
+    const textColor = isPositive
+        ? theme.successText
         : isZero
-            ? "text-gray-400"
-            : "text-red-500"
+            ? theme.subText
+            : theme.dangerText
 
-    const bg = isPositive
-        ? "bg-green-500/10"
+    const badgeBg = isPositive
+        ? theme.successSoft
         : isZero
-            ? "bg-gray-500/10"
-            : "bg-red-500/10"
+            ? "bg-gray-100 border border-gray-200"
+            : theme.dangerSoft
 
     return (
-        <div className=" p-5 rounded-2xl shadow-md border border-white/5">
+        <div
+            className={cn(
+                "p-4 rounded-2xl border shadow-sm transition-all duration-200",
+                "hover:shadow-md",
+                theme.card
+            )}
+        >
+            {/* TITLE */}
+            <p className={cn("text-xs mb-1", theme.subText)}>
+                {title}
+            </p>
 
-            <p className="text-sm text-gray-800 mb-1">{title}</p>
-
-            <h2 className="text-2xl font-semibold text-gray-800">
+            {/* VALUE */}
+            <h2 className="text-xl font-semibold text-slate-900">
                 {value}
             </h2>
 
+            {/* GROWTH */}
             <div className="mt-3 flex items-center gap-2">
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${bg}`}>
 
-                    {isPositive && <ArrowUpRight size={14} />}
-                    {!isPositive && !isZero && <ArrowDownRight size={14} />}
+                <div
+                    className={cn(
+                        "flex items-center gap-1 px-2 py-1 rounded-lg border",
+                        badgeBg
+                    )}
+                >
+                    {isPositive && (
+                        <ArrowUpRight
+                            size={14}
+                            className={textColor}
+                        />
+                    )}
 
-                    <span className={`text-xs font-medium ${color}`}>
+                    {!isPositive && !isZero && (
+                        <ArrowDownRight
+                            size={14}
+                            className={textColor}
+                        />
+                    )}
+
+                    <span
+                        className={cn(
+                            "text-xs font-medium",
+                            textColor
+                        )}
+                    >
                         {isPositive ? "+" : ""}
                         {growth.toFixed(2)}%
                     </span>
                 </div>
 
-                <span className="text-xs text-gray-800">
+                <span
+                    className={cn(
+                        "text-xs",
+                        theme.subText
+                    )}
+                >
                     vs last month
                 </span>
             </div>
