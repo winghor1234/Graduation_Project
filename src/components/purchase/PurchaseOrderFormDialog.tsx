@@ -83,6 +83,7 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                 return
             }
 
+
             const payload = {
                 supplier_id: data.supplier_id,
                 purchase_details: data.purchase_details
@@ -122,7 +123,7 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
                         <select {...register("supplier_id")}>
-                            <option value="">Select category</option>
+                            <option value="">Select supplier</option>
                             {suppliers.map((c) => (
                                 <option key={c.supplier_id} value={c.supplier_id}>
                                     {c.supplier_name}

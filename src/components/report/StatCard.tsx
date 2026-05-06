@@ -28,6 +28,7 @@ const colorMap = {
         icon: "bg-orange-100 text-orange-600",
         accent: "border-orange-200"
     },
+    
 }
 
 export default function StatCard({
