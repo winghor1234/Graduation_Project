@@ -1,21 +1,8 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    LineElement,
-    PointElement,
-    Tooltip,
-    Legend,
-    Filler,
-    type ChartOptions,
-    type ChartData,
-} from "chart.js"
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend, Filler, type ChartOptions, type ChartData,} from "chart.js"
 import { Chart } from "react-chartjs-2"
-
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend, Filler)
 
 export type SalesGraphData = {
@@ -190,7 +177,7 @@ export default function SalesGraphCard({ data }: Props) {
                     <h2 className="text-[15px] font-semibold text-gray-800">Sales Graph</h2>
                     <p className="text-[11px] text-gray-400 mt-0.5">Performance overview by period</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 border-2 border-red-600">
                     {/* Tabs */}
                     <div className="flex bg-gray-100 rounded-full p-0.5 gap-0.5">
                         {TABS.map((t) => (

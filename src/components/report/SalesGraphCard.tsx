@@ -48,6 +48,8 @@ function getInventorySummary(view: ViewMode) {
 }
 
 export default function SalesGraphCard() {
+        console.log("SalesGraphCard render")
+
     const [tab, setTab] = useState<ActiveTab>("Sales")
     const [view, setView] = useState<ViewMode>("M")
     
@@ -57,8 +59,8 @@ export default function SalesGraphCard() {
     getInventorySummary(view)
     
     
-    console.log("tab:", tab, "view:", view)
-    console.log("summaryItems:", summaryItems)
+    // console.log("tab:", tab, "view:", view)
+    // console.log("summaryItems:", summaryItems)
     return (
         <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm w-full min-w-0">
 
@@ -68,7 +70,7 @@ export default function SalesGraphCard() {
                     <h2 className="text-[15px] font-semibold text-gray-800">Sales Graph</h2>
                     <p className="text-[11px] text-gray-400 mt-0.5">Performance overview by period</p>
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap ">
                     <ChartTabBar tab={tab} onChange={setTab} />
                     <ChartViewToggle view={view} onChange={setView} />
                 </div>
