@@ -110,8 +110,9 @@
 // }
 
 
+import SalesGraphCard from "@/components/report/SalesGraphCard"
 import StatCard from "@/components/report/StatCard"
-import SalesGraphCard from "@/components/SalesGraphCard"
+// import SalesGraphCard from "@/components/SalesGraphCard"
 import { DollarSign, ShoppingCart, Package, AlertTriangle, Import, BaggageClaim } from "lucide-react"
 
 const mockSalesData = {
@@ -213,7 +214,7 @@ export default function ReportPage() {
 
             {/* Chart */}
             <div className="w-full min-w-0">
-                <SalesGraphCard data={mockSalesData} />
+                <SalesGraphCard  />
             </div>
 
         </div>

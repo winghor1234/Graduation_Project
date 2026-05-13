@@ -109,7 +109,6 @@ model Product {
   category      Category @relation(fields: [category_id], references: [category_id])
 
   images       ProductImage[]
-
   purchase_details PurchaseDetail[]
   import_details   ImportDetail[]
   order_details    OrderDetail[]
