@@ -109,11 +109,12 @@
 //     )
 // }
 
-
+'use client'
+import { useGetReport } from "@/app/features/hooks"
 import SalesGraphCard from "@/components/report/SalesGraphCard"
 import StatCard from "@/components/report/StatCard"
-// import SalesGraphCard from "@/components/SalesGraphCard"
 import { DollarSign, ShoppingCart, Package, AlertTriangle, Import, BaggageClaim } from "lucide-react"
+
 
 const mockSalesData = {
     labels: ["Jan 23'", "Feb 23'", "Mar 23'", "Apr 23'", "May 23'", "Jun 23'", "Jul 23'", "Aug 23'", "Sep 23'", "Oct 23'", "Nov 23'"],
@@ -137,6 +138,9 @@ const mockStats = {
 }
 
 export default function ReportPage() {
+    const { data, isLoading, error } = useGetReport()
+    const report = data?.data
+    console.log("report:", report)
     return (
         <div className="p-6 bg-[#f5f7fb] min-h-screen space-y-6">
 
@@ -149,7 +153,7 @@ export default function ReportPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard
                     title="Total Revenue"
-                    value={mockStats.revenue}
+                    value={report?.summary?.revenue || 0}
                     prefix="$"
                     growth={14.4}
                     sub="vs last month"
@@ -158,7 +162,7 @@ export default function ReportPage() {
                 />
                 <StatCard
                     title="Total Cost"
-                    value={mockStats.cost}
+                    value={report?.summary?.cost || 0}
                     prefix="$"
                     growth={-3.2}
                     sub="vs last month"
@@ -167,7 +171,7 @@ export default function ReportPage() {
                 />
                 <StatCard
                     title="Total Profit"
-                    value={mockStats.profit}
+                    value={report?.summary?.profit || 0}
                     prefix="$"
                     growth={22.1}
                     sub="vs last month"
@@ -176,7 +180,7 @@ export default function ReportPage() {
                 />
                 <StatCard
                     title="Total Orders"
-                    value={mockStats.orders}
+                    value={report?.order.length || 0}
                     growth={16.6}
                     sub="15.7 per day"
                     icon={<ShoppingCart size={18} />}
@@ -184,28 +188,28 @@ export default function ReportPage() {
                 />
                 <StatCard
                     title="Units Sold"
-                    value={mockStats.unitsSold}
+                    value={report?.sold.length || 0}
                     sub="3.5 items per order"
                     icon={<Package size={18} />}
                     color="blue"
                 />
                 <StatCard
                     title="Purchases"
-                    value={mockStats.purchases}
+                    value={report?.purchases.length || 0}
                     sub="This month"
                     icon={<BaggageClaim size={18} />}
                     color="amber"
                 />
                 <StatCard
                     title="Imports"
-                    value={mockStats.imports}
+                    value={report?.imports.length || 0}
                     sub="This month"
                     icon={<Import size={18} />}
                     color="amber"
                 />
                 <StatCard
                     title="Low Stock Alerts"
-                    value={mockStats.lowStock}
+                    value={report?.lowStock.length || 0}
                     sub="43 low · 10 out of stock"
                     icon={<AlertTriangle size={18} />}
                     color="red"
@@ -214,7 +218,7 @@ export default function ReportPage() {
 
             {/* Chart */}
             <div className="w-full min-w-0">
-                <SalesGraphCard  />
+                <SalesGraphCard data={report} />
             </div>
 
         </div>
