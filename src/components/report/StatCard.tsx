@@ -176,6 +176,7 @@
 // }
 
 
+import { formatCurrency } from "@/utils/FormatCurrency"
 import { ReactNode } from "react"
 
 type Color = "blue" | "green" | "red" | "purple" | "amber"
@@ -202,11 +203,11 @@ const colorMap: Record<Color, {
     amber: { iconBg: "bg-amber-50", iconText: "text-amber-500", dot: "bg-amber-400" },
 }
 
-function formatValue(value: number, prefix?: string): string {
-    if (value >= 1_000_000) return `${prefix ?? ""}${(value / 1_000_000).toFixed(1)}M`
-    if (value >= 1_000) return `${prefix ?? ""}${(value / 1_000).toFixed(1)}K`
-    return `${prefix ?? ""}${value}`
-}
+// function formatValue(value: number, prefix?: string): string {
+//     if (value >= 1_000_000) return `${prefix ?? ""}${(value / 1_000_000).toFixed(1)}M`
+//     if (value >= 1_000) return `${prefix ?? ""}${(value / 1_000).toFixed(1)}K`
+//     return `${prefix ?? ""}${value}`
+// }
 
 export default function StatCard({ title, value, prefix, growth, sub, icon, color = "blue" }: Props) {
     const theme = colorMap[color]
@@ -234,7 +235,7 @@ export default function StatCard({ title, value, prefix, growth, sub, icon, colo
             <div className="space-y-0.5">
                 <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wide">{title}</p>
                 <h2 className="text-2xl font-bold text-gray-800 leading-tight">
-                    {formatValue(value, prefix)}
+                    {formatCurrency(value)}
                 </h2>
                 {sub && <p className="text-[11px] text-gray-400">{sub}</p>}
             </div>

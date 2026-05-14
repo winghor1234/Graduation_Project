@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Chart as ChartJS,CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend, Filler,} from "chart.js"
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend, Filler, type ChartOptions, type ChartData } from 'chart.js';
 import { ActiveTab, ViewMode } from "../Type"
 import { inventoryData, revenueData, salesData } from "../data/salesMockData"
 import ChartTabBar from "./chart/ChartTabBar"
@@ -46,9 +46,9 @@ function getInventorySummary(view: ViewMode) {
         { label: "Received", value: `+${d.received.reduce((a, b) => a + b, 0)}`, color: "#22c55e" },
     ]
 }
-
-export default function SalesGraphCard() {
-        console.log("SalesGraphCard render")
+type Props = {
+    data: 
+export default function SalesGraphCard(data: Props) {
 
     const [tab, setTab] = useState<ActiveTab>("Sales")
     const [view, setView] = useState<ViewMode>("M")
