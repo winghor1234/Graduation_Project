@@ -948,129 +948,129 @@ export const reportApi = {
 }
 
 
-  // getDashboardReport: async () => {
-  //   const res = await axiosInstance.get("/report/dashboard")
-  //   return res.data.data
-  // },
+// getDashboardReport: async () => {
+//   const res = await axiosInstance.get("/report/dashboard")
+//   return res.data.data
+// },
 
 
-  // getProductReport: async (params?: GetParams): Promise<{
-  //   data: Product[]
-  //   meta: {
-  //     total: number
-  //     page: number
-  //     limit: number
-  //     totalPages: number
-  //   }
-  // }> => {
-  //   const res = await axiosInstance.get("/report/products", {
-  //     params
-  //   })
+// getProductReport: async (params?: GetParams): Promise<{
+//   data: Product[]
+//   meta: {
+//     total: number
+//     page: number
+//     limit: number
+//     totalPages: number
+//   }
+// }> => {
+//   const res = await axiosInstance.get("/report/products", {
+//     params
+//   })
 
-  //   return res.data.data
-  // },
+//   return res.data.data
+// },
 
-  // getTopProductsReport: async (params?: GetParams): Promise<{
-  //   data: Product[]
-  //   meta: {
-  //     total: number
-  //     page: number
-  //     limit: number
-  //     totalPages: number
-  //   }
-  // }> => {
-  //   const res = await axiosInstance.get("/report/top-products", {
-  //     params
-  //   })
-  //   return res.data.data
-  // },
-
-
-  // getLowStockProductsReport: async (params?: GetParams): Promise<{
-  //   data: Product[]
-  //   meta: {
-  //     total: number
-  //     page: number
-  //     limit: number
-  //     totalPages: number
-  //   }
-  // }> => {
-  //   const res = await axiosInstance.get("/report/low-stock", {
-  //     params
-  //   })
-  //   return res.data.data
-  // },
-
-  // getPurchaseReport: async (params?: GetParams): Promise<{
-  //   data: PurchaseOrder[]
-  //   meta: {
-  //     total: number
-  //     page: number
-  //     limit: number
-  //     totalPages: number
-  //   }
-  // }> => {
-  //   const res = await axiosInstance.get("/report/purchase", {
-  //     params
-  //   })
-
-  //   return res.data.data
-  // },
-
-  // getImportReport: async (params?: GetParams): Promise<{
-  //   data: Import[]
-  //   meta: {
-  //     total: number
-  //     page: number
-  //     limit: number
-  //     totalPages: number
-  //   }
-  // }> => {
-  //   const res = await axiosInstance.get("/report/imports", {
-  //     params
-  //   })
-  //   return res.data.data
-  // },
-
-  // getCustomerReport: async () => {
-  //   const res = await axiosInstance.get("/report/customers")
-  //   return res.data
-  // },
-
-  // getSalesQuantityReport: async () => {
-  // const res = await axiosInstance.get("/report/sale")
-  //   return res.data.data
-  // },
+// getTopProductsReport: async (params?: GetParams): Promise<{
+//   data: Product[]
+//   meta: {
+//     total: number
+//     page: number
+//     limit: number
+//     totalPages: number
+//   }
+// }> => {
+//   const res = await axiosInstance.get("/report/top-products", {
+//     params
+//   })
+//   return res.data.data
+// },
 
 
+// getLowStockProductsReport: async (params?: GetParams): Promise<{
+//   data: Product[]
+//   meta: {
+//     total: number
+//     page: number
+//     limit: number
+//     totalPages: number
+//   }
+// }> => {
+//   const res = await axiosInstance.get("/report/low-stock", {
+//     params
+//   })
+//   return res.data.data
+// },
 
-  // getRevenueSummaryReport: async (): Promise<RevenueSummary> => {
-  //   const res = await axiosInstance.get("/report/revenue")
-  //   return res.data
-  // },
+// getPurchaseReport: async (params?: GetParams): Promise<{
+//   data: PurchaseOrder[]
+//   meta: {
+//     total: number
+//     page: number
+//     limit: number
+//     totalPages: number
+//   }
+// }> => {
+//   const res = await axiosInstance.get("/report/purchase", {
+//     params
+//   })
+
+//   return res.data.data
+// },
+
+// getImportReport: async (params?: GetParams): Promise<{
+//   data: Import[]
+//   meta: {
+//     total: number
+//     page: number
+//     limit: number
+//     totalPages: number
+//   }
+// }> => {
+//   const res = await axiosInstance.get("/report/imports", {
+//     params
+//   })
+//   return res.data.data
+// },
+
+// getCustomerReport: async () => {
+//   const res = await axiosInstance.get("/report/customers")
+//   return res.data
+// },
+
+// getSalesQuantityReport: async () => {
+// const res = await axiosInstance.get("/report/sale")
+//   return res.data.data
+// },
 
 
 
-  // getMonthlyRevenueReport: async (): Promise<MonthlyRevenue[]> => {
-  //   const res = await axiosInstance.get("/report/monthly-revenue")
-  //   return res.data.data
-  // },
+// getRevenueSummaryReport: async (): Promise<RevenueSummary> => {
+//   const res = await axiosInstance.get("/report/revenue")
+//   return res.data
+// },
 
 
-  // getSaleQuantityReport: async (params?: GetParams): Promise<{
-  //   data: Sale[]
-  //   meta: {
-  //     total: number
-  //     page: number
-  //     limit: number
-  //     totalPages: number
-  //   }
-  // }> => {
-  //   const res = await axiosInstance.get("/report/sales", {
-  //     params
-  //   })
-  //   return res.data.data
-  // },
+
+// getMonthlyRevenueReport: async (): Promise<MonthlyRevenue[]> => {
+//   const res = await axiosInstance.get("/report/monthly-revenue")
+//   return res.data.data
+// },
+
+
+// getSaleQuantityReport: async (params?: GetParams): Promise<{
+//   data: Sale[]
+//   meta: {
+//     total: number
+//     page: number
+//     limit: number
+//     totalPages: number
+//   }
+// }> => {
+//   const res = await axiosInstance.get("/report/sales", {
+//     params
+//   })
+//   return res.data.data
+// },
 
 
 
@@ -1092,6 +1092,35 @@ export const dashboardApi = {
     return res.data
   }
 }
+
+
+
+// ----------------------------------------- dashboard end ---------------------------------------------------
+
+
+
+
+
+// ----------------------------------------- dashboard end ---------------------------------------------------
+
+
+
+
+export const exportApi = {
+  pdf: async () => {
+    const res = await axiosInstance.post("/export/pdf")
+    return res.data
+  },
+
+
+  excel: async () => {
+    const res = await axiosInstance.post("/export/exel")
+    return res
+  }
+
+}
+
+
 
 
 

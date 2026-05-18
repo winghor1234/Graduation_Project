@@ -1,7 +1,7 @@
 import PDFDocument from "pdfkit"
 import { ExportConfig } from "@/types/export"
 
-export async function generatePdf<T extends Record<string, any>>(
+export async function generatePdf<T extends Record<string, unknown>>(
     config: ExportConfig<T>
 ) {
     const doc = new PDFDocument({ margin: 30 })

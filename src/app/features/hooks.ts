@@ -1,14 +1,14 @@
 
 "use client"
 
-import { adminApi, adminAuthApi, categoryApi, customerApi, dashboardApi, DeliveryApi, importApi, locationApi, orderApi, paymentApi, productApi, purchaseApi, refundApi, reportApi, saleApi, supplierApi } from "./api"
+import { adminApi, adminAuthApi, categoryApi, customerApi, dashboardApi, DeliveryApi, exportApi, importApi, locationApi, orderApi, paymentApi, productApi, purchaseApi, refundApi, reportApi, saleApi, supplierApi } from "./api"
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { CreateCustomerInput, UpdateCustomerInput } from "@/modules/customer/customer.type"
 import { CreateEmployeeInput, UpdateEmployeeInput } from "@/modules/employee/employee.type"
 import { Category, UpdateCategoryInput } from "@/modules/category/category.type"
 import { CreateSupplierInput, UpdateSupplierInput } from "@/modules/supplier/supplier.type"
 import { CreatePurchaseOrderInput, UpdatePurchaseOrderInput } from "@/modules/purchase/purchase.type"
-import { CreateOrderInput, OrderInput, UpdateOrderStatusInput } from "@/modules/order/order.types"
+import { UpdateOrderStatusInput } from "@/modules/order/order.types"
 import { CreateSaleInput } from "@/modules/sale/sale.type"
 import { CreateRefundInput } from "@/modules/refund/refund.type"
 import { ForgotPasswordInput, VerifyOTPInput } from "@/modules/auth/auth.type"
@@ -1197,6 +1197,107 @@ export const useGetReport = () => {
     })
 }
 
+
+
+// --------------------------------------------------------  report end -----------------------------------------------------------------------
+
+
+
+
+
+// --------------------------------------------------------  report end -----------------------------------------------------------------------
+
+
+export const useExportPdf = () => {
+
+    return useMutation<
+        Blob,
+        Error,
+        ExportOptions
+    >({
+
+        mutationFn: (
+            body
+        ) => exportApi.pdf(body),
+
+        onSuccess: (
+            blob,
+            variables
+        ) => {
+
+            const url =
+                window.URL.createObjectURL(blob)
+
+            const a =
+                document.createElement("a")
+
+            a.href = url
+
+            a.download =
+                `${variables.fileName}.pdf`
+
+            a.click()
+
+            window.URL.revokeObjectURL(url)
+
+        }
+
+    })
+
+}
+
+type ExportOptions = {
+
+    fileName: string
+
+    title: string
+
+    columns: {
+        header: string
+        accessor: string
+    }[]
+
+    data: Record<string, unknown>[]
+
+}
+
+export const useExportExcel = () => {
+
+    return useMutation<
+        Blob,
+        Error,
+        ExportOptions
+    >({
+
+        mutationFn: (
+            body
+        ) => exportApi.excel(body),
+
+        onSuccess: (
+            blob,
+            variables
+        ) => {
+
+            const url =
+                window.URL.createObjectURL(blob)
+
+            const a =
+                document.createElement("a")
+
+            a.href = url
+
+            a.download =
+                `${variables.fileName}.xlsx`
+
+            a.click()
+
+            window.URL.revokeObjectURL(url)
+
+        }
+
+    })
+
+}
 
 
 // --------------------------------------------------------  report end -----------------------------------------------------------------------

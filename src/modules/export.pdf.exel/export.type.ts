@@ -11,3 +11,15 @@ export type ReceiptPayload = {
     items: ReceiptItem[]
     total: number
 }
+
+export type ExportColumn<T> = {
+    key: keyof T
+    header: string
+}
+
+export type ExportConfig<T extends Record<string, unknown>> = {
+    title: string
+    data: T[]
+    columns: ExportColumn<T>[]
+    fileName?: string
+}

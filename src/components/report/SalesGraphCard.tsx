@@ -10,8 +10,6 @@ import ChartSummaryBar from "./chart/ChartSummaryBar"
 import SalesChart from "./chart/SalesChart"
 import InventoryChart from "./chart/InventoryChart"
 import RevenueChart from "./chart/RevenueChart"
-
-
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend, Filler)
 
 function getSalesSummary(view: ViewMode) {
@@ -47,42 +45,43 @@ function getInventorySummary(view: ViewMode) {
     ]
 }
 type Props = {
-    data: 
-export default function SalesGraphCard(data: Props) {
-
-    const [tab, setTab] = useState<ActiveTab>("Sales")
-    const [view, setView] = useState<ViewMode>("M")
-    
-    const summaryItems =
-    tab === "Sales" ? getSalesSummary(view) :
-    tab === "Revenue" ? getRevenueSummary(view) :
-    getInventorySummary(view)
-    
-    
-    // console.log("tab:", tab, "view:", view)
-    // console.log("summaryItems:", summaryItems)
-    return (
-        <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm w-full min-w-0">
-
-            {/* Header */}
-            <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
-                <div>
-                    <h2 className="text-[15px] font-semibold text-gray-800">Sales Graph</h2>
-                    <p className="text-[11px] text-gray-400 mt-0.5">Performance overview by period</p>
-                </div>
-                <div className="flex items-center gap-2 flex-wrap ">
-                    <ChartTabBar tab={tab} onChange={setTab} />
-                    <ChartViewToggle view={view} onChange={setView} />
-                </div>
-            </div>
-
-            {/* Summary numbers */}
-            <ChartSummaryBar items={summaryItems} />
-
-            {/* Charts */}
-            {tab === "Sales" && <SalesChart key={`sales-${view}`} data={salesData[view]} />}
-            {tab === "Revenue" && <RevenueChart key={`revenue-${view}`} data={revenueData[view]} />}
-            {tab === "Inventory" && <InventoryChart key={`inventory-${view}`} data={inventoryData[view]} />}
-        </div>
-    )
+    data: any
 }
+    export default function SalesGraphCard(data: Props) {
+
+        const [tab, setTab] = useState<ActiveTab>("Sales")
+        const [view, setView] = useState<ViewMode>("M")
+
+        const summaryItems =
+            tab === "Sales" ? getSalesSummary(view) :
+                tab === "Revenue" ? getRevenueSummary(view) :
+                    getInventorySummary(view)
+
+
+        // console.log("tab:", tab, "view:", view)
+        // console.log("summaryItems:", summaryItems)
+        return (
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm w-full min-w-0">
+
+                {/* Header */}
+                <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+                    <div>
+                        <h2 className="text-[15px] font-semibold text-gray-800">Sales Graph</h2>
+                        <p className="text-[11px] text-gray-400 mt-0.5">Performance overview by period</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap ">
+                        <ChartTabBar tab={tab} onChange={setTab} />
+                        <ChartViewToggle view={view} onChange={setView} />
+                    </div>
+                </div>
+
+                {/* Summary numbers */}
+                <ChartSummaryBar items={summaryItems} />
+
+                {/* Charts */}
+                {tab === "Sales" && <SalesChart key={`sales-${view}`} data={salesData[view]} />}
+                {tab === "Revenue" && <RevenueChart key={`revenue-${view}`} data={revenueData[view]} />}
+                {tab === "Inventory" && <InventoryChart key={`inventory-${view}`} data={inventoryData[view]} />}
+            </div>
+        )
+    }

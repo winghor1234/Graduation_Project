@@ -1,10 +1,14 @@
 import PDFDocument from "pdfkit"
-
-export function exportToPdf(data: any[]) {
+type ReportItem = {
+    name: string
+    qty: number
+    price: number
+}
+export function exportToPdf(data: ReportItem[]) {
 
     const doc = new PDFDocument()
 
-    const buffers: any[] = []
+    const buffers: Uint8Array[] = []
 
     doc.on("data", buffers.push.bind(buffers))
 
