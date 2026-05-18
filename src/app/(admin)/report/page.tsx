@@ -110,7 +110,7 @@
 // }
 
 'use client'
-import { useGetReport } from "@/app/features/hooks"
+import { useExportExcel, useExportPdf, useGetReport } from "@/app/features/hooks"
 import SalesGraphCard from "@/components/report/SalesGraphCard"
 import StatCard from "@/components/report/StatCard"
 import { DollarSign, ShoppingCart, Package, AlertTriangle, Import, BaggageClaim } from "lucide-react"
@@ -140,13 +140,25 @@ const mockStats = {
 export default function ReportPage() {
     const { data, isLoading, error } = useGetReport()
     const report = data?.data
-    console.log("report:", report)
-    return (
-        <div className="p-6 bg-[#f5f7fb] min-h-screen space-y-6">
+    const pdfMutation = useExportPdf()
+    const excelMutation = useExportExcel()
 
-            <div>
-                <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
-                <p className="text-sm text-gray-400 mt-0.5">Overview of your business performance</p>
+    return (
+        <div id="report-content" className="p-6 bg-[#f5f7fb] min-h-screen space-y-6">
+
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
+                    <p className="text-sm text-gray-400 mt-0.5">Overview of your business performance</p>
+                </div>
+                <div className="flex gap-2 no-print">
+                    <button onClick={() => excelMutation.mutate("sales")} className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 flex items-center gap-2">
+                        Export Excel
+                    </button>
+                    <button onClick={() => pdfMutation.mutate("sales")} className="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 flex items-center gap-2">
+                        Export PDF
+                    </button>
+                </div>
             </div>
 
             {/* Stat Cards */}

@@ -1,7 +1,7 @@
 
 "use client"
 
-import { adminApi, adminAuthApi, categoryApi, customerApi, dashboardApi, DeliveryApi, importApi, locationApi, orderApi, paymentApi, productApi, purchaseApi, refundApi, reportApi, saleApi, supplierApi } from "./api"
+import { adminApi, adminAuthApi, categoryApi, customerApi, dashboardApi, DeliveryApi, exportApi, importApi, locationApi, orderApi, paymentApi, productApi, purchaseApi, refundApi, reportApi, saleApi, supplierApi } from "./api"
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { CreateCustomerInput, UpdateCustomerInput } from "@/modules/customer/customer.type"
 import { CreateEmployeeInput, UpdateEmployeeInput } from "@/modules/employee/employee.type"
@@ -16,6 +16,7 @@ import { CreateImportInput } from '@/modules/import/import.type';
 import { VerifyPaymentInput } from '@/modules/payment/payment.type';
 import { CreateDeliveryInput, UpdateDeliveryInput } from "@/modules/delivery/delivery.type"
 import { CreateBranchInput, CreateDistrictInput, CreateProvinceInput, updateBranchInput, updateDistrictInput, updateProvinceInput } from '@/modules/location/location.type';
+import { ReportType } from "@/modules/export.pdf.excel/export.type"
 
 
 export type UseGetParams = {
@@ -1200,5 +1201,112 @@ export const useGetReport = () => {
 
 
 // --------------------------------------------------------  report end -----------------------------------------------------------------------
+
+
+
+// --------------------------------------------------------  export start -----------------------------------------------------------------------
+
+
+
+// ================= DOWNLOAD HELPER =================
+const downloadFile = (
+    data: Blob,
+    filename: string
+) => {
+
+    const url =
+        window.URL.createObjectURL(data)
+
+    const link =
+        document.createElement("a")
+
+    link.href = url
+
+    link.download = filename
+
+    document.body.appendChild(link)
+
+    link.click()
+
+    link.remove()
+
+    window.URL.revokeObjectURL(url)
+}
+
+
+
+// ================= PDF =================
+export const useExportPdf = () => {
+
+    return useMutation({
+
+        mutationFn: (
+            type: ReportType
+        ) =>
+            exportApi.exportPdf(type),
+
+        onSuccess: (
+            data,
+            type
+        ) => {
+
+            downloadFile(
+                data,
+                `${type}.pdf`
+            )
+        }
+    })
+}
+
+
+
+// ================= EXCEL =================
+export const useExportExcel = () => {
+
+    return useMutation({
+
+        mutationFn: (
+            type: ReportType
+        ) =>
+            exportApi.exportExcel(type),
+
+        onSuccess: (
+            data,
+            type
+        ) => {
+
+            downloadFile(
+                data,
+                `${type}.xlsx`
+            )
+        }
+    })
+}
+
+
+
+// ================= CSV =================
+export const useExportCsv = () => {
+
+    return useMutation({
+
+        mutationFn: (
+            type: ReportType
+        ) =>
+            exportApi.exportCsv(type),
+
+        onSuccess: (
+            data,
+            type
+        ) => {
+
+            downloadFile(
+                data,
+                `${type}.csv`
+            )
+        }
+    })
+}
+// --------------------------------------------------------  export end -----------------------------------------------------------------------
 
 

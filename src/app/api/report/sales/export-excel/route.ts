@@ -1,14 +1,12 @@
 import { reportService } from "@/modules/report/report.service"
-import { exportToExcel } from "@/utils/exportExcel"
-import { NextRequest } from "next/server"
+import { generateExcel } from "@/utils/excelExport"
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     const sales = await reportService.getSalesQuantityReport()
-    const buffer = exportToExcel(sales, "Sales Report")
-    return new Response(buffer, {
+    const buffer = await generateExcel("Sales Report", sales)
+    return new Response(buffer as any, {
         headers: {
-            "Content-Type":
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "Content-Disposition": "attachment; filename=sales-report.xlsx"
         }
     })

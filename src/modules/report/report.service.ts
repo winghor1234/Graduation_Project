@@ -52,22 +52,22 @@ export const reportService = {
     //         return customers
     //     },
 
-    //     // Sales Quantity Report
-    //     async getSalesQuantityReport() {
-    //         const sales = await prisma.saleDetail.groupBy({
-    //             by: ["product_id"],
-    //             _sum: {
-    //                 quantity: true
-    //             },
-    //             orderBy: {
-    //                 _sum: {
-    //                     quantity: "desc"
-    //                 }
-    //             }
-    //         })
-    //         return sales
+    // Sales Quantity Report
+    async getSalesQuantityReport() {
+        const sales = await prisma.saleDetail.groupBy({
+            by: ["product_id"],
+            _sum: {
+                quantity: true
+            },
+            orderBy: {
+                _sum: {
+                    quantity: "desc"
+                }
+            }
+        })
+        return sales
 
-    //     },
+    },
 
     //     // Top Selling Products
     //     async getTopSellingProducts() {
@@ -312,11 +312,6 @@ export const reportService = {
             imports,
             sales,
             customers,
-            summary: {
-                revenue,
-                cost,
-                profit
-            },
             topProducts,
             lowStock,
             sold: salesQuantity,
@@ -324,7 +319,12 @@ export const reportService = {
                 month: new Date(item.month).toISOString().slice(0, 7),
                 revenue: Number(item.revenue)
             })),
-            order
+            order,
+            summary: {
+                revenue,
+                cost,
+                profit
+            },
         }
     }
 }

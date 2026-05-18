@@ -47,7 +47,8 @@ function getInventorySummary(view: ViewMode) {
     ]
 }
 type Props = {
-    data: 
+    data: any
+}
 export default function SalesGraphCard(data: Props) {
 
     const [tab, setTab] = useState<ActiveTab>("Sales")

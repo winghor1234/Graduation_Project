@@ -11,3 +11,17 @@ export type ReceiptPayload = {
     items: ReceiptItem[]
     total: number
 }
+
+
+export type ReportType =
+    | "purchase"
+    | "import"
+    | "sales"
+    | "customer"
+    | "revenue"
+    | "cost"
+    | "topProduct"
+    | "lowProduct"
+    | "saleQuantity"
+    | "monthlyRevenue"
+    | "order"

@@ -3,6 +3,5 @@ import { NextRequest } from "next/server"
 
 
 export async function GET(req: NextRequest) {
-    return ExportController.exportPdf(req)
-
+    return ExportController.exportCsv(req)
 }
