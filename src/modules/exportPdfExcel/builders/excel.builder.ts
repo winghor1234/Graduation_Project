@@ -1,34 +1,63 @@
-import ExcelJS from "exceljs"
+
+import ExcelJS from "exceljs";
+import { NextResponse } from "next/server";
+
+interface ExcelColumn {
+    header: string;
+    key: string;
+    width?: number;
+}
+
+interface ExportExcelProps<T> {
+    sheetName: string;
+    columns: ExcelColumn[];
+    data: T[];
+    fileName: string;
+}
 
 export class ExcelBuilder {
 
-    static async export({
-        sheetName,
-        columns,
-        data
-    }: any) {
+    static async export<T>(
+        data: ExportExcelProps<T>
+    ): Promise<NextResponse> {
 
+        const {
+            sheetName,
+            columns,
+            data: rows,
+            fileName
+        } = data;
+
+        // create workbook
         const workbook =
-            new ExcelJS.Workbook()
+            new ExcelJS.Workbook();
 
+        // create worksheet
         const worksheet =
-            workbook.addWorksheet(sheetName)
+            workbook.addWorksheet(sheetName);
 
-        worksheet.columns = columns
+        // set columns
+        worksheet.columns = columns;
 
-        data.forEach((row: any) => {
-            worksheet.addRow(row)
-        })
+        // add rows
+        rows.forEach((row) => {
+            worksheet.addRow(row as any);
+        });
 
-        worksheet.getRow(1).font = {
-            bold: true
-        }
-
+        // create buffer
         const buffer =
-            await workbook.xlsx.writeBuffer()
+            await workbook.xlsx.writeBuffer();
 
-        return Buffer.from(buffer)
+        // return response
+        return new NextResponse(buffer, {
+            status: 200,
+            headers: {
+                "Content-Type":
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 
+                "Content-Disposition":
+                    `attachment; filename=${fileName}.xlsx`
+            }
+        });
     }
-
 }

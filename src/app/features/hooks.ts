@@ -1205,101 +1205,92 @@ export const useGetReport = () => {
 
 
 
-// --------------------------------------------------------  report end -----------------------------------------------------------------------
+// --------------------------------------------------------  export start -----------------------------------------------------------------------
+
+import { useState } from "react";
 
 
-export const useExportPdf = () => {
+export const useExport = () => {
 
-    return useMutation<
-        Blob,
-        Error,
-        ExportOptions
-    >({
+    const [exporting, setExporting] =
+        useState(false);
 
-        mutationFn: (
-            body
-        ) => exportApi.pdf(body),
+    const exportExcel =
+        async () => {
+            try {
+                setExporting(true);
+                const data = await exportApi.excel();
 
-        onSuccess: (
-            blob,
-            variables
-        ) => {
+                // create url
+                const url = window.URL.createObjectURL(new Blob([data]));
 
-            const url =
-                window.URL.createObjectURL(blob)
+                // create link
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute(
+                    "download",
+                    "top-product-report.xlsx"
+                );
 
-            const a =
-                document.createElement("a")
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setExporting(false);
+            }
+        };
 
-            a.href = url
+    const exportPdf =
+        async () => {
 
-            a.download =
-                `${variables.fileName}.pdf`
+            try {
 
-            a.click()
+                setExporting(true);
 
-            window.URL.revokeObjectURL(url)
+                const data =
+                    await exportApi.pdf();
 
-        }
+                const url =
+                    window.URL.createObjectURL(
+                        new Blob([data])
+                    );
 
-    })
+                const link =
+                    document.createElement("a");
 
-}
+                link.href = url;
 
-type ExportOptions = {
+                link.setAttribute(
+                    "download",
+                    "top-product-report.pdf"
+                );
 
-    fileName: string
+                document.body.appendChild(link);
 
-    title: string
+                link.click();
 
-    columns: {
-        header: string
-        accessor: string
-    }[]
+                link.remove();
 
-    data: Record<string, unknown>[]
+            } catch (error) {
 
-}
+                console.error(error);
 
-export const useExportExcel = () => {
+            } finally {
 
-    return useMutation<
-        Blob,
-        Error,
-        ExportOptions
-    >({
+                setExporting(false);
+            }
+        };
 
-        mutationFn: (
-            body
-        ) => exportApi.excel(body),
-
-        onSuccess: (
-            blob,
-            variables
-        ) => {
-
-            const url =
-                window.URL.createObjectURL(blob)
-
-            const a =
-                document.createElement("a")
-
-            a.href = url
-
-            a.download =
-                `${variables.fileName}.xlsx`
-
-            a.click()
-
-            window.URL.revokeObjectURL(url)
-
-        }
-
-    })
-
-}
+    return {
+        exportExcel,
+        exporting,
+        exportPdf,
+    };
+};
 
 
-// --------------------------------------------------------  report end -----------------------------------------------------------------------
+// --------------------------------------------------------  export end -----------------------------------------------------------------------
 
 

@@ -1,65 +1,190 @@
-const PdfPrinter =
-    require("pdfmake/src/printer")
+import path from "path";
 
-import path from "path"
+import { NextResponse }
+    from "next/server";
+
+interface PdfColumn {
+    header: string;
+    key: string;
+    width?: number;
+}
+
+interface ExportPdfProps<T> {
+    title?: string;
+    columns: PdfColumn[];
+    data: T[];
+    fileName: string;
+}
 
 export class PdfBuilder {
 
-    static async export(
-        title: string,
-        data: any[]
-    ) {
+    static async export<T>(
+        props: ExportPdfProps<T>
+    ): Promise<NextResponse> {
 
-        const fonts = {
+        // dynamic import
+        const PDFDocument = (await import("pdfkit")).default;
 
-            Roboto: {
+        const {
+            title,
+            columns,
+            data,
+            fileName
+        } = props;
 
-                normal: path.join(
-                    process.cwd(),
-                    "public/fonts/Roboto-Regular.ttf"
-                ),
+        // font path
+        const regularFont =
+            path.join(
+                process.cwd(),
+                "public/fonts/Roboto-Regular.ttf"
+            );
 
-                bold: path.join(
-                    process.cwd(),
-                    "public/fonts/Roboto-Regular.ttf"
-                ),
+        const boldFont =
+            path.join(
+                process.cwd(),
+                "public/fonts/Roboto-Bold.ttf"
+            );
 
-                italics: path.join(
-                    process.cwd(),
-                    "public/fonts/Roboto-Regular.ttf"
-                ),
+        // create pdf
+        const doc =
+            new PDFDocument({
+                margin: 30,
+                size: "A4"
+            });
 
-                bolditalics: path.join(
-                    process.cwd(),
-                    "public/fonts/Roboto-Regular.ttf"
-                )
+        // register font
+        doc.registerFont(
+            "Roboto",
+            regularFont
+        );
 
+        doc.registerFont(
+            "Roboto-Bold",
+            boldFont
+        );
+
+        // IMPORTANT
+        doc.font("Roboto");
+
+        const buffers: Buffer[] = [];
+
+        doc.on(
+            "data",
+            (chunk: Buffer) => {
+                buffers.push(chunk);
             }
+        );
 
+        // ===== TITLE =====
+
+        if (title) {
+
+            doc
+                .font("Roboto-Bold")
+                .fontSize(20)
+                .text(title, {
+                    align: "center"
+                });
+
+            doc.moveDown(2);
         }
 
-        const printer =
-            new PdfPrinter(fonts)
+        // ===== HEADER =====
 
-        const headers =
-            Object.keys(data[0])
+        const startX = 50;
 
-        const body = [
+        let currentY = doc.y;
 
-            headers.map((header) => ({
-                text: header.toUpperCase(),
-                bold: true
-            })),
+        columns.forEach(
+            (column, index) => {
 
-            ...data.map((item) =>
+                const x =
+                    startX +
+                    (index * 120);
 
-                headers.map((header) => ({
-                    text: String(item[header] ?? "-")
-                }))
+                doc
+                    .font("Roboto-Bold")
+                    .fontSize(12)
+                    .text(
+                        column.header,
+                        x,
+                        currentY,
+                        {
+                            width:
+                                column.width || 100
+                        }
+                    );
+            }
+        );
 
-            )
+        currentY += 30;
 
-        ]
+        // ===== ROWS =====
+
+        data.forEach((row: any) => {
+
+            columns.forEach(
+                (column, index) => {
+
+                    const x =
+                        startX +
+                        (index * 120);
+
+                    doc
+                        .font("Roboto")
+                        .fontSize(11)
+                        .text(
+                            String(
+                                row[column.key] ?? ""
+                            ),
+                            x,
+                            currentY,
+                            {
+                                width:
+                                    column.width || 100
+                            }
+                        );
+                }
+            );
+
+            currentY += 25;
+
+            if (currentY > 750) {
+
+                doc.addPage();
+
+                currentY = 50;
+            }
+        });
+
+        doc.end();
+
+        const pdfBuffer =
+            await new Promise<Buffer>(
+                (resolve) => {
+
+                    doc.on("end", () => {
+
+                        resolve(
+                            Buffer.concat(buffers)
+                        );
+                    });
+                }
+            );
+
+        return new NextResponse(
+            pdfBuffer as any,
+            {
+                status: 200,
+
+                headers: {
+                    "Content-Type":
+                        "application/pdf",
+
+                    "Content-Disposition":
+                        `attachment; filename=${fileName}.pdf`
+                }
+            }
+        );
     }
-
 }

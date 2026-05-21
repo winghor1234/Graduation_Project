@@ -1,160 +1,137 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ExportService } from "./export.service"
-import { PdfBuilder } from "./builders/pdf.builder"
-import { CsvBuilder } from "./builders/csv.builder"
-import { ExcelBuilder } from "./builders/excel.builder"
-import { ExportColumns } from "./constants/exportColumns"
+import { ExportService } from "./export.service";
+import { ExcelBuilder } from "./builders/excel.builder";
+import { ExportColumns } from "./constants/exportColumns";
+import { PdfBuilder } from "./builders/pdf.builder";
+
 
 export class ExportController {
-    static async export(req: NextRequest) {
+
+    static async ProductTop(req: NextRequest): Promise<NextResponse> {
         try {
-            const { searchParams } = new URL(req.url)
-            const type = searchParams.get("type")
-            const format = searchParams.get("format")
-            const period = searchParams.get("period")
-            const startDate = searchParams.get("startDate")
-            const endDate = searchParams.get("endDate")
+            // get query params
+            const { searchParams } = new URL(req.url);
+            const startDate = searchParams.get("startDate");
+            const endDate = searchParams.get("endDate");
 
-            let data: any[] = []
-            let columns: any[] = []
-            let title = ""
-            // =========================
-            // SALES
-            // =========================
+            // get data from service
+            const data = await ExportService.getProductsTop({ startDate, endDate });
 
-            if (type === "sales") {
-                data = await ExportService.getSalesData(period || undefined, startDate, endDate)
-                columns = ExportColumns.sales
-                title = "Sales Export"
-            }
-
-            // =========================
-            // PRODUCTS
-            // =========================
-
-            // else if (type === "products") {
-            //     data = await ExportService.getProductData()
-            //     columns = ExportColumns.products
-            //     title = "Product Export"
-            // }
-
-            // =========================
-            // INVALID TYPE
-            // =========================
-            else {
-                return NextResponse.json({ message: "Invalid type" }, { status: 400 })
-            }
-
-            // =========================
-            // NO DATA
-            // =========================
-
+            // check data
             if (!data || data.length === 0) {
-                return NextResponse.json({ message: "No data found" }, { status: 404 })
+                return NextResponse.json({ message: "Product not found" }, { status: 404 });
             }
+            // console.log(data);
 
-            // =========================
-            // EXCEL
-            // =========================
+            // format export data
+            const exportData = data.map((item) => ({
+                productCode: item.product_code,
+                productName: item.product_name,
+                // Category: item.category?.category_name,
+                // PurchasePrice: item.purchase_price,
+                price: item.sale_price,
+                ptock: item.stock_qty,
+            }));
 
-            if (format === "excel") {
-                const buffer = await ExcelBuilder.export({
-                    sheetName: title,
-                    columns,
-                    data
-                })
-                return new NextResponse(
-                    new Uint8Array(buffer),
+            // export excel
+            return await ExcelBuilder.export({
+                sheetName: "Top Product Report",
+                columns: ExportColumns.products,
+                data: exportData,
+                fileName: "top-product-report"
+            });
+
+        } catch (error) {
+            console.error(error);
+            return NextResponse.json({ message: "Internal Server Error", error }, { status: 500 }
+            );
+        }
+    }
+
+
+    // ===== PDF =====
+
+    static async ProductTopPdf(
+        req: NextRequest
+    ): Promise<NextResponse> {
+
+        try {
+
+            const { searchParams } =
+                new URL(req.url);
+
+            const startDate =
+                searchParams.get("startDate");
+
+            const endDate =
+                searchParams.get("endDate");
+
+            const data =
+                await ExportService
+                    .getProductsTop({
+                        startDate,
+                        endDate
+                    });
+
+            if (!data?.length) {
+
+                return NextResponse.json(
                     {
-                        status: 200,
-                        headers: {
-                            "Content-Type":
-                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-
-                            "Content-Disposition":
-                                `attachment; filename=${type}.xlsx`
-                        }
-                    }
-                )
-
-            }
-
-            // =========================
-            // CSV
-            // =========================
-
-            if (format === "csv") {
-                const csv = CsvBuilder.export(data)
-                return new NextResponse(
-                    csv,
+                        message:
+                            "No data found"
+                    },
                     {
-                        status: 200,
-                        headers: {
-                            "Content-Type":
-                                "text/csv",
-
-                            "Content-Disposition":
-                                `attachment; filename=${type}.csv`
-                        }
+                        status: 404
                     }
-                )
-
+                );
             }
 
-            // =========================
-            // PDF
-            // =========================
+            const exportData =
+                data.map((item) => ({
 
-            if (format === "pdf") {
-                const buffer = await PdfBuilder.export(title, data)
-                return new NextResponse(
-                    new Uint8Array(buffer as any),
-                    {
-                        status: 200,
-                        headers: {
-                            "Content-Type":
-                                "application/pdf",
+                    ProductCode:
+                        item?.product_code,
 
-                            "Content-Disposition":
-                                `attachment; filename=${type}.pdf`
-                        }
-                    }
-                )
+                    ProductName:
+                        item?.product_name,
 
-            }
+                    SalePrice:
+                        item?.sale_price,
 
-            // =========================
-            // INVALID FORMAT
-            // =========================
+                    Stock:
+                        item?.stock_qty,
 
-            return NextResponse.json(
-                {
-                    message: "Invalid format"
-                },
-                {
-                    status: 400
-                }
-            )
+                    TotalSold:
+                        item?.total_quantity
+                }));
+
+            return await PdfBuilder.export({
+
+                title: "Top Product Report",
+
+                columns:
+                    ExportColumns.products,
+
+                data:
+                    exportData,
+
+                fileName:
+                    "top-product-report"
+            });
 
         } catch (error) {
 
-            console.error(error)
+            console.error(error);
 
             return NextResponse.json(
                 {
-                    message: "Export failed",
-                    error:
-                        error instanceof Error
-                            ? error.message
-                            : "Unknown error"
+                    message:
+                        "Internal Server Error"
                 },
                 {
                     status: 500
                 }
-            )
-
+            );
         }
-
     }
-
 }

@@ -228,11 +228,9 @@
 
 'use client'
 
-import {
-    useExportPdf,
-    useGetReport
-} from "@/app/features/hooks"
 
+
+import { useExport, useGetReport } from "@/app/features/hooks"
 import SalesGraphCard from "@/components/report/SalesGraphCard"
 import StatCard from "@/components/report/StatCard"
 
@@ -277,84 +275,12 @@ export default function ReportPage() {
         isPending: exporting
     } = useExportPdf()
 
+    const { data, isLoading, error} = useGetReport()
+
     const report = data?.data
+    const { exportExcel, exporting, exportPdf } = useExport();
 
-    const handleExportPdf = () => {
 
-        exportPdf({
-
-            fileName: "report",
-
-            title: "Business Report",
-
-            columns: [
-
-                {
-                    header: "Revenue",
-                    accessor: "revenue"
-                },
-
-                {
-                    header: "Cost",
-                    accessor: "cost"
-                },
-
-                {
-                    header: "Profit",
-                    accessor: "profit"
-                }
-
-            ],
-
-            data: [
-
-                {
-                    revenue:
-                        Number(
-                            report?.summary?.revenue
-                        ) || 0,
-
-                    cost:
-                        Number(
-                            report?.summary?.cost
-                        ) || 0,
-
-                    profit:
-                        Number(
-                            report?.summary?.profit
-                        ) || 0
-
-                }
-
-            ]
-
-        })
-
-    }
-
-    if (isLoading) {
-
-        return (
-
-            <div className="p-6">
-                Loading...
-            </div>
-
-        )
-
-    }
-
-    if (error) {
-
-        return (
-
-            <div className="p-6 text-red-500">
-                Failed to load report
-            </div>
-
-        )
-
-    }
 
     return (
 
@@ -376,26 +302,26 @@ export default function ReportPage() {
                 </div>
 
                 <button
-
-                    onClick={handleExportPdf}
-
+                    onClick={exportExcel}
                     disabled={exporting}
-
-                    className="
-                        px-4
-                        py-2
-                        rounded-lg
-                        bg-black
-                        text-white
-                        disabled:opacity-50
-                    "
-
                 >
 
                     {
                         exporting
                             ? "Exporting..."
-                            : "Export PDF"
+                            : "Export Excel"
+                    }
+
+                </button>
+                <button
+                    onClick={exportPdf}
+                    disabled={exporting}
+                >
+
+                    {
+                        exporting
+                            ? "Exporting..."
+                            : "Export Pdf"
                     }
 
                 </button>

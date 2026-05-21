@@ -44,12 +44,17 @@ export const ExportColumns = {
 
         {
             header: "Product Name",
-            key: "product_name",
+            key: "productCode",
+            width: 40
+        },
+        {
+            header: "Product Name",
+            key: "productName",
             width: 40
         },
 
         {
-            header: "Price",
+            header: "SalePrice",
             key: "price",
             width: 20
         },

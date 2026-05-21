@@ -1,60 +1,81 @@
-import { prisma } from "@/lib/prisma"
-import { getDateFilter } from "@/utils/dateFilter"
+import { prisma } from "@/lib/prisma";
+
+type ExportsProps = {
+    startDate?: string | null;
+    endDate?: string | null;
+}
+
 export class ExportService {
 
-    // =========================
-    // SALES
-    // =========================
-
-    static async getSalesData(
-        period?: string,
-        startDate?: string | null,
-        endDate?: string | null
+    static async getProductsTop(
+        props: ExportsProps
     ) {
 
-        const dateFilter =
-            getDateFilter(
-                period,
-                startDate,
-                endDate
-            )
+        const {
+            startDate,
+            endDate
+        } = props;
 
-        const sales =
-            await prisma.sale.findMany({
+        const topProducts =
+            await prisma.saleDetail.groupBy({
+
+                by: ["product_id"],
 
                 where: {
-                    sale_date: dateFilter
+                    sale: {
+                        ...(startDate && {
+                            createdAt: {
+                                gte: new Date(startDate)
+                            }
+                        }),
+
+                        ...(endDate && {
+                            createdAt: {
+                                lt: new Date(endDate)
+                            }
+                        })
+                    }
                 },
 
-                include: {
+                _sum: {
+                    quantity: true
+                },
 
-                    sale_details: {
-
-                        include: {
-                            product: true
-                        }
-
+                orderBy: {
+                    _sum: {
+                        quantity: "desc"
                     }
+                },
 
-                }
+                take: 10
+            });
 
-            })
+        const data =
+            await Promise.all(
 
-        return sales.flatMap((sale) =>
+                topProducts.map(async (item) => {
 
-            sale.sale_details.map((detail) => ({
+                    const product =
+                        await prisma.product.findUnique({
 
-                invoice:
-                    sale.sale_id.slice(0, 8),
+                            where: {
+                                product_id:
+                                    item.product_id
+                            },
 
-                sale_date:
-                    sale.sale_date.toLocaleDateString(),
+                            include: {
+                                category: true
+                            }
+                        });
 
-                product_name:
-                    detail.product?.product_name || "-",
+                    return {
+                        ...product,
+                        total_quantity:
+                            item._sum.quantity
+                    };
+                })
+            );
 
-            })))
-
+        return data;
     }
-
 }

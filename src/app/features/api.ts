@@ -1107,18 +1107,37 @@ export const dashboardApi = {
 
 
 export const exportApi = {
+
   pdf: async () => {
-    const res = await axiosInstance.post("/export/pdf")
-    return res.data
+
+    const response =
+      await axiosInstance.get(
+        "/export-report/pdf",
+        {
+          responseType: "blob"
+        }
+      );
+
+    return response.data;
   },
 
 
-  excel: async () => {
-    const res = await axiosInstance.post("/export/exel")
-    return res
-  }
 
-}
+  excel: async () => {
+
+    const response =
+      await axiosInstance.get(
+        "/export-report/excel",
+        {
+          responseType: "blob"
+        }
+      );
+
+    return response.data;
+  }
+};
+
+
 
 
 
