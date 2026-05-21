@@ -290,7 +290,10 @@ export const reportService = {
                             customer_name: true,
                             phone: true,
                             email: true,
-                            address: true,
+                            province: true,
+                            district: true,
+                            village: true,
+                            point: true,
                             gender: true,
                             isActive: true,
                         }

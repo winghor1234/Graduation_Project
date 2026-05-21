@@ -275,7 +275,7 @@ export default function ReportPage() {
     const {
         mutate: exportPdf,
         isPending: exporting
-    } = useExportPdf<ExportPdfOptions>()
+    } = useExportPdf()
 
     const report = data?.data
 

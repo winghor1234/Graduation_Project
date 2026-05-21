@@ -112,7 +112,7 @@ export const saleService = {
             // 🎁 7. add point (fix logic)
             if (result.customer_id) {
 
-                const point = Math.floor((total || 0) / 100)
+                const point = Math.floor((total || 0) / 10000)
 
                 await tx.customer.update({
                     where: { customer_id: result.customer_id },
