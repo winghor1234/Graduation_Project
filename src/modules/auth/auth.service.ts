@@ -10,7 +10,6 @@ import { verifyAccessToken } from "@/utils/jwt"
 export const authService = {
     // CUSTOMER REGISTER
     async customerRegister(data: CustomerRegisterInput) {
-
         const existingUser = await prisma.customer.findFirst({
             where: { phone: data.phone }
 

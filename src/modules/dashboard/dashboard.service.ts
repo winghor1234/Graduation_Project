@@ -68,7 +68,9 @@ export const dashboardService = {
                             customer_name: true,
                             phone: true,
                             email: true,
-                            address: true,
+                            province: true,
+                            district: true,
+                            village: true,
                             gender: true,
                             isActive: true,
                         }

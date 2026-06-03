@@ -1211,77 +1211,69 @@ import { useState } from "react";
 
 
 export const useExport = () => {
+    const [exporting, setExporting] = useState(false);
+    const exportExcel = async () => {
+        try {
+            setExporting(true);
+            const data = await exportApi.excel();
+            // create url
+            const url = window.URL.createObjectURL(new Blob([data]));
 
-    const [exporting, setExporting] =
-        useState(false);
+            // create link
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute(
+                "download",
+                "top-product-report.xlsx"
+            );
 
-    const exportExcel =
-        async () => {
-            try {
-                setExporting(true);
-                const data = await exportApi.excel();
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setExporting(false);
+        }
+    };
 
-                // create url
-                const url = window.URL.createObjectURL(new Blob([data]));
+    const exportPdf = async () => {
+        try {
 
-                // create link
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute(
-                    "download",
-                    "top-product-report.xlsx"
-                );
+            setExporting(true);
 
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setExporting(false);
-            }
-        };
+            const data = await exportApi.pdf();
 
-    const exportPdf =
-        async () => {
+            const url =
+                window.URL.createObjectURL(data);
 
-            try {
+            const link =
+                document.createElement("a");
 
-                setExporting(true);
+            link.href = url;
 
-                const data =
-                    await exportApi.pdf();
+            link.setAttribute(
+                "download",
+                "top-product-report.pdf"
+            );
 
-                const url =
-                    window.URL.createObjectURL(
-                        new Blob([data])
-                    );
+            document.body.appendChild(link);
 
-                const link =
-                    document.createElement("a");
+            link.click();
 
-                link.href = url;
+            link.remove();
 
-                link.setAttribute(
-                    "download",
-                    "top-product-report.pdf"
-                );
+            window.URL.revokeObjectURL(url);
 
-                document.body.appendChild(link);
+        } catch (error) {
 
-                link.click();
+            console.error(error);
 
-                link.remove();
+        } finally {
 
-            } catch (error) {
-
-                console.error(error);
-
-            } finally {
-
-                setExporting(false);
-            }
-        };
+            setExporting(false);
+        }
+    };
 
     return {
         exportExcel,
