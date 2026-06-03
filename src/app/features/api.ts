@@ -1119,7 +1119,32 @@ export const exportApi = {
   //   return res.data
   // }
 
-}
+
+  pdf: async () => {
+    const response = await axiosInstance.get("/export-report/pdf",
+      {
+        responseType: "blob"
+      }
+    );
+
+    return response.data;
+  },
+
+
+
+  excel: async () => {
+    const response =
+      await axiosInstance.get("/export-report/excel",
+        {
+          responseType: "blob"
+        }
+      );
+
+    return response.data;
+  }
+};
+
+
 
 
 

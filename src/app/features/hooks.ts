@@ -1205,24 +1205,62 @@ export const useGetReport = () => {
 
 
 
-// --------------------------------------------------------  report end -----------------------------------------------------------------------
+// --------------------------------------------------------  export start -----------------------------------------------------------------------
+
+import { useState } from "react";
 
 
-export const useSalesReport = () => {
-  return useQuery({
-    queryKey: ["sales-report"],
-    queryFn: exportApi.getSalesReport,
-  });
-};
+export const useExportPdf = () => {
+
+    return useMutation<
+        Blob,
+        Error,
+        ExportOptions
+    >({
+
+        mutationFn: (
+            body
+        ) => exportApi.pdf(body),
+
+        onSuccess: (
+            blob,
+            variables
+        ) => {
+
+            const url =
+                window.URL.createObjectURL(blob)
+
+            const a =
+                document.createElement("a")
+
+            a.href = url
+
+            a.download =
+                `${variables.fileName}.pdf`
+
+            a.click()
+
+            window.URL.revokeObjectURL(url)
+
+        }
+
+    })
+
+}
 
 type ExportOptions = {
+
     fileName: string
+
     title: string
+
     columns: {
         header: string
         accessor: string
     }[]
+
     data: Record<string, unknown>[]
+
 }
 
 export const useExportExcel = () => {
@@ -1243,27 +1281,44 @@ export const useExportExcel = () => {
         ) => {
 
             const url =
-                window.URL.createObjectURL(blob)
+                window.URL.createObjectURL(data);
 
-            const a =
-                document.createElement("a")
+            const link =
+                document.createElement("a");
 
-            a.href = url
+            link.href = url;
 
-            a.download =
-                `${variables.fileName}.xlsx`
+            link.setAttribute(
+                "download",
+                "top-product-report.pdf"
+            );
 
-            a.click()
+            document.body.appendChild(link);
 
-            window.URL.revokeObjectURL(url)
+            link.click();
 
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+
+            console.error(error);
+
+        } finally {
+
+            setExporting(false);
         }
+    };
 
-    })
+    return {
+        exportExcel,
+        exporting,
+        exportPdf,
+    };
+};
 
-}
 
-
-// --------------------------------------------------------  report end -----------------------------------------------------------------------
+// --------------------------------------------------------  export end -----------------------------------------------------------------------
 
 

@@ -3,7 +3,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { authService } from "./auth.service"
 import { BadRequestError, NotFoundError, ForbiddenError, UnauthorizedError, errorResponse, successResponse } from "@/utils/response"
-import { LoginInput, CustomerRegisterInput, EmployeeRegisterInput, VerifyOTPInput, ForgotPasswordInput, ResetPasswordInput, ResendOTPInput } from "./auth.type"
 import { clearAuthCookies, setAuthCookies } from "@/utils/cookie"
 import { verifyAccessToken } from "@/utils/jwt"
 import { loginLimiter, otpLimiter } from "@/utils/rateLimiter"
@@ -12,7 +11,7 @@ export const authController = {
 
     async customerRegister(req: NextRequest): Promise<NextResponse> {
         try {
-            const body: CustomerRegisterInput = await req.json();
+            const body = await req.json();
             if (!body.email || !body.password) {
                 throw new BadRequestError("Email and password are required");
             }
@@ -38,7 +37,7 @@ export const authController = {
     async customerLogin(req: NextRequest): Promise<NextResponse> {
         try {
             const ip = req.headers.get("x-forwarded-for") || "unknown"
-            const body: LoginInput = await req.json()
+            const body = await req.json()
             const key = `${body.email}_${ip}`
             await loginLimiter.consume(key)
             const result = await authService.customerLogin(body)
@@ -201,7 +200,7 @@ export const authController = {
     async adminRegister(req: NextRequest): Promise<NextResponse> {
 
         try {
-            const body: EmployeeRegisterInput = await req.json();
+            const body = await req.json();
             if (!body.email || !body.password) {
                 throw new BadRequestError("Email and password are required");
             }
@@ -229,7 +228,7 @@ export const authController = {
 
         try {
             const ip = req.headers.get("x-forwarded-for") || "unknown"
-            const body: LoginInput = await req.json()
+            const body = await req.json()
             const key = `${body.email}_${ip}`
             await loginLimiter.consume(key)
             // console.log(body)
@@ -270,7 +269,7 @@ export const authController = {
     },
     async adminVerifyOTP(req: NextRequest): Promise<NextResponse> {
         try {
-            const body: VerifyOTPInput = await req.json();
+            const body = await req.json();
             if (!body) {
                 throw new BadRequestError("Email and OTP are required");
             }
@@ -291,7 +290,7 @@ export const authController = {
 
     async adminResendOTP(req: NextRequest): Promise<NextResponse> {
         try {
-            const body: ResendOTPInput = await req.json();
+            const body = await req.json();
             if (!body) {
                 throw new BadRequestError("Email is required");
             }
@@ -313,7 +312,7 @@ export const authController = {
 
     async adminResetPassword(req: NextRequest): Promise<NextResponse> {
         try {
-            const body: ResetPasswordInput = await req.json();
+            const body = await req.json();
             if (!body) {
                 throw new BadRequestError("Email and new password are required");
             }
