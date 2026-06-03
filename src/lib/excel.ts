@@ -16,7 +16,10 @@ export async function generateExcel<T extends Record<string, any>>(
 
     // Data
     config.data.forEach((row) => {
-        ws.addRow(config.columns.map((c) => row[c.key]))
+        ws.addRow(config.columns.map((c) => {
+            const accessor = (c as any).accessor || (c as any).key
+            return row[accessor]
+        }))
     })
 
     const buffer = await wb.xlsx.writeBuffer()

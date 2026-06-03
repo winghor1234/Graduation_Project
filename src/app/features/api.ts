@@ -1107,16 +1107,17 @@ export const dashboardApi = {
 
 
 export const exportApi = {
-  pdf: async () => {
-    const res = await axiosInstance.post("/export/pdf")
-    return res.data
+  getSalesReport: async () => {
+    const response = await axiosInstance.get("/export/pdf");
+    return response.data;
   },
 
-
-  excel: async () => {
-    const res = await axiosInstance.post("/export/exel")
-    return res
-  }
+  // excel: async (data: any) => {
+  //   const res = await axiosInstance.post("/export/excel", data, {
+  //     responseType: "blob"
+  //   })
+  //   return res.data
+  // }
 
 }
 

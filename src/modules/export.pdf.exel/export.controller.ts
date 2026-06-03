@@ -1,35 +1,30 @@
-import { NextRequest } from "next/server"
-import { generateExcel } from "@/lib/excel"
-import { generatePdf } from "@/lib/pdf"
-import { ExportConfig } from "@/types/export"
+// import { NextRequest, NextResponse } from "next/server"
 
-export const ExportController = {
-    async pdf<T extends Record<string, unknown>>(req: NextRequest) {
-        try {
-            const config: ExportConfig<T> = await req.json()
-            return await generatePdf(config)
-        } catch (error) {
-            console.log(error)
-            return Response.json(
-                { success: false, message: "Generate PDF failed" },
-                { status: 500 }
-            )
-        }
-    },
 
-    async excel<T extends Record<string, unknown>>(req: NextRequest) {
-        try {
-            const config: ExportConfig<T> = await req.json()
-            return await generateExcel(config)
-        } catch (error) {
-            console.log(error)
-            return Response.json(
-                { success: false, message: "Generate Excel failed" },
-                { status: 500 }
-            )
 
-        }
 
-    }
 
-}
+// export class ExportController {
+
+//     static async ProductTop(req: NextRequest, res: NextResponse): Promise<NextResponse> {
+//         try {
+//             const result = await salesReportService();
+
+//             return res.status(200).json({
+//                 success: true,
+//                 message:
+//                     "Get sales report successfully",
+//                 data: result,
+//             });
+//         } catch (error) {
+//             console.log(error);
+
+//             return res.status(500).json({
+//                 success: false,
+//                 message: "Server Error",
+//             });
+//         }
+//     }
+
+
+// }

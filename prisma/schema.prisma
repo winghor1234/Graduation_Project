@@ -115,6 +115,7 @@ model Product {
   order_details    OrderDetail[]
   sale_details     SaleDetail[]
   refund_details   RefundDetail[]
+  promotion_products PromotionProduct[]
 
   @@index([category_id])
 }
@@ -133,6 +134,49 @@ model ProductImage {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+}
+
+
+model Promotion {
+  promotion_id      String   @id @default(uuid())
+  promotion_code    String   @unique
+  promotion_name    String
+
+  discount_value    Int
+
+  start_date        DateTime
+  end_date          DateTime
+
+  status            PromotionStatus @default(ACTIVE)
+
+  description       String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  promotion_products PromotionProduct[]
+}
+
+
+
+model PromotionProduct {
+  id            String @id @default(uuid())
+
+  promotion_id  String
+  product_id    String
+
+  promotion     Promotion @relation(fields: [promotion_id], references: [promotion_id], onDelete: Cascade)
+  product       Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+
+  @@unique([promotion_id, product_id])
+
+  @@index([promotion_id])
+  @@index([product_id])
+}
+
+enum PromotionStatus {
+  ACTIVE
+  INACTIVE
 }
 
 

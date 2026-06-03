@@ -1208,57 +1208,21 @@ export const useGetReport = () => {
 // --------------------------------------------------------  report end -----------------------------------------------------------------------
 
 
-export const useExportPdf = () => {
-
-    return useMutation<
-        Blob,
-        Error,
-        ExportOptions
-    >({
-
-        mutationFn: (
-            body
-        ) => exportApi.pdf(body),
-
-        onSuccess: (
-            blob,
-            variables
-        ) => {
-
-            const url =
-                window.URL.createObjectURL(blob)
-
-            const a =
-                document.createElement("a")
-
-            a.href = url
-
-            a.download =
-                `${variables.fileName}.pdf`
-
-            a.click()
-
-            window.URL.revokeObjectURL(url)
-
-        }
-
-    })
-
-}
+export const useSalesReport = () => {
+  return useQuery({
+    queryKey: ["sales-report"],
+    queryFn: exportApi.getSalesReport,
+  });
+};
 
 type ExportOptions = {
-
     fileName: string
-
     title: string
-
     columns: {
         header: string
         accessor: string
     }[]
-
     data: Record<string, unknown>[]
-
 }
 
 export const useExportExcel = () => {

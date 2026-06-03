@@ -228,10 +228,10 @@
 
 'use client'
 
-import {
-    useExportPdf,
-    useGetReport
-} from "@/app/features/hooks"
+// import {
+//     useExportPdf,
+//     useGetReport
+// } from "@/app/features/hooks"
 
 import SalesGraphCard from "@/components/report/SalesGraphCard"
 import StatCard from "@/components/report/StatCard"
@@ -266,16 +266,16 @@ type ExportPdfOptions = {
 
 export default function ReportPage() {
 
-    const {
-        data,
-        isLoading,
-        error
-    } = useGetReport()
+    // const {
+    //     data,
+    //     isLoading,
+    //     error
+    // } = useGetReport()
 
-    const {
-        mutate: exportPdf,
-        isPending: exporting
-    } = useExportPdf()
+    // const {
+    //     mutate: exportPdf,
+    //     isPending: exporting
+    // } = useExportPdf()
 
     const report = data?.data
 

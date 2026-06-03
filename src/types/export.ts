@@ -1,6 +1,7 @@
 export type ExportColumn<T> = {
     header: string
-    key: keyof T
+    key?: keyof T
+    accessor?: string
 }
 
 export type ExportConfig<T> = {
