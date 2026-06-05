@@ -1190,19 +1190,24 @@ export const useGetDashboard = () => {
 
 
 export const useGetReport = (params: {
-    reportType: string;
+    reportType?: string;
     period?: string;
     startDate?: string;
     endDate?: string;
 }) => {
     return useQuery({
-        queryKey: ["report", params],
-        queryFn: () => reportApi.getReport(params),
+        queryKey: [
+            "report",
+            params.reportType,
+            params.period,
+            params.startDate,
+            params.endDate,
+        ],
 
-        // ทำให้ UI ไม่กระพริบเวลาเปลี่ยน filter
-        placeholderData: keepPreviousData,
+        queryFn: () => reportApi.getReport(params as any),
 
-        // กันยิง API ตอน params ยังไม่พร้อม
+        placeholderData: (prev) => prev,
+
         enabled: !!params.reportType,
     });
 };
@@ -1217,116 +1222,114 @@ export const useGetReport = (params: {
 
 // --------------------------------------------------------  export start -----------------------------------------------------------------------
 
-import { useState } from "react";
+// import { useState } from "react";
 
 
-export const useExportPdf = () => {
+// export const useExportPdf = () => {
 
-    return useMutation<
-        Blob,
-        Error,
-        ExportOptions
-    >({
+//     return useMutation<
+//         Blob,
+//         Error,
+//         ExportOptions
+//     >({
 
-        mutationFn: (
-            body
-        ) => exportApi.pdf(body),
+//         mutationFn: () => exportApi.pdf(),
 
-        onSuccess: (
-            blob,
-            variables
-        ) => {
+//         onSuccess: (
+//             blob,
+//             variables
+//         ) => {
 
-            const url =
-                window.URL.createObjectURL(blob)
+//             const url =
+//                 window.URL.createObjectURL(blob)
 
-            const a =
-                document.createElement("a")
+//             const a =
+//                 document.createElement("a")
 
-            a.href = url
+//             a.href = url
 
-            a.download =
-                `${variables.fileName}.pdf`
+//             a.download =
+//                 `${variables.fileName}.pdf`
 
-            a.click()
+//             a.click()
 
-            window.URL.revokeObjectURL(url)
+//             window.URL.revokeObjectURL(url)
 
-        }
+//         }
 
-    })
+//     })
 
-}
+// }
 
-type ExportOptions = {
+// type ExportOptions = {
 
-    fileName: string
+//     fileName: string
 
-    title: string
+//     title: string
 
-    columns: {
-        header: string
-        accessor: string
-    }[]
+//     columns: {
+//         header: string
+//         accessor: string
+//     }[]
 
-    data: Record<string, unknown>[]
+//     data: Record<string, unknown>[]
 
-}
+// }
 
-export const useExportExcel = () => {
+// export const useExportExcel = () => {
 
-    return useMutation<
-        Blob,
-        Error,
-        ExportOptions
-    >({
+//     return useMutation<
+//         Blob,
+//         Error,
+//         ExportOptions
+//     >({
 
-        mutationFn: (
-            body
-        ) => exportApi.excel(body),
+//         mutationFn: (
+//             body
+//         ) => exportApi.excel(),
 
-        onSuccess: (
-            blob,
-            variables
-        ) => {
+//         onSuccess: (
+//             blob,
+//             variables
+//         ) => {
 
-            const url =
-                window.URL.createObjectURL(data);
+//             const url =
+//                 window.URL.createObjectURL(data);
 
-            const link =
-                document.createElement("a");
+//             const link =
+//                 document.createElement("a");
 
-            link.href = url;
+//             link.href = url;
 
-            link.setAttribute(
-                "download",
-                "top-product-report.pdf"
-            );
+//             link.setAttribute(
+//                 "download",
+//                 "top-product-report.pdf"
+//             );
 
-            document.body.appendChild(link);
+//             document.body.appendChild(link);
 
-            link.click();
+//             link.click();
 
-            link.remove();
+//             link.remove();
 
-            window.URL.revokeObjectURL(url);
+//             window.URL.revokeObjectURL(url);
 
-        } catch (error) {
+//         } catch (error) {
 
-            console.error(error);
+//             console.error(error);
 
-        } finally {
+//         } finally {
 
-            setExporting(false);
-        }
-    };
+//             setExporting(false);
+//         }
+//     };
 
-    return {
-        exportExcel,
-        exporting,
-        exportPdf,
-    };
-};
+//     return {
+//         exportExcel,
+//         exporting,
+//         exportPdf,
+//     };
+// };
 
 
 // --------------------------------------------------------  export end -----------------------------------------------------------------------

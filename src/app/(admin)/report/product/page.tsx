@@ -1,14 +1,16 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useGetReport } from '@/app/features/hooks';
 import ExportButton from '@/components/ExportButton';
 import { Package } from 'lucide-react';
 import { handleProductExcelExport, handleProductPDFExport } from '@/components/report/ExportToReport';
+import { useGetReport } from '@/app/features/hooks';
 
 export default function ProductReportPage() {
-    const { data, isLoading } = useGetReport();
-
+    const { data, isLoading } = useGetReport({
+        reportType: "SALES",
+        period: "MONTHLY",
+    });
     const products = data?.data?.products || [];
 
     const [search, setSearch] = useState('');
