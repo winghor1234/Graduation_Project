@@ -87,7 +87,7 @@
 
 import { useState } from "react"
 import { useDataTable } from "@/hooks/useDataTable"
-import { useGetOrders, useUpdateOrderStatus, useVerifyPayment, useUpdateDelivery } from "@/app/features/hooks"
+import { useGetOrders } from "@/app/features/hooks/Order"
 import { AppPagination } from "@/components/AppPagination"
 import { Order } from "@/modules/order/order.types"
 import { OrderDetailDialog } from "@/components/order/OrderDetail"

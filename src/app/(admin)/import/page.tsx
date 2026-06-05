@@ -3,12 +3,13 @@
 import { useState } from "react"
 import { useDataTable } from "@/hooks/useDataTable"
 import { toast } from "sonner"
-import { useGetImports, useCreateImport, useDeleteImport, useGetPurchaseOrders } from "@/app/features/hooks"
+import { useGetImports, useCreateImport, useDeleteImport } from "@/app/features/hooks/Import"
 import { Import } from "@/modules/import/import.type"
 import { ImportToolbar } from "@/components/import/ImportToolbar"
 import { ImportTable } from "@/components/import/ImportTable"
 import { ImportFormDialog } from "@/components/import/ImportFormDialog"
 import { ImportDetail } from "@/components/import/ImportDetailDialog"
+import { useGetPurchaseOrders } from "@/app/features/hooks/Purchase"
 
 
 

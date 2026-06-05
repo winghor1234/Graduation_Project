@@ -1,4 +1,4 @@
-import { useCreateProvince, useDeleteProvince, useGetProvinces, useUpdateProvince } from "@/app/features/hooks"
+import { useCreateProvince, useDeleteProvince, useGetProvinces, useUpdateProvince } from "@/app/features/hooks/Location"
 import { AppPagination } from "@/components/AppPagination"
 import { ProvinceDetailDialog } from "@/components/location/province/ProvinceDetailDialog"
 import { ProvinceFormDialog } from "@/components/location/province/ProvinceFormDialog"

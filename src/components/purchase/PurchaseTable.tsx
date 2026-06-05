@@ -17,7 +17,7 @@ type Props = {
 }
 
 export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onView }: Props) {
-    console.log("purchase : ", purchases)
+    // console.log("purchase : ", purchases)
 
     if (isLoading) return <p>Loading...</p>
 

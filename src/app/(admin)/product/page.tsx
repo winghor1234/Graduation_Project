@@ -1,5 +1,5 @@
 "use client"
-import { useCreateProduct, useDeleteProduct, useGetCategories, useGetProducts, useUpdateProduct } from "@/app/features/hooks"
+import { useCreateProduct, useDeleteProduct, useGetProducts, useUpdateProduct } from "@/app/features/hooks/Product"
 import { AppPagination } from "@/components/AppPagination"
 import { ProductToolbar } from "@/components/products/ProductToolbar"
 import { ProductFormDialog } from "@/components/products/ProductFormDialog"
@@ -8,6 +8,7 @@ import { useDataTable } from "@/hooks/useDataTable"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Product } from "@/modules/product/product.types"
+import { useGetCategories } from "@/app/features/hooks/Category"
 
 export default function ProductsPage() {
     const table = useDataTable()

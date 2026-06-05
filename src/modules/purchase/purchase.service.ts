@@ -84,9 +84,9 @@ export const purchaseService = {
                 throw new NotFoundError("Purchase not found")
             }
 
-            if (existing.imports.length > 0) {
-                throw new BadRequestError("Cannot update purchase after import")
-            }
+            // if (existing.imports.length > 0) {
+            //     throw new BadRequestError("Cannot update purchase after import")
+            // }
 
             if (existing.status !== "pending") {
                 throw new BadRequestError("Only pending purchase can be updated")
@@ -147,7 +147,7 @@ export const purchaseService = {
             const existing = await tx.purchaseOrder.findUnique({
                 where: { purchase_id: id },
                 include: {
-                    imports: true
+                    import: true
                 }
             })
 
@@ -155,10 +155,10 @@ export const purchaseService = {
                 throw new NotFoundError("Purchase not found")
             }
 
-            // ❌ 2. ห้ามลบถ้ามี import
-            if (existing.imports.length > 0) {
-                throw new BadRequestError("Cannot delete purchase with existing imports")
-            }
+            // // ❌ 2. ห้ามลบถ้ามี import
+            // if (existing.imports.length > 0) {
+            //     throw new BadRequestError("Cannot delete purchase with existing imports")
+            // }
 
             // ❌ 3. optional: check status
             if (existing.status !== "pending") {

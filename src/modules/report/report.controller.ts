@@ -162,44 +162,24 @@
 
 // }
 
-import {
-    BadRequestError,
-    errorResponse,
-    ForbiddenError,
-    NotFoundError,
-    successResponse,
-    UnauthorizedError
-} from "@/utils/response";
-
+import { BadRequestError, errorResponse, ForbiddenError, NotFoundError, successResponse, UnauthorizedError } from "@/utils/response";
 import { ReportQueryDto } from "./report.type";
 import { ReportService } from "./report.service";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const reportService = new ReportService(prisma);
+const exportreportService = new ReportService(prisma);
 
-export const reportController = {
-    async Report(query: ReportQueryDto) {
+export const exportReportController = {
+    async ExportReport(query: ReportQueryDto) {
         try {
-            const data = await reportService.getReport(query);
-
-            return successResponse(
-                data,
-                "Get report successfully",
-                200
-            );
+            const data = await exportreportService.getExportReport(query);
+            return successResponse(data, "Get export report successfully", 200);
         } catch (error) {
             console.log(error);
-
-            if (
-                error instanceof BadRequestError ||
-                error instanceof NotFoundError ||
-                error instanceof ForbiddenError ||
-                error instanceof UnauthorizedError
-            ) {
+            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
                 return errorResponse(error.message, error.statusCode);
             }
-
             return errorResponse("Internal Server Error", 500);
         }
     }

@@ -389,7 +389,7 @@ export class ReportService {
     // =========================
     // MAIN REPORT
     // =========================
-    async getReport(query: ReportQueryDto) {
+    async getExportReport(query: ReportQueryDto) {
         const dateFilter = this.buildDateFilter(
             query.period,
             query.startDate,

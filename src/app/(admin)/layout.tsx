@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { getRedirectPath } from "@/utils/auth"
-import { useAuth, useAdminLogout } from "../features/hooks"
 
 import {
     LayoutDashboard,
@@ -19,6 +18,7 @@ import {
 
 import { Sidebar } from "@/components/adminLayout/Sidebar"
 import { Header } from "@/components/adminLayout/Header"
+import { useAuth, useEmployeeLogout } from "../features/hooks/Auth"
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN"] },
@@ -45,7 +45,7 @@ export default function AdminLayout({
     const pathname = usePathname()
 
     const { user, isLoading } = useAuth()
-    const { mutate: logout } = useAdminLogout()
+    const { mutate: logout } = useEmployeeLogout()
 
     const [collapsed, setCollapsed] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)

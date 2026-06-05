@@ -6,7 +6,7 @@ import {
     useGetBranches,
     useGetDistricts,
     useUpdateBranch
-} from "@/app/features/hooks"
+} from "@/app/features/hooks/Location"
 
 import { AppPagination } from "@/components/AppPagination"
 import { BranchDetailDialog } from "@/components/location/branch/BranchDetailDialog"

@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useGetDashboard } from "@/app/features/hooks"
+import { useGetDashboard } from "@/app/features/hooks/Dashboard"
 import { RecentOrders } from "@/components/dashboard/RecentOrders"
 import { RevenueChart } from "@/components/dashboard/RevenueChart"
 import StatCard from "@/components/dashboard/StatCard"

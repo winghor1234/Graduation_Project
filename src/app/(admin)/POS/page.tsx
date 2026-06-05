@@ -3,7 +3,7 @@
 "use client"
 
 import { useState } from "react"
-import { useGetProducts, useCreateSale, useGetCustomers } from "@/app/features/hooks"
+import { useCreateSale } from "@/app/features/hooks/Sale"
 import ProductGrid from "@/components/POS/ProductGrid"
 import CustomerSelect from "@/components/POS/CustomerSelect"
 import CartPanel from "@/components/POS/CartPanel"
@@ -12,6 +12,8 @@ import ReceiptModal from "@/components/POS/ReceiptModal"
 import { useCart } from "@/components/POS/useCart"
 import { Customer } from "@/modules/customer/customer.type"
 import { useRouter } from "next/navigation"
+import { useGetProducts } from "@/app/features/hooks/Product"
+import { useGetCustomers } from "@/app/features/hooks/Customer"
 
 
 export default function POSPage() {

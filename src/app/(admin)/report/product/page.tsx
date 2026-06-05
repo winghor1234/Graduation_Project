@@ -3,28 +3,36 @@
 import { useMemo, useState } from 'react';
 import ExportButton from '@/components/ExportButton';
 import { Package } from 'lucide-react';
-import { handleProductExcelExport, handleProductPDFExport } from '@/components/report/ExportToReport';
-import { useGetReport } from '@/app/features/hooks';
+import {  handleProductExcelExport,  handleProductPDFExport} from '@/components/exportReport/ExportToReport';
+import { useGetExportReport } from '@/app/features/hooks/Export';
+import { Product } from '@/modules/product/product.types';
 
 export default function ProductReportPage() {
-    const { data, isLoading } = useGetReport({
-        reportType: "SALES",
-        period: "MONTHLY",
-    });
-    const products = data?.data?.products || [];
 
     const [search, setSearch] = useState('');
-    const [filterType, setFilterType] = useState('MONTH');
+    const [filterType, setFilterType] = useState<'WEEK' | 'MONTH' | 'YEAR' | 'CUSTOM'>('MONTH');
+    const [startDate, setStartDate] = useState<string>();
+    const [endDate, setEndDate] = useState<string>();
 
+    // 🟢 API CALL (dynamic)
+    const { data, isLoading } = useGetExportReport({
+        reportType: "PRODUCT",
+        period: filterType,
+        startDate,
+        endDate,
+    });
+    console.log(data);
+
+    const products = data?.data ?? [];
+
+    // 🟢 FILTER (client-side search only)
     const filteredProducts = useMemo(() => {
-        return products.filter((item: any) => {
-            const keyword = search.toLowerCase();
+        const keyword = search.toLowerCase();
 
-            return (
-                item?.product_name?.toLowerCase().includes(keyword) ||
-                item?.product_code?.toLowerCase().includes(keyword)
-            );
-        });
+        return products.filter((item: Product) =>
+            item?.product_name?.toLowerCase().includes(keyword) ||
+            item?.product_code?.toLowerCase().includes(keyword)
+        );
     }, [products, search]);
 
     if (isLoading) {
@@ -75,7 +83,7 @@ export default function ProductReportPage() {
                 </div>
             </div>
 
-            {/* Summary Card */}
+            {/* Summary */}
             <div className="bg-white rounded-xl shadow-sm p-5 mb-6">
 
                 <div className="flex items-center gap-3">
@@ -113,24 +121,13 @@ export default function ProductReportPage() {
 
                     <select
                         value={filterType}
-                        onChange={(e) => setFilterType(e.target.value)}
+                        onChange={(e) => setFilterType(e.target.value as 'WEEK' | 'MONTH' | 'YEAR' | 'CUSTOM')}
                         className="border rounded-lg px-3 py-2"
                     >
-                        <option value="WEEK">
-                            Weekly
-                        </option>
-
-                        <option value="MONTH">
-                            Monthly
-                        </option>
-
-                        <option value="YEAR">
-                            Yearly
-                        </option>
-
-                        <option value="CUSTOM">
-                            Custom Range
-                        </option>
+                        <option value="WEEK">Weekly</option>
+                        <option value="MONTH">Monthly</option>
+                        <option value="YEAR">Yearly</option>
+                        <option value="CUSTOM">Custom Range</option>
                     </select>
 
                 </div>
@@ -140,11 +137,15 @@ export default function ProductReportPage() {
 
                         <input
                             type="date"
+                            value={startDate ?? ''}
+                            onChange={(e) => setStartDate(e.target.value)}
                             className="border rounded-lg px-3 py-2"
                         />
 
                         <input
                             type="date"
+                            value={endDate ?? ''}
+                            onChange={(e) => setEndDate(e.target.value)}
                             className="border rounded-lg px-3 py-2"
                         />
 
@@ -161,67 +162,34 @@ export default function ProductReportPage() {
                     <table className="w-full">
 
                         <thead className="bg-gray-100">
-
                             <tr>
-
-                                <th className="text-left px-4 py-3">
-                                    Code
-                                </th>
-
-                                <th className="text-left px-4 py-3">
-                                    Product Name
-                                </th>
-
-                                <th className="text-left px-4 py-3">
-                                    Stock
-                                </th>
-
-                                <th className="text-left px-4 py-3">
-                                    Sale Price
-                                </th>
-
+                                <th className="text-left px-4 py-3">Code</th>
+                                <th className="text-left px-4 py-3">Product Name</th>
+                                <th className="text-left px-4 py-3">Stock</th>
+                                <th className="text-left px-4 py-3">Sale Price</th>
                             </tr>
-
                         </thead>
 
                         <tbody>
-
                             {filteredProducts.length > 0 ? (
-                                filteredProducts.map((item: any) => (
+                                filteredProducts.map((item :Product) => (
                                     <tr
                                         key={item.product_id}
                                         className="border-t hover:bg-gray-50"
                                     >
-                                        <td className="px-4 py-3">
-                                            {item.product_code}
-                                        </td>
-
-                                        <td className="px-4 py-3">
-                                            {item.product_name}
-                                        </td>
-
-                                        <td className="px-4 py-3">
-                                            {item.stock_qty}
-                                        </td>
-
-                                        <td className="px-4 py-3">
-                                            ${item.sale_price}
-                                        </td>
+                                        <td className="px-4 py-3">{item.product_code}</td>
+                                        <td className="px-4 py-3">{item.product_name}</td>
+                                        <td className="px-4 py-3">{item.stock_qty}</td>
+                                        <td className="px-4 py-3">${item.sale_price}</td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-
-                                    <td
-                                        colSpan={4}
-                                        className="text-center py-10 text-gray-500"
-                                    >
+                                    <td colSpan={4} className="text-center py-10 text-gray-500">
                                         No products found
                                     </td>
-
                                 </tr>
                             )}
-
                         </tbody>
 
                     </table>

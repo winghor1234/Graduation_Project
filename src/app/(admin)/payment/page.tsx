@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { toast } from "sonner"
 
-import { useGetPayment, useVerifyPayment } from "@/app/features/hooks"
+import { useGetPayment, useVerifyPayment } from "@/app/features/hooks/Payment"
 import { useDataTable } from "@/hooks/useDataTable"
 
 import { AppPagination } from "@/components/AppPagination"

@@ -35,17 +35,8 @@ type jsPDFWithAutoTable = jsPDF & {
 
 // ================= PDF ENGINE =================
 
-export const exportPDF = <T extends Record<string, unknown>>(
-    params: ExportPDFParams<T>
-) => {
-    const {
-        type,
-        title,
-        fileName,
-        columns,
-        data,
-        meta,
-    } = params;
+export const exportPDF = <T extends Record<string, unknown>>(  params: ExportPDFParams<T>) => {
+    const { type, title, fileName, columns, data, meta,} = params;
 
     // ✅ CREATE DOC FIRST
     const doc = new jsPDF({
@@ -70,8 +61,7 @@ export const exportPDF = <T extends Record<string, unknown>>(
     doc.text(title, 14, 42);
 
     doc.setFontSize(10);
-    doc.text(
-        `Date: ${dayjs().format("DD/MM/YYYY HH:mm")}`,
+    doc.text(  `Date: ${dayjs().format("DD/MM/YYYY HH:mm")}`,
         140,
         18
     );

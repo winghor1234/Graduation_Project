@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { useGetCustomers, useCreateCustomer, useUpdateCustomerStatus, useUpdateCustomer } from "@/app/features/hooks"
+import { useGetCustomers, useCreateCustomer, useUpdateCustomerStatus, useUpdateCustomer } from "@/app/features/hooks/Customer"
 import { useDataTable } from "@/hooks/useDataTable"
 import { Customer } from "@/modules/customer/customer.type"
 import { CustomerTable } from "@/components/customer/CustomerTable"

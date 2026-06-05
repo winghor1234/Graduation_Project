@@ -29,6 +29,15 @@ export type Customer = {
 }
 
 
+export type UseGetParams = {
+    page?: number
+    limit?: number
+    search?: string
+    orderBy?: string
+    order?: "asc" | "desc"
+}
+
+
 
 
 

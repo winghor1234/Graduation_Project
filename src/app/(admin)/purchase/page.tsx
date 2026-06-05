@@ -11,10 +11,7 @@ import {
     useCreatePurchaseOrder,
     useUpdatePurchaseOrder,
     useDeletePurchaseOrder,
-    useGetProducts,
-    useGetSuppliers,
-    useGetCategories
-} from "@/app/features/hooks"
+} from "@/app/features/hooks/Purchase"
 
 import { AppPagination } from "@/components/AppPagination"
 import { PurchaseOrder } from "@/modules/purchase/purchase.type"
@@ -23,6 +20,9 @@ import { PurchaseOrderTable } from "@/components/purchase/PurchaseTable"
 import { PurchaseOrderToolbar } from "@/components/purchase/PurchaseOrderToolbar"
 import { PurchaseDetail } from "@/components/purchase/PurchaseDetail"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useGetProducts } from "@/app/features/hooks/Product"
+import { useGetSuppliers } from "@/app/features/hooks/Supplier"
+import { useGetCategories } from "@/app/features/hooks/Category"
 
 export default function PurchaseOrderPage() {
     const table = useDataTable()

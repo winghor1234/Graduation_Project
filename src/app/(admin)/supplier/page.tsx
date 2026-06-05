@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useDataTable } from "@/hooks/useDataTable"
-import { useGetSuppliers,  useCreateSupplier,  useUpdateSupplier,  useDeleteSupplier} from "@/app/features/hooks"
+import { useGetSuppliers,  useCreateSupplier,  useUpdateSupplier,  useDeleteSupplier} from "@/app/features/hooks/Supplier"
 import { Supplier } from "@/modules/supplier/supplier.type"
 import { AppPagination } from "@/components/AppPagination"
 import { SupplierToolbar } from "@/components/supplier/SupplierToolbar"

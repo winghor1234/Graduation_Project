@@ -1,6 +1,6 @@
 "use client"
 
-import { useCreateDistrict, useDeleteDistrict, useGetDistricts, useGetProvinces, useUpdateDistrict } from "@/app/features/hooks"
+import { useCreateDistrict, useDeleteDistrict, useGetDistricts, useGetProvinces, useUpdateDistrict } from "@/app/features/hooks/Location"
 import { AppPagination } from "@/components/AppPagination"
 import { DistrictDetailDialog } from "@/components/location/district/DistrictDetaildialog"
 import { DistrictFormDialog } from "@/components/location/district/DistrictFormDialog"

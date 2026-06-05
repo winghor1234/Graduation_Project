@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Edit, Trash2, FolderTree } from "lucide-react"
 import { toast } from "sonner"
-import { useGetCategories, useCreateCategory, useDeleteCategory, useUpdateCategory } from "@/app/features/hooks"
 import { Category } from "@/modules/category/category.type"
+import { useCreateCategory, useDeleteCategory, useGetCategories, useUpdateCategory } from "@/app/features/hooks/Category"
 
 
 export default function CategoriesPage() {

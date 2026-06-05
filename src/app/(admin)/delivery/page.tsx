@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useGetDeliveries, useUpdateDelivery } from "@/app/features/hooks"
+import { useGetDeliveries, useUpdateDelivery } from "@/app/features/hooks/Delivery"
 import { Delivery } from "@/modules/delivery/delivery.type"
 import { DeliveryDetailDialog } from "@/components/delivery/DeliveryDetailDialog"
 import { DeliveryUpdateDialog } from "@/components/delivery/DeliveryUpdateDialog"

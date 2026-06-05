@@ -4,7 +4,11 @@
 // import { exportPDF } from "@/utils/exportPdf";
 
 
+import { Customers } from "../customer/CustomerType";
 import { handleExcelExport, handlePDFExport } from "../ExportToReport";
+import { Product } from "../products/ProductType";
+import { PurchaseOrder } from "../purchase/PurchaseType";
+import { createPDFExporter } from "./PdfExporter";
 
 
 
@@ -60,7 +64,7 @@ import { handleExcelExport, handlePDFExport } from "../ExportToReport";
 
 
 
-export const handleProductPDFExport = (products: any[]) => {
+export const handleProductPDFExport = (products: Product[]) => {
     handlePDFExport({
         title: "Product Report",
         fileName: "product-report",
@@ -87,7 +91,7 @@ export const handleProductPDFExport = (products: any[]) => {
     });
 };
 
-export const handleProductExcelExport = (products: any[]) => {
+export const handleProductExcelExport = (products: Product[]) => {
     handleExcelExport({
         title: "Product Report",
         fileName: "product-report",
@@ -116,7 +120,7 @@ export const handleProductExcelExport = (products: any[]) => {
 
 }
 
-export const handleCustomerPDFExport = (customers: any[]) => {
+export const handleCustomerPDFExport = (customers: Customers[]) => {
     handlePDFExport({
         title: "Customer Report",
         fileName: "customer-report",
@@ -138,7 +142,7 @@ export const handleCustomerPDFExport = (customers: any[]) => {
     });
 };
 
-export const handleCustomerExcelExport = (customers: any[]) => {
+export const handleCustomerExcelExport = (customers: Customers[]) => {
     handleExcelExport({
         title: "Customer Report",
         fileName: "customer-report",
@@ -157,6 +161,40 @@ export const handleCustomerExcelExport = (customers: any[]) => {
         data: customers.map((c, index) => ({
             __index: index + 1,
             customer_name: c.customer_name,
+        })),
+    });
+};
+
+
+export const handlePurchasePDFExport = (purchases: PurchaseOrder[]) => {
+    handlePDFExport({
+        title: "Purchase Report",
+        fileName: "purchase-report",
+        columns: [
+            {
+                header: "No",
+                key: "__index",
+            },
+            {
+                header: "Purchase Code",
+                key: "purchase_code",
+            },
+            {
+                header: "Supplier",
+                key: "supplier_name",
+            },
+            {
+                header: "Amount",
+                key: "amount",
+            },
+        ],
+
+        data: purchases.map((c, index) => ({
+            __index: index + 1,
+            purchase_code: c.purchase_code,
+            supplier_name: c.supplier?.supplier_name,
+            amount: c.total_amount,
+            
         })),
     });
 };

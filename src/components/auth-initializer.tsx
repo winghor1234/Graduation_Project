@@ -33,10 +33,11 @@
 
 import { useEffect } from "react"
 import { useAuthStore } from "@/store/useAuthStore"
-import { useAdminMe } from "@/app/features/hooks"
+import { useEmployeeMe } from "@/app/features/hooks/Auth"
+
 
 export function AuthInitializer() {
-  const { isLoading } = useAdminMe()
+  const { isLoading } = useEmployeeMe()
   const setLoading = useAuthStore((s) => s.setLoading)
 
   useEffect(() => {

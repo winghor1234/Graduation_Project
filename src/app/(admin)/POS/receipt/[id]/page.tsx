@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams } from "next/navigation"
-import { useGetSale } from "@/app/features/hooks";
+import { useGetSale } from "@/app/features/hooks/Sale";
 import { formatDate } from "@/utils/FormatDate";
 import { formatCurrency } from "@/utils/FormatCurrency";
 import { BackButton } from "@/utils/BackButton";

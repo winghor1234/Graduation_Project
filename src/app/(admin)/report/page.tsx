@@ -1,40 +1,14 @@
-
-
 'use client'
-
-// import {
-//     useExportPdf,
-//     useGetReport
-// } from "@/app/features/hooks"
-
-
-import { useGetReport } from "@/app/features/hooks"
-import ExportButton from "@/components/ExportButton"
+import { useGetDashboard } from "@/app/features/hooks/Dashboard"
 import SalesGraphCard from "@/components/report/SalesGraphCard"
 import StatCard from "@/components/report/StatCard"
 import { DollarSign, ShoppingCart, Package, AlertTriangle, Import, BaggageClaim } from "lucide-react"
 import Link from "next/link"
-import { handleCustomerExcelExport, handleCustomerPDFExport } from "@/components/report/ExportToReport"
-
 
 export default function ReportPage() {
-
-
-    // const {
-    //     data,
-    //     isLoading,
-    //     error
-    // } = useGetReport()
-
-    // const {
-    //     mutate: exportPdf,
-    //     isPending: exporting
-    // } = useExportPdf()
-
-    const { data, isLoading, error } = useGetReport()
+    const { data, isLoading, error } = useGetDashboard()
     const report = data?.data
-    console.log("report:", report)
-
+    // console.log("report:", data)
     const reports = [
         {
             title: "Product Report",
@@ -82,10 +56,6 @@ export default function ReportPage() {
                         Overview of your business performance
                     </p>
                 </div>
-                {/* <div>
-                    <ExportButton onExport={() => handleCustomerPDFExport(report?.customers)} loading={isLoading} title="Export PDF" />
-                    <ExportButton onExport={() => handleCustomerExcelExport(report?.customers)} loading={isLoading} title="Export Excel" />
-                </div> */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {reports.map((item) => (
                         <Link
