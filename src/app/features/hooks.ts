@@ -1189,13 +1189,23 @@ export const useGetDashboard = () => {
 // --------------------------------------------------------  report start -----------------------------------------------------------------------
 
 
-export const useGetReport = () => {
+export const useGetReport = (params: {
+    reportType: string;
+    period?: string;
+    startDate?: string;
+    endDate?: string;
+}) => {
     return useQuery({
-        queryKey: ["report"],
-        queryFn: () => reportApi.getReport(),
+        queryKey: ["report", params],
+        queryFn: () => reportApi.getReport(params),
+
+        // ทำให้ UI ไม่กระพริบเวลาเปลี่ยน filter
         placeholderData: keepPreviousData,
-    })
-}
+
+        // กันยิง API ตอน params ยังไม่พร้อม
+        enabled: !!params.reportType,
+    });
+};
 
 
 

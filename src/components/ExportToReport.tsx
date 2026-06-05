@@ -1,54 +1,55 @@
 
-import { Customers } from "@/modules/customer/customer.type";
 import { exportExcel } from "@/utils/exportExcel";
 import { exportPDF } from "@/utils/exportPdf";
 
+interface Column {
+    header: string;
+    key: string;
+}
 
+interface ExportReportProps {
+    title: string;
+    fileName: string;
+    sheetName?: string;
+    columns: Column[];
+    data: any[];
+}
 
-export const handleCustomerPDFExport = (data: Customers[]) => {
-    if (!data) return;
+const companyInfo = {
+    companyName: "Sport Wear Systems",
+    address: "Vientiane, Laos",
+    phone: "020 xxxx xxxx",
+    email: "SportWearSystems@gmail.com",
+};
+
+export const handlePDFExport = ({
+    title,
+    columns,
+    data,
+}: ExportReportProps) => {
+    if (!data?.length) return;
+
     exportPDF({
         type: "report",
-        title: "Customer Report",
-        meta: {
-            companyName: "Sport Wear Systems",
-            address: "Vientiane, Laos",
-            phone: "020 xxxx",
-            email: "SportWearSystems@gmail.com",
-        },
-
-        columns: [
-            { header: "No", key: "__index" },
-            { header: "Customer", key: "customerName" },
-        ],
-
-        data: data?.map((c, index) => ({
-            __index: index + 1,
-            customerName: c.customer_name,
-        })),
+        title,
+        meta: companyInfo,
+        columns,
+        data,
     });
 };
 
-
-export const handleCustomerExcelExport = (data: Customers[]) => {
-    if (!data) return;
+export const handleExcelExport = ({
+    fileName,
+    sheetName,
+    columns,
+    data,
+}: ExportReportProps) => {
+    if (!data?.length) return;
 
     exportExcel({
-        fileName: "customer-report",
-        sheetName: "Customers",
-        columns: [
-            {
-                header: "No",
-                key: "__index",
-            },
-            {
-                header: "Customer Name",
-                key: "customer_name",
-            },
-        ],
-        data: data?.map((c, index) => ({
-            __index: index + 1,
-            customer_name: c.customer_name,
-        })),
+        fileName,
+        sheetName,
+        columns,
+        data,
     });
 };

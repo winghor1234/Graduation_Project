@@ -940,12 +940,19 @@ export const locationApi = {
 
 
 export const reportApi = {
+    getReport: async (params: {
+        reportType: string;
+        period?: string;
+        startDate?: string;
+        endDate?: string;
+    }) => {
+        const res = await axiosInstance.get("/report", {
+            params,
+        });
 
-  getReport: async () => {
-    const res = await axiosInstance.get("/report")
-    return res.data
-  }
-}
+        return res.data;
+    },
+};
 
 
 // getDashboardReport: async () => {

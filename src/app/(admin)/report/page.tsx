@@ -14,6 +14,7 @@ import { handleCustomerExcelExport, handleCustomerPDFExport } from "@/components
 import SalesGraphCard from "@/components/report/SalesGraphCard"
 import StatCard from "@/components/report/StatCard"
 import { DollarSign, ShoppingCart, Package, AlertTriangle, Import, BaggageClaim } from "lucide-react"
+import Link from "next/link"
 
 
 export default function ReportPage() {
@@ -34,6 +35,41 @@ export default function ReportPage() {
     const report = data?.data
     console.log("report:", report)
 
+    const reports = [
+        {
+            title: "Product Report",
+            href: "/report/product",
+        },
+        {
+            title: "Purchase Report",
+            href: "/report/purchase",
+        },
+        {
+            title: "Import Report",
+            href: "/report/import",
+        },
+        {
+            title: "Customer Report",
+            href: "/report/customer",
+        },
+        {
+            title: "Sale Report",
+            href: "/report/sale",
+        },
+        {
+            title: "Revenue Report",
+            href: "/report/revenue",
+        },
+        {
+            title: "Profit Report",
+            href: "/report/profit",
+        },
+        {
+            title: "Expenses Report",
+            href: "/report/expenses",
+        },
+    ];
+
     return (
         <div className="p-6 bg-[#f5f7fb] min-h-screen space-y-6">
             {/* Header */}
@@ -46,9 +82,26 @@ export default function ReportPage() {
                         Overview of your business performance
                     </p>
                 </div>
-                <div>
+                {/* <div>
                     <ExportButton onExport={() => handleCustomerPDFExport(report?.customers)} loading={isLoading} title="Export PDF" />
                     <ExportButton onExport={() => handleCustomerExcelExport(report?.customers)} loading={isLoading} title="Export Excel" />
+                </div> */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {reports.map((item) => (
+                        <Link
+                            key={item.title}
+                            href={item.href}
+                            className="bg-white border rounded-xl p-5 shadow hover:shadow-lg"
+                        >
+                            <h2 className="font-semibold">
+                                {item.title}
+                            </h2>
+
+                            <p className="text-sm text-gray-500 mt-2">
+                                Generate and export report
+                            </p>
+                        </Link>
+                    ))}
                 </div>
 
             </div>
