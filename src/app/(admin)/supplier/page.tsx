@@ -5,9 +5,9 @@ import { useDataTable } from "@/hooks/useDataTable"
 import { useGetSuppliers,  useCreateSupplier,  useUpdateSupplier,  useDeleteSupplier} from "@/app/features/hooks/Supplier"
 import { Supplier } from "@/modules/supplier/supplier.type"
 import { AppPagination } from "@/components/AppPagination"
-import { SupplierToolbar } from "@/components/supplier/SupplierToolbar"
-import { SupplierTable } from "@/components/supplier/SupplierTable"
-import { SupplierFormDialog } from "@/components/supplier/SupplierFormDialog"
+import { SupplierToolbar } from "@/components/adminComponent/supplier/SupplierToolbar"
+import { SupplierTable } from "@/components/adminComponent/supplier/SupplierTable"
+import { SupplierFormDialog } from "@/components/adminComponent/supplier/SupplierFormDialog"
 
 export default function SupplierPage() {
     const table = useDataTable()

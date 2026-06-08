@@ -212,12 +212,12 @@
 'use client';
 import { formatCurrency, } from "@/utils/FormatCurrency";
 import { formatDate, } from "@/utils/FormatDate";
-import { getStatusBadge, } from "@/components/purchase/StatusBadge";
-import { useReport } from "@/components/exportReport/useExportReport";
-import DataTable, { Column } from "@/components/exportReport/DataTable";
-import ReportLayout from "@/components/exportReport/ExportReportLayout";
-import { PurchaseOrder } from "@/components/purchase/PurchaseType";
-import { handlePurchasePDFExport } from "@/components/exportReport/ExportToReport";
+import { getStatusBadge, } from "@/components/adminComponent/purchase/StatusBadge";
+import { useReport } from "@/components/adminComponent/exportReport/useExportReport";
+import DataTable, { Column } from "@/components/adminComponent/exportReport/DataTable";
+import ReportLayout from "@/components/adminComponent/exportReport/ExportReportLayout";
+import { PurchaseOrder } from "@/components/adminComponent/purchase/PurchaseType";
+import { handlePurchasePDFExport } from "@/components/adminComponent/exportReport/ExportToReport";
 // import { exportPurchasePDF } from "@/components/exportReport/ExportToReport";
 
 export default function PurchaseReportPage() {

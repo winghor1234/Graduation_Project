@@ -3,10 +3,10 @@ import { useState } from "react"
 import { useGetCustomers, useCreateCustomer, useUpdateCustomerStatus, useUpdateCustomer } from "@/app/features/hooks/Customer"
 import { useDataTable } from "@/hooks/useDataTable"
 import { Customer } from "@/modules/customer/customer.type"
-import { CustomerTable } from "@/components/customer/CustomerTable"
+import { CustomerToolbar } from "@/components/adminComponent/customer/CustomerToolbar"
+import { CustomerTable } from "@/components/adminComponent/customer/CustomerTable"
 import { AppPagination } from "@/components/AppPagination"
-import { CustomerFormDialog } from "@/components/customer/CustomerFormDialog"
-import { CustomerToolbar } from "@/components/customer/CustomerToolbar"
+import { CustomerFormDialog } from "@/components/adminComponent/customer/CustomerFormDialog"
 export default function CustomerPage() {
     const table = useDataTable()
 

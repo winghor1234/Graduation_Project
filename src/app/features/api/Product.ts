@@ -19,9 +19,15 @@ export const productApi = {
         return res.data.data
     },
 
+    getAlls: async (): Promise<Product[]> => {
+        const res = await axiosInstance.get("/product")
+        return res.data.data
+    },
+
+
     getOne: async (id: string): Promise<Product> => {
         const res = await axiosInstance.get(`/product/${id}`)
-        return res.data.data.data
+        return res.data.data
     },
 
     create: async (data: FormData): Promise<Product> => {

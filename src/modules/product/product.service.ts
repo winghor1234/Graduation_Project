@@ -20,6 +20,15 @@ export const productService = {
 
 
   },
+  async getAllProducts() {
+    const products = await prisma.product.findMany({
+      include: {
+        category: true,
+        images: true
+      }
+    })
+    return products
+  },
 
   async getProduct(id: string) {
     const product = await prisma.product.findUnique({

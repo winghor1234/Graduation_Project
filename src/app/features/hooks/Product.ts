@@ -11,10 +11,19 @@ export const useGetProducts = (params?: UseGetParams) => {
     })
 }
 
+export const useGetAllProducts = () => {
+    return useQuery({
+        queryKey: ["product"],
+        queryFn: productApi.getAlls,
+        placeholderData: keepPreviousData,
+    })
+}
+
 export const useGetProduct = (id: string) => {
     return useQuery({
         queryKey: ["product", id],
         queryFn: () => productApi.getOne(id),
+        placeholderData: keepPreviousData,
     })
 }
 

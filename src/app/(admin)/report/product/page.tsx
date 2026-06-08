@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import ExportButton from '@/components/ExportButton';
 import { Package } from 'lucide-react';
-import {  handleProductExcelExport,  handleProductPDFExport} from '@/components/exportReport/ExportToReport';
+import {  handleProductExcelExport,  handleProductPDFExport} from '@/components/adminComponent/exportReport/ExportToReport';
 import { useGetExportReport } from '@/app/features/hooks/Export';
 import { Product } from '@/modules/product/product.types';
 

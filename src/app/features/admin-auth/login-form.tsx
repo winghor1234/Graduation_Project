@@ -14,7 +14,7 @@ import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { getRedirectPath } from "@/utils/auth";
-import { useAdminLogin } from "../hooks";
+import { useEmployeeLogin } from "../hooks/Auth";
 import { LoginInput } from "@/modules/auth/auth.type";
 import { loginSchema } from "../validation";
 
@@ -22,7 +22,7 @@ import { loginSchema } from "../validation";
 
 export default function LoginForm() {
     const router = useRouter();
-    const { mutate: login, isPending } = useAdminLogin();
+    const { mutate: login, isPending } = useEmployeeLogin();
     const [showPassword, setShowPassword] = useState(false);
 
     const {

@@ -90,8 +90,8 @@ import { useDataTable } from "@/hooks/useDataTable"
 import { useGetOrders } from "@/app/features/hooks/Order"
 import { AppPagination } from "@/components/AppPagination"
 import { Order } from "@/modules/order/order.types"
-import { OrderDetailDialog } from "@/components/order/OrderDetail"
-import { OrderTable } from "@/components/order/OrderTable"
+import { OrderDetailDialog } from "@/components/adminComponent/order/OrderDetail"
+import { OrderTable } from "@/components/adminComponent/order/OrderTable"
 
 
 export default function UnifiedOrderPage() {

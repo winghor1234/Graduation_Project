@@ -7,9 +7,9 @@ import { useGetPayment, useVerifyPayment } from "@/app/features/hooks/Payment"
 import { useDataTable } from "@/hooks/useDataTable"
 
 import { AppPagination } from "@/components/AppPagination"
-import { PaymentToolbar } from "@/components/payment/PaymentToolbar"
-import { PaymentTable } from "@/components/payment/PaymentTable"
-import { PaymentVerifyDialog } from "@/components/payment/PaymentVerifyDialog"
+import { PaymentToolbar } from "@/components/adminComponent/payment/PaymentToolbar"
+import { PaymentTable } from "@/components/adminComponent/payment/PaymentTable"
+import { PaymentVerifyDialog } from "@/components/adminComponent/payment/PaymentVerifyDialog"
 import { Payment } from "@/modules/payment/payment.type"
 
 

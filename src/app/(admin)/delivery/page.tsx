@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { useGetDeliveries, useUpdateDelivery } from "@/app/features/hooks/Delivery"
 import { Delivery } from "@/modules/delivery/delivery.type"
-import { DeliveryDetailDialog } from "@/components/delivery/DeliveryDetailDialog"
-import { DeliveryUpdateDialog } from "@/components/delivery/DeliveryUpdateDialog"
-import { DeliveryTable } from "@/components/delivery/DeliveryTable"
+import { DeliveryDetailDialog } from "@/components/adminComponent/delivery/DeliveryDetailDialog"
+import { DeliveryUpdateDialog } from "@/components/adminComponent/delivery/DeliveryUpdateDialog"
+import { DeliveryTable } from "@/components/adminComponent/delivery/DeliveryTable"
 
 
 

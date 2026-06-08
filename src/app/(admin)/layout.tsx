@@ -16,9 +16,10 @@ import {
     Settings
 } from "lucide-react"
 
-import { Sidebar } from "@/components/adminLayout/Sidebar"
-import { Header } from "@/components/adminLayout/Header"
+
 import { useAuth, useEmployeeLogout } from "../features/hooks/Auth"
+import { Sidebar } from "@/components/adminComponent/adminLayout/Sidebar"
+import { Header } from "@/components/adminComponent/adminLayout/Header"
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN"] },
@@ -36,23 +37,16 @@ const navigation = [
     { name: "Settings", href: "/setting", icon: Settings, roles: ["ADMIN"] },
 ] as const
 
-export default function AdminLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
+export default function AdminLayout({  children,}: { children: React.ReactNode}) {
     const router = useRouter()
     const pathname = usePathname()
-
     const { user, isLoading } = useAuth()
     const { mutate: logout } = useEmployeeLogout()
-
     const [collapsed, setCollapsed] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)
 
     useEffect(() => {
         if (isLoading) return
-
         if (!user) return router.replace("/login")
 
         if (pathname === "/") {
@@ -63,21 +57,10 @@ export default function AdminLayout({
     if (isLoading) return null
 
     return (
-        <div className="
-      flex h-screen
-      bg-[#f8fafc]
-      text-slate-900
-    ">
+        <div className=" flex h-screen bg-[#f8fafc] text-slate-900 ">
 
             {/* SOFT BLUE GLOW */}
-            <div className="
-        fixed top-[-200px] left-[30%]
-        w-[500px] h-[500px]
-        bg-blue-500/10
-        blur-[120px]
-        rounded-full
-        z-0
-      " />
+            <div className="  fixed top-[-200px] left-[30%] w-[500px] h-[500px] bg-blue-500/10 blur-[120px] rounded-full z-0" />
 
             {/* SIDEBAR */}
             <Sidebar
@@ -96,13 +79,7 @@ export default function AdminLayout({
             {mobileOpen && (
                 <div
                     onClick={() => setMobileOpen(false)}
-                    className="
-            fixed inset-0
-            bg-black/20
-            backdrop-blur-sm
-            md:hidden
-            z-30
-          "
+                    className=" fixed inset-0 bg-black/20 backdrop-blur-sm md:hidden z-30  "
                 />
             )}
 
@@ -118,15 +95,7 @@ export default function AdminLayout({
                 <main className="flex-1 overflow-auto p-5">
 
                     {/* CONTENT WRAPPER */}
-                    <div className="
-            min-h-full
-            bg-white/80
-            backdrop-blur-xl
-            border border-gray-200
-            rounded-3xl
-            shadow-sm
-            p-5
-          ">
+                    <div className="  min-h-full  bg-white/80  backdrop-blur-xl  border border-gray-200  rounded-3xl  shadow-sm  p-5">
                         {children}
                     </div>
 

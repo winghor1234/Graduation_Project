@@ -1,7 +1,7 @@
 'use client'
 import { useGetDashboard } from "@/app/features/hooks/Dashboard"
-import SalesGraphCard from "@/components/report/SalesGraphCard"
-import StatCard from "@/components/report/StatCard"
+import SalesGraphCard from "@/components/adminComponent/report/SalesGraphCard"
+import StatCard from "@/components/adminComponent/report/StatCard"
 import { DollarSign, ShoppingCart, Package, AlertTriangle, Import, BaggageClaim } from "lucide-react"
 import Link from "next/link"
 

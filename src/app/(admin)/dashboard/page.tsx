@@ -1,11 +1,11 @@
 
 "use client"
 
-import { useGetDashboard } from "@/app/features/hooks/Dashboard"
-import { RecentOrders } from "@/components/dashboard/RecentOrders"
-import { RevenueChart } from "@/components/dashboard/RevenueChart"
-import StatCard from "@/components/dashboard/StatCard"
-import { TopProducts } from "@/components/dashboard/TopProducts"
+import { useGetDashboard } from "@/app/features/hooks/Dashboard";
+import { RecentOrders } from "@/components/adminComponent/dashboard/RecentOrders";
+import { RevenueChart } from "@/components/adminComponent/dashboard/RevenueChart";
+import StatCard from "@/components/adminComponent/dashboard/StatCard";
+import { TopProducts } from "@/components/adminComponent/dashboard/TopProducts";
 import { formatCurrency } from "@/utils/FormatCurrency"
 
 export default function DashboardPage() {

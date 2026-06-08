@@ -8,6 +8,7 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { formDataParser } from "@/utils/cloudinary"
 import { CreateProductInput } from "./product.types"
+import { useGetAllProducts } from "@/app/features/hooks/Product"
 
 export const productController = {
     async getProducts(req: NextRequest) {
@@ -44,8 +45,21 @@ export const productController = {
         }
 
     },
+    async getAllProducts(req: NextRequest) {
+        try {
+            const products = await productService.getAllProducts()
+            return successResponse(products, "Get all products successfully", 200)
+        } catch (error) {
+            console.log(error)
+            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+                return errorResponse(error.message, error.statusCode);
+            }
+            return errorResponse("Internal Server Error", 500)
+        }
+    },
 
     async getProduct(req: NextRequest, id: string) {
+        console.log("id from frontend : ",id)
         try {
             const product = await productService.getProduct(id)
             return successResponse(product, "Get product successfully", 200)
