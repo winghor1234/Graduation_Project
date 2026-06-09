@@ -46,6 +46,11 @@ export const locationApi = {
         return res.data.data
     },
 
+    getAllProvince: async (): Promise<Province[]> => {
+        const res = await axiosInstance.get("/location/province")
+        return res.data?.data
+    },
+
     getProvince: async (id: string): Promise<Province> => {
         const res = await axiosInstance.get(`/location/province/${id}`)
         return res.data.data

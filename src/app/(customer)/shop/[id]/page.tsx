@@ -18,7 +18,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const { id } = use(params);
 
     // เปลี่ยนชื่อตัวแปรผลลัพธ์ของ Hook เป็น apiProductResponse เพื่อไม่ให้สับสนกับตัว Type Product
-    const { data: apiProductResponse, loading: isProductLoading } = useGetProduct(id);
+    const { data: apiProductResponse, } = useGetProduct(id);
     const { data: apiAllProductsResponse, isLoading: isAllLoading } = useGetAllProducts();
 
     const router = useRouter();
@@ -43,7 +43,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     }, [allProducts, product]);
 
     // 🛑 [Early Return] สเต็ปดักเช็คสถานะแอปพลิเคชัน (ย้ายลงมาด้านล่าง Hooks ทั้งหมดถูกต้องตามกติกา)
-    if (isProductLoading || isAllLoading) return <LoadingDetailSkeleton />;
+    // if (isProductLoading || isAllLoading) return <LoadingDetailSkeleton />;
     if (!product) return <ProductNotFoundState />;
 
     const handleAddToCart = () => {

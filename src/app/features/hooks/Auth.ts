@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ForgotPasswordInput, VerifyOTPInput } from "@/modules/auth/auth.type"
 import { AuthApi } from "../api/Auth"
 
-export const useAuth = () => {
-    const { data, isLoading } = useEmployeeMe()
+export const useAuthMe = () => {
+    const { data, isLoading } = Me()
     const user = data?.data ?? null
     return {
         user,
@@ -15,10 +15,10 @@ export const useAuth = () => {
 
 
 
-export const useEmployeeMe = () => {
+export const Me = () => {
     return useQuery({
         queryKey: ["me"],
-        queryFn: AuthApi.employeeMe,
+        queryFn: AuthApi.Me,
         retry: false,
         staleTime: 1000 * 60 * 5,
         refetchOnMount: false,

@@ -46,19 +46,19 @@ export const AuthApi = {
     },
 
 
-    employeeMe: async () => {
-        try {
-            const res = await axiosInstance.get("/auth/me")
-            return res.data
-        } catch (err: unknown) {
-            if (isAxiosError(err)) {
-                if (err.response?.status === 401) {
-                    return null
-                }
-            }
-            throw err
-        }
-    },
+    // employeeMe: async () => {
+    //     try {
+    //         const res = await axiosInstance.get("/auth/me")
+    //         return res.data
+    //     } catch (err: unknown) {
+    //         if (isAxiosError(err)) {
+    //             if (err.response?.status === 401) {
+    //                 return null
+    //             }
+    //         }
+    //         throw err
+    //     }
+    // },
 
     // customer
     customerLogin: async (data: LoginInput) => {
@@ -76,19 +76,19 @@ export const AuthApi = {
         const res = await axiosInstance.post("/auth/refresh")
         return res.data
     },
-    customerMe: async () => {
-        try {
-            const res = await axiosInstance.get("/auth/me")
-            return res.data
-        } catch (err: unknown) {
-            if (isAxiosError(err)) {
-                if (err.response?.status === 401) {
-                    return null
-                }
-            }
-            throw err
-        }
-    },
+    // customerMe: async () => {
+    //     try {
+    //         const res = await axiosInstance.get("/auth/me")
+    //         return res.data
+    //     } catch (err: unknown) {
+    //         if (isAxiosError(err)) {
+    //             if (err.response?.status === 401) {
+    //                 return null
+    //             }
+    //         }
+    //         throw err
+    //     }
+    // },
 
     customerForgotPassword: async (data: ForgotPasswordInput) => {
         const res = await axiosInstance.post("/auth/customer/forgot-password", data)
@@ -110,6 +110,19 @@ export const AuthApi = {
         return res.data
     },
 
-
+// me
+    Me: async () => {
+        try {
+            const res = await axiosInstance.get("/auth/me")
+            return res.data
+        } catch (err: unknown) {
+            if (isAxiosError(err)) {
+                if (err.response?.status === 401) {
+                    return null
+                }
+            }
+            throw err
+        }
+    },
 
 }

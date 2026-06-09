@@ -1,9 +1,14 @@
+
+
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Upload, CheckCircle, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -17,23 +22,116 @@ import { Textarea } from '@/components/ui/textarea';
 import { useCustomer } from '@/components/customerComponent/CustomerContext';
 import { useGetAllProducts } from '@/app/features/hooks/Product';
 import { Product } from '@/components/adminComponent/products/ProductType';
+import { useAuthMe } from '@/app/features/hooks/Auth';
+import { useCreateOrder } from '@/app/features/hooks/Order';
+import { useGetAllProvince } from '@/app/features/hooks/Location';
+
+type User = {
+    customer_id: string;
+    role: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+}
+
+type Province = {
+    province_id: string;
+    province_name: string;
+    districts: {
+        district_id: string;
+        district_name: string;
+        branches: { // 💡 แก้ไขตัวสะกดจาก branchs เป็น branches ให้ตรงกับ Data จริงหลังบ้าน
+            branch_id: string;
+            branch_name: string;
+            district_id: string;
+            createdAt?: string;
+            updatedAt?: string;
+        }[];
+        createdAt?: string;
+        updatedAt?: string;
+    }[];
+    addressBranches?: any[];
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+// 🛡️ 1. กำหนด Zod Schema ให้ตรงตามข้อมูลฟอร์ม
+const checkoutSchema = z.object({
+    province_id: z.string().min(1, 'กรุณาระบุจังหวัด'),
+    district_id: z.string().min(1, 'กรุณาระบุอำเภอ'),
+    branch_id: z.string().min(1, 'กรุณาระบุสาขา'),
+    paymentSlip: z.any().optional()
+});
+
+type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
-    const { cart, clearCart, addOrder } = useCustomer();
+    const { cart, clearCart } = useCustomer();
     const { data: apiAllProducts, isLoading } = useGetAllProducts();
+    const { data: provincesData, isLoading: isLoadingProvinces } = useGetAllProvince();
+
+    const provinces = provincesData as Province[];
+    const { mutate: createOrder, isPending: isSubmitting } = useCreateOrder();
     const router = useRouter();
 
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
+    const userData = useAuthMe();
+    const user: User = userData;
+
+    // ⚡ 2. ประกาศใช้งาน React Hook Form พร้อมกำหนดค่าเริ่มต้น
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CheckoutFormData>({
+        resolver: zodResolver(checkoutSchema),
+        defaultValues: {
+            province_id: '',
+            district_id: '',
+            branch_id: ''
+        }
     });
 
-    const [paymentSlip, setPaymentSlip] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string>('');
+    // ==========================================
+    // 🔄 ตรรกะคัดกรองข้อมูล Dropdown สัมพันธ์ (Cascading Dropdown)
+    // ==========================================
 
-    const allProducts = (apiAllProducts?.data || apiAllProducts || []) as Product[];
+    // เฝ้าติดตามค่า ID ที่ถูกเลือกใน Dropdown ปัจจุบัน
+    const selectedProvinceId = watch('province_id');
+    const selectedDistrictId = watch('district_id');
+
+    // 🔍 ดึงข้อมูล "จังหวัด" ที่เลือก เพื่อเอาไปใช้ดึงรายชื่ออำเภอข้างใน
+    const selectedProvinceData = useMemo(() => {
+        if (!provinces || !selectedProvinceId) return null;
+        return provinces.find((p) => p.province_id === selectedProvinceId);
+    }, [provinces, selectedProvinceId]);
+
+    // 🔍 ดึงข้อมูล "อำเภอ" ที่เลือก เพื่อเอาไปใช้ดึงรายชื่อสาขาข้างใน
+    const selectedDistrictData = useMemo(() => {
+        if (!selectedProvinceData || !selectedDistrictId) return null;
+        return selectedProvinceData.districts?.find((d) => d.district_id === selectedDistrictId);
+    }, [selectedProvinceData, selectedDistrictId]);
+
+    // 🧼 ล้างค่าอำเภอและสาขาทันที เมื่อผู้ใช้งานทำการเปลี่ยนจังหวัดใหม่
+    useEffect(() => {
+        setValue('district_id', '');
+        setValue('branch_id', '');
+    }, [selectedProvinceId, setValue]);
+
+    // 🧼 ล้างค่าสาขาทันที เมื่อผู้ใช้งานทำการเปลี่ยนอำเภอใหม่
+    useEffect(() => {
+        setValue('branch_id', '');
+    }, [selectedDistrictId, setValue]);
+
+    // ==========================================
+
+    // ตรวจจับไฟล์สลิปเพื่อนำมาทำพรีวิวรูปภาพ
+    const currentSlipFile = watch('paymentSlip');
+
+    const previewUrl = useMemo(() => {
+        if (currentSlipFile instanceof File) {
+            return URL.createObjectURL(currentSlipFile);
+        }
+        return '';
+    }, [currentSlipFile]);
+
+    const allProducts = (apiAllProducts || []) as Product[];
 
     // 1. นำข้อมูลตะกร้าหน้าบ้านมารวมตรรกะราคาและภาพถ่ายจริงร่วมกับคลังสินค้าหลังบ้าน
     const cartItems = useMemo(() => {
@@ -44,7 +142,7 @@ export default function CheckoutPage() {
         });
     }, [cart, allProducts]);
 
-    // 2. คำนวณราคายอดรวมสินค้าพรีเมียมทั้งหมด
+    // 2. คำนวณราคายอดรวมสินค้าทั้งหมด
     const subtotal = useMemo(() => {
         return cartItems.reduce((sum, item) => {
             const price = item.product?.sale_price || 0;
@@ -55,7 +153,7 @@ export default function CheckoutPage() {
     const shipping = subtotal > 0 ? 100 : 0; // ยอดค่าจัดส่งแบบสกุลเงินบาท ฿100
     const total = subtotal + shipping;
 
-    // 3. ใช้ useEffect ดีดหน้าเว็บกลับไปที่ตะกร้าหากไม่มีสิ่งของค้างอยู่ (ถูกหลักโครงสร้างสั่งงาน)
+    // 3. ใช้ useEffect ดีดหน้าเว็บกลับไปที่ตะกร้าหากไม่มีสิ่งของค้างอยู่
     useEffect(() => {
         if (!isLoading && (!cart || cart.length === 0)) {
             router.push('/cart');
@@ -65,47 +163,43 @@ export default function CheckoutPage() {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setPaymentSlip(file);
-            const url = URL.createObjectURL(file);
-            setPreviewUrl(url);
+            setValue('paymentSlip', file, { shouldValidate: true });
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    // 🚀 4. ฟังก์ชันส่งข้อมูลเมื่อผ่านเกณฑ์เงื่อนไขของ Schema ทั้งหมดแล้ว
+    const onFormSubmit = (data: CheckoutFormData) => {
+        const bodyFormData = new FormData();
+        bodyFormData.append("customer_id", user?.customer_id || "");
+        bodyFormData.append("method", "TRANSFER");
+        bodyFormData.append("province_id", data.province_id);
+        bodyFormData.append("district_id", data.district_id);
+        bodyFormData.append("branch_id", data.branch_id);
 
-        if (!formData.name || !formData.email || !formData.phone || !formData.address) {
-            toast.error('กรุณากรอกข้อมูลในช่องที่จำเป็นให้ครบถ้วนครับ');
-            return;
+        const orderDetailsPayload = cartItems.map((item) => ({
+            product_id: item.productId,
+            quantity: item.quantity,
+            price: item.product?.sale_price || 0,
+        }));
+        bodyFormData.append("order_details", JSON.stringify(orderDetailsPayload));
+
+        if (data.paymentSlip) {
+            bodyFormData.append("file", data.paymentSlip);
         }
 
-        // ฟอร์มจัดรูปแบบออเดอร์ส่งบันทึกเข้าฐานข้อมูลหลังบ้าน
-        const order = {
-            id: `ORD-${Date.now()}`,
-            customerId: 'cust-' + Date.now(),
-            customerName: formData.name,
-            customerEmail: formData.email,
-            customerPhone: formData.phone,
-            items: cartItems.map((item) => ({
-                productId: item.productId,
-                quantity: item.quantity,
-                price: item.product?.sale_price || 0,
-            })),
-            total,
-            status: paymentSlip ? 'PENDING_VERIFICATION' : 'WAITING_PAYMENT',
-            paymentStatus: paymentSlip ? 'PENDING' : 'PENDING',
-            paymentSlip: previewUrl || undefined,
-            createdAt: new Date().toISOString(),
-            address: formData.address,
-        } as const;
-
-        if (typeof addOrder === 'function') addOrder(order);
-        clearCart();
-        toast.success('ทำการสั่งซื้อสินค้าเรียบร้อยแล้วครับ! 🎉');
-        router.push('/products');
+        // เรียกใช้ Mutation ของ React Query เพื่อบันทึกข้อมูล
+        createOrder(bodyFormData, {
+            onSuccess: () => {
+                clearCart();
+                toast.success('ทำการสั่งซื้อสินค้าเรียบร้อยแล้วครับ! 🎉');
+                router.push('/products');
+            },
+            onError: (error) => {
+                toast.error(error?.message || 'เกิดข้อผิดพลาดในการสั่งซื้อสินค้า กรุณาลองใหม่อีกครั้งครับ ❌');
+            }
+        });
     };
 
-    // ดักรอจังหวะโหลดข้อมูลสั้นๆ ป้องกันหน้าบิดเบี้ยว
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center text-md font-medium text-gray-500 animate-pulse">
@@ -115,68 +209,96 @@ export default function CheckoutPage() {
     }
 
     if (!cart || cart.length === 0) return null;
+    if (isLoadingProvinces) return (
+        <div className="flex h-screen items-center justify-center text-md font-medium text-gray-500 animate-pulse">
+            กำลังดึงข้อมูลจังหวัด... 📦
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-gray-50 py-10">
             <div className="container mx-auto px-4 max-w-6xl">
                 <h1 className="text-3xl font-bold mb-8 text-gray-900 tracking-tight">Checkout</h1>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onFormSubmit)}>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
                         {/* ซีกซ้าย: ฟอร์มกรอกที่อยู่และอัพโหลดหลักฐานสลิป */}
                         <div className="lg:col-span-2 space-y-6">
 
-                            {/*ข้อมูลลูกค้า */}
+                            {/*ข้อมูลที่อยู่ลูกค้าและสาขา */}
                             <Card className="border shadow-sm bg-white">
                                 <CardHeader>
-                                    <CardTitle className="text-gray-900">Customer Information</CardTitle>
+                                    <CardTitle className="text-gray-900">Branch & Location Information</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
+
+                                    {/* 🗺️ 1. SELECT PROVINCE */}
                                     <div>
-                                        <Label htmlFor="name" className="text-gray-700">Full Name *</Label>
-                                        <Input
-                                            id="name"
-                                            required
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="mt-1.5"
-                                        />
+                                        <Label htmlFor="province_id" className="text-gray-700">Province *</Label>
+                                        <select
+                                            id="province_id"
+                                            {...register('province_id')}
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background mt-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                        >
+                                            <option value="">-- Select Province --</option>
+                                            {provinces?.map((prov) => (
+                                                <option key={prov.province_id} value={prov.province_id}>
+                                                    {prov.province_name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.province_id && (
+                                            <p className="text-xs text-destructive mt-1">{errors.province_id.message}</p>
+                                        )}
                                     </div>
+
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                                        {/* 🏙️ 2. SELECT DISTRICT */}
                                         <div>
-                                            <Label htmlFor="email" className="text-gray-700">Email *</Label>
-                                            <Input
-                                                id="email"
-                                                type="email"
-                                                required
-                                                value={formData.email}
-                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                className="mt-1.5"
-                                            />
+                                            <Label htmlFor="district_id" className="text-gray-700">District *</Label>
+                                            <select
+                                                id="district_id"
+                                                {...register('district_id')}
+                                                disabled={!selectedProvinceId} // ล็อกไว้ถ้ายังไม่เลือกจังหวัด
+                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background mt-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                <option value="">-- Select District --</option>
+                                                {/* วนลูปแสดงอำเภอเฉพาะที่สังกัดอยู่ในจังหวัดที่เลือกเท่านั้น */}
+                                                {selectedProvinceData?.districts?.map((dist) => (
+                                                    <option key={dist.district_id} value={dist.district_id}>
+                                                        {dist.district_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {errors.district_id && (
+                                                <p className="text-xs text-destructive mt-1">{errors.district_id.message}</p>
+                                            )}
                                         </div>
+
+                                        {/* 🏢 3. SELECT BRANCH */}
                                         <div>
-                                            <Label htmlFor="phone" className="text-gray-700">Phone *</Label>
-                                            <Input
-                                                id="phone"
-                                                type="tel"
-                                                required
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                className="mt-1.5"
-                                            />
+                                            <Label htmlFor="branch_id" className="text-gray-700">Branch *</Label>
+                                            <select
+                                                id="branch_id"
+                                                {...register('branch_id')}
+                                                disabled={!selectedDistrictId} // ล็อกไว้ถ้ายังไม่เลือกอำเภอ
+                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background mt-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                <option value="">-- Select Branch --</option>
+                                                {/* วนลูปแสดงสาขาเฉพาะที่สังกัดอยู่ในอำเภอที่เลือกเท่านั้น */}
+                                                {selectedDistrictData?.branches?.map((branch) => (
+                                                    <option key={branch.branch_id} value={branch.branch_id}>
+                                                        {branch.branch_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {errors.branch_id && (
+                                                <p className="text-xs text-destructive mt-1">{errors.branch_id.message}</p>
+                                            )}
                                         </div>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="address" className="text-gray-700">Shipping Address *</Label>
-                                        <Textarea
-                                            id="address"
-                                            required
-                                            value={formData.address}
-                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                            rows={3}
-                                            className="mt-1.5 resize-none"
-                                        />
+
                                     </div>
                                 </CardContent>
                             </Card>
@@ -325,8 +447,13 @@ export default function CheckoutPage() {
                                         <span className="text-xl font-extrabold text-blue-600">฿{total.toLocaleString()}</span>
                                     </div>
 
-                                    <Button type="submit" size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors mt-2 shadow-sm">
-                                        ยืนยันการสั่งซื้อสินค้า
+                                    <Button
+                                        type="submit"
+                                        size="lg"
+                                        disabled={isSubmitting}
+                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors mt-2 shadow-sm"
+                                    >
+                                        {isSubmitting ? "กำลังดำเนินการออเดอร์..." : "ยืนยันการสั่งซื้อสินค้า"}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -338,3 +465,4 @@ export default function CheckoutPage() {
         </div>
     );
 }
+

@@ -17,7 +17,7 @@ import {
 } from "lucide-react"
 
 
-import { useAuth, useEmployeeLogout } from "../features/hooks/Auth"
+import { useAuthMe, useEmployeeLogout } from "../features/hooks/Auth"
 import { Sidebar } from "@/components/adminComponent/adminLayout/Sidebar"
 import { Header } from "@/components/adminComponent/adminLayout/Header"
 
@@ -40,7 +40,7 @@ const navigation = [
 export default function AdminLayout({  children,}: { children: React.ReactNode}) {
     const router = useRouter()
     const pathname = usePathname()
-    const { user, isLoading } = useAuth()
+    const { user, isLoading } = useAuthMe()
     const { mutate: logout } = useEmployeeLogout()
     const [collapsed, setCollapsed] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)

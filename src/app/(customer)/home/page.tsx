@@ -44,7 +44,7 @@ export default function HomePage() {
 
     // 📦 แกะข้อมูลสินค้าเตรียมไว้ล่วงหน้า (ถ้าข้อมูลยังไม่มา ให้ดักเป็นอาเรย์ว่างเพื่อป้องกัน Error)
     const products: Product[] = apiResponse || [];
-    console.log("product ; ",products);
+    // console.log("product ; ",products);
 
     // ✨ [แก้ไขตามกฎ Rules of Hooks] ย้าย useMemo ขึ้นมาประกาศไว้ด้านบนสุดร่วมกันทันที ห้ามมี if คั่น
     // 1. กรองสินค้าแนะนำ (Featured Products)
@@ -122,7 +122,7 @@ export default function HomePage() {
                         <p className="text-xl mb-8 text-gray-300 font-light">
                             Premium sportswear designed for champions. Experience comfort, style, and performance.
                         </p>
-                        <Link href="/products" passHref>
+                        <Link href="/shop" passHref>
                             <Button size="lg" className="text-lg px-8 py-6">
                                 Shop Now
                                 <ArrowRight className="ml-2 size-5" />
@@ -140,7 +140,7 @@ export default function HomePage() {
                             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">Featured Products</h2>
                             <p className="text-gray-500 mt-1">Our best-selling items this season</p>
                         </div>
-                        <Link href="/products" passHref>
+                        <Link href="/shop" passHref>
                             <Button variant="outline" className="w-full sm:w-auto">
                                 View All
                                 <ArrowRight className="ml-2 size-4" />

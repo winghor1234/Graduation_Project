@@ -42,6 +42,19 @@ export const locationController = {
         }
     },
 
+    async getAllProvinces(req: NextRequest) {
+        try {
+            const provinces = await locationService.getAllProvinces()
+            return successResponse(provinces, "Get all provinces successfully", 200)
+        } catch (error) {
+            console.log(error)
+            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+                return errorResponse(error.message, error.statusCode);
+            }
+
+        }
+    },
+
     async getDistricts(req: NextRequest) {
         try {
             const { page, limit, skip } = getPaginationParams(req)

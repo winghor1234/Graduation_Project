@@ -41,6 +41,14 @@ export const useGetProvince = (id: string) => {
     })
 }
 
+export const useGetAllProvince = () => {
+    return useQuery({
+        queryKey: ["all-provinces"],
+        queryFn: () => locationApi.getAllProvince(),
+        placeholderData: keepPreviousData,
+    })
+}
+
 export const useCreateProvince = () => {
     const qc = useQueryClient()
 

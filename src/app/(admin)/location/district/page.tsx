@@ -1,6 +1,6 @@
 "use client"
 
-import { useCreateDistrict, useDeleteDistrict, useGetDistricts, useGetProvinces, useUpdateDistrict } from "@/app/features/hooks/Location"
+import { useCreateDistrict, useDeleteDistrict, useGetAllProvince, useGetDistricts, useUpdateDistrict } from "@/app/features/hooks/Location"
 import { AppPagination } from "@/components/AppPagination"
 import { DistrictDetailDialog } from "@/components/adminComponent/location/district/DistrictDetaildialog"
 import { DistrictFormDialog } from "@/components/adminComponent/location/district/DistrictFormDialog"
@@ -16,7 +16,7 @@ import { useState } from "react"
 export default function DistrictPage() {
     const table = useDataTable()
     const { data, isLoading } = useGetDistricts(table.params)
-    const { data: provinces } = useGetProvinces()
+    const { data: provinces } = useGetAllProvince()
     const createDistrict = useCreateDistrict()
     const updateDistrict = useUpdateDistrict()
     const deleteDistrict = useDeleteDistrict()
@@ -67,7 +67,7 @@ export default function DistrictPage() {
                 create={createDistrict}
                 update={updateDistrict}
                 district={selected}
-                provinces={provinces?.data ?? []}
+                provinces={provinces ?? []}
             />
             <DistrictDetailDialog
                 open={openDetail}

@@ -16,6 +16,7 @@ export default function ProductsPage() {
     const { data, isLoading } = useGetProducts(table.params)
     const { data: categories } = useGetCategories()
     const category = categories?.data 
+    console.log(data)
 
     const createProduct = useCreateProduct()
     const updateProduct = useUpdateProduct()
@@ -24,7 +25,6 @@ export default function ProductsPage() {
     const [openForm, setOpenForm] = useState< boolean >(false)
     const [selectedProduct, setSelectedProduct] = useState< Product | undefined >()
 
-    console.log(data)
 
 
     const handleEdit = (product: Product) => {

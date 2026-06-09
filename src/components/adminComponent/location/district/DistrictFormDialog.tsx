@@ -42,7 +42,7 @@ export function DistrictFormDialog({ open, onOpenChange, district, create, updat
             })
         }
     }, [district])
-
+    console.log("provinces : ",provinces)
 
     const onSubmit = async (values: DistrictFormValues) => {
 

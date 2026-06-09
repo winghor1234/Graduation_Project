@@ -18,6 +18,20 @@ export const locationService = {
     return provinces
   },
 
+  async getAllProvinces() {
+    return prisma.province.findMany({
+      include: {
+        districts: {
+          include: {
+            branches: true
+          }
+        },
+        addressBranches: true
+      }
+    })
+  },
+
+
   async getDistricts(options?: Prisma.DistrictFindManyArgs) {
     const districts = await prisma.district.findMany({
       ...options,
@@ -30,6 +44,8 @@ export const locationService = {
     return districts
   },
 
+
+
   async getBranches(options?: Prisma.BranchFindManyArgs) {
     const branches = await prisma.branch.findMany({
       ...options,
@@ -40,6 +56,7 @@ export const locationService = {
     })
     return branches
   },
+
 
   // GET DISTRICT BY PROVINCE
   // async getDistrictByProvince(province_id: string) {

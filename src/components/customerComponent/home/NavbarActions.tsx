@@ -6,10 +6,11 @@ import { ShoppingCart, User, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
-import { useGetCustomers } from '@/app/features/hooks/Customer';
+// import { useGetCustomers } from '@/app/features/hooks/Customer';
+import { useCustomer } from '../CustomerContext';
 
 export default function NavbarActions() {
-    const { cart } = useGetCustomers();
+    const { cart } = useCustomer();
     const router = useRouter(); // เปลี่ยนมาใช้ตัวนำทางหน้าของ Next.js
 
     // คำนวณจำนวนชิ้นสินค้าทั้งหมดในตะกร้าลูกค้า
