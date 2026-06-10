@@ -26,11 +26,22 @@ export const Me = () => {
     })
 }
 
-export const useEmployeeLogin = () => {
+// export const useEmployeeLogin = () => {
+//     const qc = useQueryClient()
+
+//     return useMutation({
+//         mutationFn: AuthApi.employeeLogin,
+//         onSuccess: () => {
+//             qc.invalidateQueries({ queryKey: ["me"] })
+//         },
+//     })
+// }
+
+export const useLogin = () => {
     const qc = useQueryClient()
 
     return useMutation({
-        mutationFn: AuthApi.employeeLogin,
+        mutationFn: AuthApi.login,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["me"] })
         },

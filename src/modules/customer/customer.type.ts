@@ -23,6 +23,7 @@ export type CreateCustomerInput = {
     email: string
     phone: string
     password: string
+    gender?: string
 
 }
 

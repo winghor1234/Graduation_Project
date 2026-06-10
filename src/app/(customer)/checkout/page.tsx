@@ -61,7 +61,7 @@ const checkoutSchema = z.object({
     province_id: z.string().min(1, 'กรุณาระบุจังหวัด'),
     district_id: z.string().min(1, 'กรุณาระบุอำเภอ'),
     branch_id: z.string().min(1, 'กรุณาระบุสาขา'),
-    paymentSlip: z.any().optional()
+    paymentSlip: z.any().optional(),
 });
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
@@ -76,7 +76,7 @@ export default function CheckoutPage() {
     const router = useRouter();
 
     const userData = useAuthMe();
-    const user: User = userData;
+    const user: User = userData?.user;
 
     // ⚡ 2. ประกาศใช้งาน React Hook Form พร้อมกำหนดค่าเริ่มต้น
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CheckoutFormData>({
@@ -135,12 +135,34 @@ export default function CheckoutPage() {
 
     // 1. นำข้อมูลตะกร้าหน้าบ้านมารวมตรรกะราคาและภาพถ่ายจริงร่วมกับคลังสินค้าหลังบ้าน
     const cartItems = useMemo(() => {
-        if (!cart) return [];
-        return cart.map((item) => {
-            const dbProduct = allProducts.find((p) => p.product_id === item.productId);
-            return { ...item, product: dbProduct || null };
+        if (!cart?.length) return [];
+
+        const mergedCart = Object.values(
+            cart.reduce((acc, item) => {
+                if (!item.productId) return acc;
+
+                if (acc[item.productId]) {
+                    acc[item.productId].quantity += item.quantity;
+                } else {
+                    acc[item.productId] = { ...item };
+                }
+
+                return acc;
+            }, {} as Record<string, typeof cart[number]>)
+        );
+
+        return mergedCart.map((item) => {
+            const dbProduct = allProducts.find(
+                (p) => p.product_id === item.productId
+            );
+
+            return {
+                ...item,
+                product: dbProduct ?? null,
+            };
         });
     }, [cart, allProducts]);
+    console.log("cart item ; ", cartItems)
 
     // 2. คำนวณราคายอดรวมสินค้าทั้งหมด
     const subtotal = useMemo(() => {
@@ -169,9 +191,11 @@ export default function CheckoutPage() {
 
     // 🚀 4. ฟังก์ชันส่งข้อมูลเมื่อผ่านเกณฑ์เงื่อนไขของ Schema ทั้งหมดแล้ว
     const onFormSubmit = (data: CheckoutFormData) => {
+        console.log("data : ", user);
         const bodyFormData = new FormData();
         bodyFormData.append("customer_id", user?.customer_id || "");
         bodyFormData.append("method", "TRANSFER");
+        bodyFormData.append("amount", String(total));
         bodyFormData.append("province_id", data.province_id);
         bodyFormData.append("district_id", data.district_id);
         bodyFormData.append("branch_id", data.branch_id);
@@ -181,6 +205,7 @@ export default function CheckoutPage() {
             quantity: item.quantity,
             price: item.product?.sale_price || 0,
         }));
+        console.log("order detail : ", orderDetailsPayload);
         bodyFormData.append("order_details", JSON.stringify(orderDetailsPayload));
 
         if (data.paymentSlip) {

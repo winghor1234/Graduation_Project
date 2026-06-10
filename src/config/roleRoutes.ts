@@ -6,7 +6,17 @@ export const roleRoutes = {
     ],
 
     CUSTOMER: [
-        "/api/orders",
+        "/api/home",
+        "/api/shop",
+        "/api/checkout",
+        "/api/cart",
+        "/api/order-history",
+        "/api/product",
+        "/api/location/province",
+        "/api/location/district",
+        "/api/location/branch",
+        "/api/order"
+
     ]
 
 };

@@ -34,27 +34,75 @@ export const authController = {
 
     },
 
-    async customerLogin(req: NextRequest): Promise<NextResponse> {
+    // async customerLogin(req: NextRequest): Promise<NextResponse> {
+    //     try {
+    //         const ip = req.headers.get("x-forwarded-for") || "unknown"
+    //         const body = await req.json()
+    //         const key = `${body.email}_${ip}`
+    //         await loginLimiter.consume(key)
+    //         const result = await authService.customerLogin(body)
+    //         const { password, ...safeUser } = result.user
+    //         const response = successResponse(safeUser, "Login successful", 200)
+    //         setAuthCookies({
+    //             response,
+    //             accessToken: result.accessToken,
+    //             refreshToken: result.refreshToken
+    //         })
+    //         return response
+    //     } catch (error) {
+    //         console.log(error)
+    //         if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+    //             return errorResponse(error.message, error.statusCode);
+    //         }
+    //         return errorResponse("Internal Server Error", 500)
+    //     }
+    // },
+
+
+    async login(req: NextRequest): Promise<NextResponse> {
         try {
-            const ip = req.headers.get("x-forwarded-for") || "unknown"
-            const body = await req.json()
-            const key = `${body.email}_${ip}`
-            await loginLimiter.consume(key)
-            const result = await authService.customerLogin(body)
-            const { password, ...safeUser } = result.user
-            const response = successResponse(safeUser, "Login successful", 200)
+            const ip = req.headers.get("x-forwarded-for") || "unknown";
+            const body = await req.json();
+            const key = `${body.email}_${ip}`;
+            await loginLimiter.consume(key);
+            const result = await authService.login(body);
+            const { password, ...safeUser } = result.user;
+            const response = successResponse(
+                {
+                    ...safeUser,
+                    accessToken: result.accessToken,
+                    refreshToken: result.refreshToken,
+                },
+                "Login successful",
+                200
+            );
+
             setAuthCookies({
                 response,
                 accessToken: result.accessToken,
-                refreshToken: result.refreshToken
-            })
-            return response
+                refreshToken: result.refreshToken,
+            });
+
+            return response;
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
+            console.log(error);
+
+            if (
+                error instanceof BadRequestError ||
+                error instanceof NotFoundError ||
+                error instanceof ForbiddenError ||
+                error instanceof UnauthorizedError
+            ) {
+                return errorResponse(
+                    error.message,
+                    error.statusCode
+                );
             }
-            return errorResponse("Internal Server Error", 500)
+
+            return errorResponse(
+                "Internal Server Error",
+                500
+            );
         }
     },
 
@@ -224,31 +272,31 @@ export const authController = {
     },
 
 
-    async adminLogin(req: NextRequest): Promise<NextResponse> {
+    // async adminLogin(req: NextRequest): Promise<NextResponse> {
 
-        try {
-            const ip = req.headers.get("x-forwarded-for") || "unknown"
-            const body = await req.json()
-            const key = `${body.email}_${ip}`
-            await loginLimiter.consume(key)
-            // console.log(body)
-            const result = await authService.adminLogin(body);
-            // const { password, ...safeUser } = result.user;
-            const response = successResponse(result, "Login successful", 200);
-            setAuthCookies({
-                response,
-                accessToken: result.accessToken,
-                refreshToken: result.refreshToken
-            });
-            return response;
-        } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
-        }
-    },
+    //     try {
+    //         const ip = req.headers.get("x-forwarded-for") || "unknown"
+    //         const body = await req.json()
+    //         const key = `${body.email}_${ip}`
+    //         await loginLimiter.consume(key)
+    //         // console.log(body)
+    //         const result = await authService.adminLogin(body);
+    //         // const { password, ...safeUser } = result.user;
+    //         const response = successResponse(result, "Login successful", 200);
+    //         setAuthCookies({
+    //             response,
+    //             accessToken: result.accessToken,
+    //             refreshToken: result.refreshToken
+    //         });
+    //         return response;
+    //     } catch (error) {
+    //         console.log(error)
+    //         if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+    //             return errorResponse(error.message, error.statusCode);
+    //         }
+    //         return errorResponse("Internal Server Error", 500)
+    //     }
+    // },
 
     async adminForgotPassword(req: NextRequest): Promise<NextResponse> {
         try {

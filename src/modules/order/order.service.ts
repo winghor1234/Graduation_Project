@@ -93,11 +93,7 @@ export const orderService = {
         const province_id = formData.get("province_id") as string
         const district_id = formData.get("district_id") as string
         const branch_id = formData.get("branch_id") as string
-
-        const order_details = JSON.parse(
-            formData.get("order_details") as string
-        )
-
+        const order_details = JSON.parse(formData.get("order_details") as string)
         const file = formData.get("file") as File | null
 
         /* ------------------ 2. UPLOAD (ย้ายออกนอก TX) ------------------ */

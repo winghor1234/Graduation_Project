@@ -1,7 +1,4 @@
-export type LoginInput = {
-    email: string
-    password: string
-}
+
 
 export type CustomerRegisterInput = {
     customer_name: string
@@ -54,6 +51,11 @@ export type ResendOTPInput = {
     email: string
 }
 
+
+export type LoginDto = {
+    email: string;
+    password: string;
+};
 
 
 

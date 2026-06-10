@@ -5,9 +5,14 @@ import { isAxiosError } from "axios"
 
 export const AuthApi = {
     // employee
-    employeeLogin: async (data: LoginInput) => {
-        // console.log("login data : ",data)
-        const res = await axiosInstance.post("auth/employee/login", data)
+    // employeeLogin: async (data: LoginInput) => {
+    //     // console.log("login data : ",data)
+    //     const res = await axiosInstance.post("auth/employee/login", data)
+    //     return res.data
+    // },
+
+    login: async (data: LoginInput) => {
+        const res = await axiosInstance.post("/auth/login", data)
         return res.data
     },
 

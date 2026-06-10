@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { comparePassword, hashPassword } from "@/utils/password"
 import { sendOTPEmail } from "@/utils/email"
-import { EmployeeRegisterInput, LoginInput, CustomerRegisterInput, ForgotPasswordInput, VerifyOTPInput, ResetPasswordInput, ResendOTPInput } from "./auth.type"
+import { EmployeeRegisterInput, CustomerRegisterInput, ForgotPasswordInput, VerifyOTPInput, ResetPasswordInput, ResendOTPInput, LoginDto } from "./auth.type"
 import { generateAccessToken, generateRefreshToken } from "@/utils/cookie"
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "@/utils/response"
 import { NextRequest } from "next/server"
@@ -55,67 +55,201 @@ export const authService = {
         };
 
     },
+
+
     // CUSTOMER LOGIN
-    async customerLogin(data: LoginInput) {
-        const user = await prisma.customer.findUnique({
+    // async customerLogin(data: LoginInput) {
+    //     const user = await prisma.customer.findUnique({
+    //         where: { email: data.email }
+    //     });
+    //     if (!user) {
+    //         throw new BadRequestError("Invalid email or password");
+    //     }
+    //     /* 🔒 CHECK ACCOUNT LOCK */
+    //     if (user.lockUntil && user.lockUntil > new Date()) {
+    //         throw new ForbiddenError("Account temporarily locked");
+    //     }
+    //     const isPasswordValid = await comparePassword(data.password, user.password);
+
+    //     /* ❌ PASSWORD WRONG */
+    //     if (!isPasswordValid) {
+    //         const attempts = user.failedLoginAttempts + 1;
+    //         await prisma.customer.update({
+    //             where: { customer_id: user.customer_id },
+    //             data: {
+    //                 failedLoginAttempts: attempts
+    //             }
+    //         });
+    //         if (attempts >= 5) {
+    //             await prisma.customer.update({
+    //                 where: { customer_id: user.customer_id },
+    //                 data: {
+    //                     lockUntil: new Date(Date.now() + 15 * 60 * 1000)
+    //                 }
+    //             });
+    //             throw new ForbiddenError("Account locked for 15 minutes");
+    //         }
+    //         throw new BadRequestError("Invalid email or password");
+    //     }
+
+    //     /* ✅ LOGIN SUCCESS → RESET ATTEMPTS */
+
+    //     await prisma.customer.update({
+    //         where: { customer_id: user.customer_id },
+    //         data: {
+    //             failedLoginAttempts: 0,
+    //             lockUntil: null
+    //         }
+    //     });
+    //     const accessToken = generateAccessToken(user.customer_id, user.role);
+    //     const refreshToken = generateRefreshToken(user.customer_id);
+    //     await prisma.refreshToken.create({
+    //         data: {
+    //             token: refreshToken,
+    //             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    //             customer: {
+    //                 connect: {
+    //                     customer_id: user.customer_id
+    //                 }
+    //             }
+    //         }
+    //     });
+    //     return { user, accessToken, refreshToken };
+
+    // },
+
+
+    async login(data: LoginDto) {
+        const employee = await prisma.employee.findUnique({
             where: { email: data.email }
         });
+        const customer = employee ? null : await prisma.customer.findUnique({ where: { email: data.email } });
+
+        const user = employee || customer;
         if (!user) {
             throw new BadRequestError("Invalid email or password");
         }
+
+        const isEmployee = "employee_id" in user;
+
+        const userId = isEmployee
+            ? user.employee_id
+            : user.customer_id;
+
         /* 🔒 CHECK ACCOUNT LOCK */
         if (user.lockUntil && user.lockUntil > new Date()) {
             throw new ForbiddenError("Account temporarily locked");
         }
-        const isPasswordValid = await comparePassword(data.password, user.password);
+
+        const isPasswordValid = await comparePassword(
+            data.password,
+            user.password
+        );
 
         /* ❌ PASSWORD WRONG */
         if (!isPasswordValid) {
+
             const attempts = user.failedLoginAttempts + 1;
-            await prisma.customer.update({
-                where: { customer_id: user.customer_id },
-                data: {
-                    failedLoginAttempts: attempts
-                }
-            });
-            if (attempts >= 5) {
-                await prisma.customer.update({
-                    where: { customer_id: user.customer_id },
+
+            if (isEmployee) {
+                await prisma.employee.update({
+                    where: { employee_id: userId },
                     data: {
-                        lockUntil: new Date(Date.now() + 15 * 60 * 1000)
+                        failedLoginAttempts: attempts
                     }
                 });
-                throw new ForbiddenError("Account locked for 15 minutes");
+            } else {
+                await prisma.customer.update({
+                    where: { customer_id: userId },
+                    data: {
+                        failedLoginAttempts: attempts
+                    }
+                });
             }
-            throw new BadRequestError("Invalid email or password");
+
+            if (attempts >= 5) {
+
+                if (isEmployee) {
+                    await prisma.employee.update({
+                        where: { employee_id: userId },
+                        data: {
+                            lockUntil: new Date(
+                                Date.now() + 15 * 60 * 1000
+                            )
+                        }
+                    });
+                } else {
+                    await prisma.customer.update({
+                        where: { customer_id: userId },
+                        data: {
+                            lockUntil: new Date(
+                                Date.now() + 15 * 60 * 1000
+                            )
+                        }
+                    });
+                }
+
+                throw new ForbiddenError(
+                    "Account locked for 15 minutes"
+                );
+            }
+
+            throw new BadRequestError(
+                "Invalid email or password"
+            );
         }
 
-        /* ✅ LOGIN SUCCESS → RESET ATTEMPTS */
+        /* ✅ LOGIN SUCCESS */
 
-        await prisma.customer.update({
-            where: { customer_id: user.customer_id },
-            data: {
-                failedLoginAttempts: 0,
-                lockUntil: null
-            }
-        });
-        const accessToken = generateAccessToken(user.customer_id, user.role);
-        const refreshToken = generateRefreshToken(user.customer_id);
+        if (isEmployee) {
+            await prisma.employee.update({
+                where: { employee_id: userId },
+                data: {
+                    failedLoginAttempts: 0,
+                    lockUntil: null,
+                    lastLogin: new Date()
+                }
+            });
+        } else {
+            await prisma.customer.update({
+                where: { customer_id: userId },
+                data: {
+                    failedLoginAttempts: 0,
+                    lockUntil: null,
+                    lastLogin: new Date()
+                }
+            });
+        }
+        const accessToken = generateAccessToken(userId, user.role);
+        const refreshToken = generateRefreshToken(userId);
         await prisma.refreshToken.create({
             data: {
                 token: refreshToken,
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                customer: {
-                    connect: {
-                        customer_id: user.customer_id
+                ...(isEmployee
+                    ? {
+                        employee: {
+                            connect: {
+                                employee_id: userId
+                            }
+                        }
                     }
-                }
+                    : {
+                        customer: {
+                            connect: {
+                                customer_id: userId
+                            }
+                        }
+                    })
             }
         });
-        return { user, accessToken, refreshToken };
 
+        return {
+            user,
+            accessToken,
+            refreshToken
+        };
     },
-
 
     // -----------------------------------------------------------------------------------
 
@@ -218,6 +352,8 @@ export const authService = {
 
     // },
     // --------------------------------------------------------------------------------
+
+
     // FORGOT PASSWORD
     async customerForgotPassword(email: string) {
         const user = await prisma.customer.findUnique({
@@ -409,72 +545,72 @@ export const authService = {
 
     },
 
-    async adminLogin(data: LoginInput) {
-        const user = await prisma.employee.findUnique({
-            where: { email: data.email }
-        });
-        if (!user) {
-            throw new BadRequestError("Invalid email or password");
-        }
+    // async adminLogin(data: LoginInput) {
+    //     const user = await prisma.employee.findUnique({
+    //         where: { email: data.email }
+    //     });
+    //     if (!user) {
+    //         throw new BadRequestError("Invalid email or password");
+    //     }
 
-        /* 🔒 CHECK ACCOUNT LOCK */
-        if (user.lockUntil && user.lockUntil > new Date()) {
-            throw new ForbiddenError("Account temporarily locked");
-        }
+    //     /* 🔒 CHECK ACCOUNT LOCK */
+    //     if (user.lockUntil && user.lockUntil > new Date()) {
+    //         throw new ForbiddenError("Account temporarily locked");
+    //     }
 
-        const isPasswordValid = await comparePassword(
-            data.password,
-            user.password
-        );
+    //     const isPasswordValid = await comparePassword(
+    //         data.password,
+    //         user.password
+    //     );
 
-        /* ❌ PASSWORD WRONG */
-        if (!isPasswordValid) {
-            const attempts = user.failedLoginAttempts + 1;
-            await prisma.employee.update({
-                where: { employee_id: user.employee_id },
-                data: {
-                    failedLoginAttempts: attempts
-                }
-            });
-            if (attempts >= 5) {
-                await prisma.employee.update({
-                    where: { employee_id: user.employee_id },
-                    data: {
-                        lockUntil: new Date(Date.now() + 15 * 60 * 1000)
-                    }
-                });
-                throw new ForbiddenError("Account locked for 15 minutes");
-            }
-            throw new BadRequestError("Invalid email or password");
-        }
-        /* ✅ LOGIN SUCCESS → RESET ATTEMPTS */
+    //     /* ❌ PASSWORD WRONG */
+    //     if (!isPasswordValid) {
+    //         const attempts = user.failedLoginAttempts + 1;
+    //         await prisma.employee.update({
+    //             where: { employee_id: user.employee_id },
+    //             data: {
+    //                 failedLoginAttempts: attempts
+    //             }
+    //         });
+    //         if (attempts >= 5) {
+    //             await prisma.employee.update({
+    //                 where: { employee_id: user.employee_id },
+    //                 data: {
+    //                     lockUntil: new Date(Date.now() + 15 * 60 * 1000)
+    //                 }
+    //             });
+    //             throw new ForbiddenError("Account locked for 15 minutes");
+    //         }
+    //         throw new BadRequestError("Invalid email or password");
+    //     }
+    //     /* ✅ LOGIN SUCCESS → RESET ATTEMPTS */
 
-        await prisma.employee.update({
-            where: { employee_id: user.employee_id },
-            data: {
-                failedLoginAttempts: 0,
-                lockUntil: null
-            }
-        })
-        const accessToken = generateAccessToken(user.employee_id, user.role);
-        const refreshToken = generateRefreshToken(user.employee_id);
-        const refreshTokenRecord = await prisma.refreshToken.create({
-            data: {
-                token: refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                employee: {
-                    connect: {
-                        employee_id: user.employee_id
-                    }
-                }
-            }
-        });
-        if (!refreshTokenRecord) {
-            throw new BadRequestError("Failed to create refresh token");
-        }
+    //     await prisma.employee.update({
+    //         where: { employee_id: user.employee_id },
+    //         data: {
+    //             failedLoginAttempts: 0,
+    //             lockUntil: null
+    //         }
+    //     })
+    //     const accessToken = generateAccessToken(user.employee_id, user.role);
+    //     const refreshToken = generateRefreshToken(user.employee_id);
+    //     const refreshTokenRecord = await prisma.refreshToken.create({
+    //         data: {
+    //             token: refreshToken,
+    //             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    //             employee: {
+    //                 connect: {
+    //                     employee_id: user.employee_id
+    //                 }
+    //             }
+    //         }
+    //     });
+    //     if (!refreshTokenRecord) {
+    //         throw new BadRequestError("Failed to create refresh token");
+    //     }
 
-        return { user, accessToken, refreshToken };
-    },
+    //     return { user, accessToken, refreshToken };
+    // },
     async adminForgotPassword(data: ForgotPasswordInput) {
         console.log("data : ", data)
         const user = await prisma.employee.findUnique({

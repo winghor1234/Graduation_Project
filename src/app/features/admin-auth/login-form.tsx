@@ -14,26 +14,26 @@ import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { getRedirectPath } from "@/utils/auth";
-import { useEmployeeLogin } from "../hooks/Auth";
-import { LoginInput } from "@/modules/auth/auth.type";
 import { loginSchema } from "../validation";
+import { LoginDto } from "@/modules/auth/auth.type";
+import { useLogin } from "../hooks/Auth";
 
 
 
 export default function LoginForm() {
     const router = useRouter();
-    const { mutate: login, isPending } = useEmployeeLogin();
+    const { mutate: login, isPending } = useLogin();
     const [showPassword, setShowPassword] = useState(false);
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<LoginInput>({
+    } = useForm<LoginDto>({
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = (data: LoginInput) => {
+    const onSubmit = (data: LoginDto) => {
         login(data, {
             onSuccess: (res) => {
                 toast.success("Login successful!");
