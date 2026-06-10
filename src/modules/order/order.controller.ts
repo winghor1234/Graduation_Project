@@ -44,6 +44,19 @@ export const orderController = {
 
     },
 
+    async getAllOrders(req: NextRequest) {
+        try {
+            const orders = await orderService.gerAllOrders()
+            return successResponse(orders, "Get all orders successfully", 200)
+        } catch (error) {
+            console.log(error)
+            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+                return errorResponse(error.message, error.statusCode);
+            }
+            return errorResponse("Internal Server Error", 500)
+        }
+    },
+
     async getOrder(id: string) {
         try {
             const order = await orderService.getOrder(id)

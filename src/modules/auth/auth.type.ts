@@ -9,7 +9,6 @@ export type CustomerRegisterInput = {
     password: string
     phone: string
     gender?: string
-    address?: string
 }
 export type  CustomerUpdateInput = {
     customer_name?: string

@@ -48,6 +48,22 @@ export const orderService = {
         return orders
     },
 
+    async gerAllOrders() {
+        const orders = await prisma.order.findMany({
+            include: {
+                customer: true,
+                order_details: {
+                    include: {
+                        product: true
+                    }
+                },
+                payment: true,
+                delivery: true
+            }
+        })
+        return orders
+    },
+
     async getOrder(id: string) {
 
         const order = await prisma.order.findUnique({

@@ -26,7 +26,6 @@ export const authService = {
                 phone: data.phone,
                 password: hashedPassword,
                 gender: data.gender ?? undefined,
-                address: data.address ?? undefined,
                 isActive: true
 
             }

@@ -34,7 +34,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer, create, updat
             phone: "",
             email: "",
             gender: "",
-            address: "",
+            // address: "",
             ...(isEdit ? {} : { password: "" }) // ✅ password เฉพาะ create
         }
     })
@@ -51,7 +51,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer, create, updat
                 phone: customer.phone,
                 email: customer.email,
                 gender: customer.gender,
-                address: customer.address,
+                // address: customer.address,
             })
         }
     }, [open, customer, reset])
@@ -114,8 +114,8 @@ export function CustomerFormDialog({ open, onOpenChange, customer, create, updat
                     <Input {...register("email")} placeholder="Email..." />
                     <div className="text-red-500 text-sm">{errors.email?.message}</div>
 
-                    <Input {...register("address")} placeholder="Address..." />
-                    <div className="text-red-500 text-sm">{errors.address?.message}</div>
+                    {/* <Input {...register("address")} placeholder="Address..." />
+                    <div className="text-red-500 text-sm">{errors.address?.message}</div> */}
 
                     <Input {...register("gender")} placeholder="Gender..." />
                     <div className="text-red-500 text-sm">{errors.gender?.message}</div>

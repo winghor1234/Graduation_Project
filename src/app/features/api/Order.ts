@@ -4,10 +4,6 @@ import { UseGetParams } from "../types"
 
 export const orderApi = {
 
-    // getAll: async (): Promise<Order[]> => {
-    //   const res = await axiosInstance.get("/order")
-    //   return res.data.data
-    // },
 
     getAll: async (params?: UseGetParams): Promise<{
         data: Order[]
@@ -23,6 +19,11 @@ export const orderApi = {
         })
 
         return res.data.data
+    },
+
+    getAlls: async (): Promise<Order[]> => {
+        const res = await axiosInstance.get("/order")
+        return res.data
     },
 
     getById: async (id: string): Promise<Order> => {

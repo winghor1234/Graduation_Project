@@ -32,7 +32,7 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
               <Link href="/shop" className="text-sm font-medium hover:underline">
                 Shop
               </Link>
-              <Link href="/my-orders" className="text-sm font-medium hover:underline">
+              <Link href="/order-history" className="text-sm font-medium hover:underline">
                 Orders
               </Link>
             </nav>

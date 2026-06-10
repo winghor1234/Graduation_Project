@@ -19,6 +19,14 @@ export const useGetOrders = (params?: UseGetParams) => {
     })
 }
 
+export const useGetAllOrders = () => {
+    return useQuery({
+        queryKey: ["orders"],
+        queryFn: orderApi.getAlls,
+        placeholderData: keepPreviousData,
+    })
+}
+
 export const useGetOrder = (id: string) => {
     return useQuery({
         queryKey: ["order", id],
