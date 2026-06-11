@@ -1,5 +1,3 @@
-
-
 import { ReactNode } from "react";
 import { Store } from "lucide-react";
 
@@ -20,7 +18,7 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
                     </div>
                     <div>
                         <h1 className="font-bold text-xl">SportWear</h1>
-                        <p className="text-sm text-gray-600">Retail System</p>
+                        <p className="text-sm text-gray-600">ລະບົບຮ້ານຄ້າຂາຍຍ່ອຍ</p>
                     </div>
                 </div>
 
@@ -35,7 +33,7 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
 
                 {/* Footer */}
                 <p className="text-center text-sm text-gray-600 mt-8">
-                    © 2026 SportWear Retail System. All rights reserved.
+                    © 2026 SportWear Retail System. ສະຫງວນລິຂະສິດທຸກປະການ.
                 </p>
             </div>
         </div>

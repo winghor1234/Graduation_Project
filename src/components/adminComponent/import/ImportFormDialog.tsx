@@ -59,16 +59,15 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
 
     /* 🔥 submit */
     const onSubmit = async (data: ImportFormValue) => {
-        console.log("IMPORT SUBMIT:", data)
 
         try {
             if (!data.purchase_id) {
-                toast.error("Please select purchase")
+                toast.error("ກະລຸນາເລືອກລາຍການຈັດຊື້")
                 return
             }
 
             if (!data.import_details.length) {
-                toast.error("No items")
+                toast.error("ບໍ່ມີລາຍການສິນຄ້າ")
                 return
             }
 
@@ -83,13 +82,13 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
                 import_details: cleanDetails
             })
 
-            toast.success("Import created")
+            toast.success("ສ້າງລາຍການນຳເຂົ້າສຳເລັດແລ້ວ")
             onOpenChange(false)
             reset()
 
         } catch (error) {
             console.error(error)
-            toast.error("Something went wrong")
+            toast.error("ເກີດຂໍ້ຜผิดພາດບາງຢ່າງ")
         }
     }
 
@@ -101,7 +100,7 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
             <DialogContent className="space-y-4">
 
                 <DialogHeader>
-                    <DialogTitle>Create Import</DialogTitle>
+                    <DialogTitle>ສ້າງລາຍການນຳເຂົ້າ</DialogTitle>
                 </DialogHeader>
 
                 <form
@@ -120,7 +119,7 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
                         }
                     >
                         <SelectTrigger>
-                            <SelectValue placeholder="Select purchase" />
+                            <SelectValue placeholder="ເລືອກລາຍການຈັດຊື້" />
                         </SelectTrigger>
 
                         <SelectContent>
@@ -158,7 +157,7 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
                                 {/* QTY */}
                                 <Input
                                     type="number"
-                                    placeholder="Qty"
+                                    placeholder="ຈຳນວນ"
                                     {...register(
                                         `import_details.${i}.quantity`,
                                         { valueAsNumber: true }
@@ -170,7 +169,7 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
                                     value={f.cost_price}
                                     disabled
                                     type="number"
-                                    placeholder="Cost"
+                                    placeholder="ຕົ້ນທຶນ"
                                     {...register(
                                         `import_details.${i}.cost_price`,
                                         { valueAsNumber: true }
@@ -187,7 +186,7 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
                         className="w-full"
                         disabled={create.isPending}
                     >
-                        Create Import
+                        บันທຶກການນຳເຂົ້າ
                     </Button>
 
                 </form>

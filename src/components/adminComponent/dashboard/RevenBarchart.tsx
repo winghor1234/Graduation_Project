@@ -12,7 +12,7 @@ export function RevenueBarChart({ data }: { data: MonthlyRevenue[] }) {
                     <XAxis
                         dataKey="month"
                         tickFormatter={(val) =>
-                            new Date(val).toLocaleDateString("en-US", {
+                            new Date(val).toLocaleDateString("lo-LA", {
                                 month: "short"
                             })
                         }

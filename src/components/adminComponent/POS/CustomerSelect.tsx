@@ -4,7 +4,7 @@ import { Customer } from "@/modules/customer/customer.type"
 type Props = {
   customers: Customer[]
   selected?: Customer | null
-  onSelect: (customer: Customer | undefined) => void
+  onSelect: (customer: Customer | null) => void // ປັບໃຫ້ກົງກັບການໃຊ້ງານ (null)
 }
 
 export default function CustomerSelect({ customers, selected, onSelect }: Props) {
@@ -16,7 +16,7 @@ export default function CustomerSelect({ customers, selected, onSelect }: Props)
         const value = e.target.value
 
         if (!value) {
-          onSelect(null) // Walk-in customer
+          onSelect(null) // ລູກຄ້າທົ່ວໄປ (Walk-in)
           return
         }
 
@@ -27,7 +27,7 @@ export default function CustomerSelect({ customers, selected, onSelect }: Props)
         onSelect(c || null)
       }}
     >
-      <option value="">Walk-in Customer</option>
+      <option value="">ລູກຄ້າທົ່ວໄປ (Walk-in Customer)</option>
 
       {customers.map((c) => (
         <option key={c.customer_id} value={c.customer_id}>

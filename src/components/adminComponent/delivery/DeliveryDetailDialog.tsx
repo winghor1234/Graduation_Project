@@ -27,26 +27,26 @@ export function DeliveryDetailDialog({ open, onOpenChange, delivery }: Props) {
             <DialogContent className="sm:max-w-md">
 
                 <DialogHeader>
-                    <DialogTitle>Delivery Detail</DialogTitle>
+                    <DialogTitle>ລາຍລະອຽດການຈັດສົ່ງ</DialogTitle>
                 </DialogHeader>
 
                 <div className="space-y-4 text-sm">
 
                     {/* Order */}
                     <div>
-                        <p className="text-muted-foreground">Order</p>
+                        <p className="text-muted-foreground">ອໍເດີ້</p>
                         <p className="font-medium">{delivery.order_id}</p>
                     </div>
 
                     {/* Status */}
                     <div>
-                        <p className="text-muted-foreground">Status</p>
+                        <p className="text-muted-foreground">ສະຖານະ</p>
                         <Badge>{delivery.status}</Badge>
                     </div>
 
                     {/* Tracking */}
                     <div>
-                        <p className="text-muted-foreground">Tracking Number</p>
+                        <p className="text-muted-foreground">ເລກຕິດຕາມພັດສະດຸ (Tracking Number)</p>
                         <p className="font-medium">
                             {delivery.tracking_number || "-"}
                         </p>
@@ -54,21 +54,21 @@ export function DeliveryDetailDialog({ open, onOpenChange, delivery }: Props) {
 
                     {/* Provider */}
                     <div>
-                        <p className="text-muted-foreground">Provider</p>
+                        <p className="text-muted-foreground">ຜູ້ບໍລິການຂົນສົ່ງ</p>
                         <p className="font-medium">{delivery.provider}</p>
                     </div>
 
                     {/* Address (important) */}
                     <div>
-                        <p className="text-muted-foreground">Address</p>
+                        <p className="text-muted-foreground">ທີ່ຢູ່</p>
 
                         <p className="font-medium">
                             {address?.branch?.branch_name}
                         </p>
 
                         <p className="text-xs text-muted-foreground">
-                            {address?.district?.district_name},{" "}
-                            {address?.province?.province_name}
+                            ເມືອງ {address?.district?.district_name},{" "}
+                            ແຂວງ {address?.province?.province_name}
                         </p>
                     </div>
 

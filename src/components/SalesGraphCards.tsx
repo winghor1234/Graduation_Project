@@ -19,15 +19,13 @@ type Props = { data: SalesGraphData }
 type ViewMode = "M" | "Y"
 type ActiveTab = "Sales" | "Revenue" | "Inventory"
 
-const TABS: ActiveTab[] = ["Sales", "Revenue", "Inventory"]
-
 const LEGEND_ITEMS = [
-    { label: "Expenses", color: "rgba(100,180,255,0.35)", type: "bar" },
-    { label: "Revenue", color: "rgba(50,130,255,0.6)", type: "bar" },
-    { label: "Units Sold", color: "#22c55e", type: "line" },
-    { label: "Cost", color: "#f87171", type: "line" },
-    { label: "Revenue line", color: "#60a5fa", type: "line" },
-    { label: "Profit", color: "#fbbf24", type: "line" },
+    { label: "ລາຍຈ່າຍ (Expenses)", color: "rgba(100,180,255,0.35)", type: "bar" },
+    { label: "ລາຍຮັບ (Revenue)", color: "rgba(50,130,255,0.6)", type: "bar" },
+    { label: "ຈຳນວນທີ່ຂາຍໄດ້ (Units Sold)", color: "#22c55e", type: "line" },
+    { label: "ຕົ້ນທຶນ (Cost)", color: "#f87171", type: "line" },
+    { label: "ເສັ້ນສະແດງລາຍຮັບ (Revenue line)", color: "#60a5fa", type: "line" },
+    { label: "ກຳໄລ (Profit)", color: "#fbbf24", type: "line" },
 ] as const
 
 export default function SalesGraphCard({ data }: Props) {
@@ -39,7 +37,7 @@ export default function SalesGraphCard({ data }: Props) {
         datasets: [
             {
                 type: "bar" as const,
-                label: "Expenses",
+                label: "ລາຍຈ່າຍ (Expenses)",
                 data: data.expenses,
                 backgroundColor: "rgba(100,180,255,0.25)",
                 borderColor: "rgba(100,180,255,0.4)",
@@ -50,7 +48,7 @@ export default function SalesGraphCard({ data }: Props) {
             },
             {
                 type: "bar" as const,
-                label: "Revenue",
+                label: "ລາຍຮັບ (Revenue)",
                 data: data.revenueBars,
                 backgroundColor: "rgba(50,130,255,0.45)",
                 borderColor: "rgba(50,130,255,0.6)",
@@ -61,7 +59,7 @@ export default function SalesGraphCard({ data }: Props) {
             },
             {
                 type: "line" as const,
-                label: "Units Sold",
+                label: "ຈຳນວນທີ່ຂາຍໄດ້ (Units Sold)",
                 data: data.unitsSold,
                 borderColor: "#22c55e",
                 borderWidth: 2.5,
@@ -74,7 +72,7 @@ export default function SalesGraphCard({ data }: Props) {
             },
             {
                 type: "line" as const,
-                label: "Cost",
+                label: "ຕົ້ນທຶນ (Cost)",
                 data: data.cost,
                 borderColor: "#f87171",
                 borderWidth: 2,
@@ -88,7 +86,7 @@ export default function SalesGraphCard({ data }: Props) {
             },
             {
                 type: "line" as const,
-                label: "Revenue line",
+                label: "ເສັ້ນສະແດງລາຍຮັບ (Revenue line)",
                 data: data.revenue,
                 borderColor: "#60a5fa",
                 borderWidth: 2,
@@ -101,7 +99,7 @@ export default function SalesGraphCard({ data }: Props) {
             },
             {
                 type: "line" as const,
-                label: "Profit",
+                label: "ກຳໄລ (Profit)",
                 data: data.profit,
                 borderColor: "#fbbf24",
                 borderWidth: 2,
@@ -174,47 +172,53 @@ export default function SalesGraphCard({ data }: Props) {
             {/* Header */}
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
-                    <h2 className="text-[15px] font-semibold text-gray-800">Sales Graph</h2>
-                    <p className="text-[11px] text-gray-400 mt-0.5">Performance overview by period</p>
+                    <h2 className="text-[15px] font-semibold text-gray-800">ແຜນພູມສະແດງຍອດຂາຍ (Sales Graph)</h2>
+                    <p className="text-[11px] text-gray-400 mt-0.5">ພາບລວມຜົນການດຳເນີນງານຕາມຊ່ວງເວລາ</p>
                 </div>
-                <div className="flex items-center gap-3 border-2 border-red-600">
+                <div className="flex items-center gap-3">
                     {/* Tabs */}
                     <div className="flex bg-gray-100 rounded-full p-0.5 gap-0.5">
-                        {TABS.map((t) => (
-                            <button
-                                key={t}
-                                onClick={() => setTab(t)}
-                                className={`px-3.5 py-1 text-xs rounded-full font-medium transition-all ${tab === t
-                                        ? "bg-white text-gray-800 shadow-sm"
-                                        : "text-gray-400 hover:text-gray-600"
-                                    }`}
-                            >
-                                {t}
-                            </button>
-                        ))}
+                        <button
+                            onClick={() => setTab("Sales")}
+                            className={`px-3.5 py-1 text-xs rounded-full font-medium transition-all ${tab === "Sales" ? "bg-white text-gray-800 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                        >
+                            ຍອດຂາຍ (Sales)
+                        </button>
+                        <button
+                            onClick={() => setTab("Revenue")}
+                            className={`px-3.5 py-1 text-xs rounded-full font-medium transition-all ${tab === "Revenue" ? "bg-white text-gray-800 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                        >
+                            ລາຍຮັບ (Revenue)
+                        </button>
+                        <button
+                            onClick={() => setTab("Inventory")}
+                            className={`px-3.5 py-1 text-xs rounded-full font-medium transition-all ${tab === "Inventory" ? "bg-white text-gray-800 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                        >
+                            ສາງສິນຄ້າ (Inventory)
+                        </button>
                     </div>
                     {/* View toggle */}
-                    <div className="flex gap-1">
-                        {(["M", "Y"] as ViewMode[]).map((v) => (
-                            <button
-                                key={v}
-                                onClick={() => setView(v)}
-                                className={`px-3 py-1 text-xs rounded-lg border font-medium transition-all ${view === v
-                                        ? "bg-blue-50 border-blue-200 text-blue-600"
-                                        : "bg-transparent border-gray-200 text-gray-400 hover:border-gray-300"
-                                    }`}
-                            >
-                                {v}
-                            </button>
-                        ))}
+                    <div className="flex bg-gray-100 rounded-lg p-0.5 gap-0.5">
+                        <button
+                            onClick={() => setView("M")}
+                            className={`px-3 py-1 text-xs rounded-md font-medium transition-all ${view === "M" ? "bg-white text-blue-600 shadow-sm border border-gray-200/50" : "text-gray-400 hover:text-gray-600"}`}
+                        >
+                            ລາຍເດືອນ (M)
+                        </button>
+                        <button
+                            onClick={() => setView("Y")}
+                            className={`px-3 py-1 text-xs rounded-md font-medium transition-all ${view === "Y" ? "bg-white text-blue-600 shadow-sm border border-gray-200/50" : "text-gray-400 hover:text-gray-600"}`}
+                        >
+                            ລາຍປີ (Y)
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* Axis labels */}
-            <div className="flex justify-between mb-1">
-                <span className="text-[11px] text-gray-400">Units Sold/M</span>
-                <span className="text-[11px] text-gray-400">Revenue, $k</span>
+            <div className="flex justify-between mb-1 px-1">
+                <span className="text-[11px] text-gray-400">ຈຳນວນທີ່ຂາຍ/ເດືອນ (Units Sold)</span>
+                <span className="text-[11px] text-gray-400">ລາຍຮັບ, $k (Revenue)</span>
             </div>
 
             {/* Chart */}

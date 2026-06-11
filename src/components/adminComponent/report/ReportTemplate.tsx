@@ -5,7 +5,6 @@ import ExportButton from "@/components/ExportButton";
 
 type Props = {
     title: string;
-    
 };
 
 export default function ReportTemplate({ title }: Props) {
@@ -19,12 +18,12 @@ export default function ReportTemplate({ title }: Props) {
 
                 <div className="flex gap-2">
                     <ExportButton
-                        title="Export PDF"
+                        title="ສົ່ງອອກເປັນ PDF"
                         onExport={() => { }}
                     />
 
                     <ExportButton
-                        title="Export Excel"
+                        title="ສົ່ງອອກເປັນ Excel"
                         onExport={() => { }}
                     />
                 </div>
@@ -37,29 +36,29 @@ export default function ReportTemplate({ title }: Props) {
                 <table className="w-full">
 
                     <thead>
-                        <tr className="border-b">
+                        <tr className="border-b text-sm text-gray-500">
                             <th className="text-left p-2">
-                                #
+                                ລຳດັບ
                             </th>
 
                             <th className="text-left p-2">
-                                Name
+                                ຊື່ລາຍການ
                             </th>
 
                             <th className="text-left p-2">
-                                Date
+                                ວັນທີ
                             </th>
 
                             <th className="text-left p-2">
-                                Amount
+                                ຈຳນວນເງິນ
                             </th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <tr>
+                        <tr className="text-sm">
                             <td className="p-2">1</td>
-                            <td className="p-2">Example</td>
+                            <td className="p-2">ຕົວຢ່າງລາຍການ</td>
                             <td className="p-2">2026-06-03</td>
                             <td className="p-2">$100</td>
                         </tr>

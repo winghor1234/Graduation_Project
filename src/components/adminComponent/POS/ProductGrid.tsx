@@ -1,5 +1,3 @@
-
-
 'use client'
 import { Product } from "@/modules/product/product.types"
 import Image from "next/image"
@@ -33,7 +31,7 @@ export default function ProductGrid({ products, onAdd }: Props) {
                             />
                         ) : (
                             <div className="flex items-center justify-center h-full text-gray-400 text-xs">
-                                No Image
+                                ບໍ່ມີຮູບພາບ
                             </div>
                         )}
                     </div>
@@ -54,7 +52,7 @@ export default function ProductGrid({ products, onAdd }: Props) {
             {/* EMPTY STATE */}
             {!products.length && (
                 <div className="col-span-full text-center text-gray-400 py-10">
-                    No products found
+                    ບໍ່ພົບສິນຄ້າ
                 </div>
             )}
 

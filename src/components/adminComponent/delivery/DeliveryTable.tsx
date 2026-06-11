@@ -16,7 +16,7 @@ type Props = {
 
 export function DeliveryTable({ data, isLoading, onView, onEdit }: Props) {
 
-    if (isLoading) return <Card className="p-6 text-center">Loading...</Card>
+    if (isLoading) return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
 
     return (
         <Card>
@@ -25,11 +25,11 @@ export function DeliveryTable({ data, isLoading, onView, onEdit }: Props) {
 
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Order</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Provider</TableHead>
-                        <TableHead>Tracking</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
+                        <TableHead>ອໍເດີ້</TableHead>
+                        <TableHead>ສະຖານະ</TableHead>
+                        <TableHead>ຜູ້ຂົນສົ່ງ</TableHead>
+                        <TableHead>ເລກຕິດຕາມພັດສະດຸ</TableHead>
+                        <TableHead className="text-right">ການຈັດການ</TableHead>
                     </TableRow>
                 </TableHeader>
 

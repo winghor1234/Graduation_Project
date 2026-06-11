@@ -75,13 +75,13 @@ export default function ReportLayout({
                 <div className="flex gap-2">
 
                     <ExportButton
-                        title="Export PDF"
+                        title="ດາວໂຫຼດ PDF"
                         loading={loading}
                         onExport={onPdf}
                     />
 
                     <ExportButton
-                        title="Export Excel"
+                        title="ດາວໂຫຼດ Excel"
                         loading={loading}
                         onExport={onExcel}
                     />
@@ -91,7 +91,7 @@ export default function ReportLayout({
             </div>
 
             <div className="bg-white rounded-xl p-4 mb-4">
-                Total Records : {total}
+                ລາຍການທັງໝົດ : {total}
             </div>
 
             <div className="bg-white rounded-xl p-4 mb-4">
@@ -103,7 +103,7 @@ export default function ReportLayout({
                         onChange={(e) =>
                             setSearch(e.target.value)
                         }
-                        placeholder="Search..."
+                        placeholder="ຄົ້ນຫາ..."
                         className="border rounded-lg px-3 py-2"
                     />
 
@@ -116,10 +116,10 @@ export default function ReportLayout({
                         }
                         className="border rounded-lg px-3 py-2"
                     >
-                        <option value="WEEK">Week</option>
-                        <option value="MONTH">Month</option>
-                        <option value="YEAR">Year</option>
-                        <option value="CUSTOM">Custom</option>
+                        <option value="WEEK">ສັບປະດາ</option>
+                        <option value="MONTH">ເດືອນ</option>
+                        <option value="YEAR">ປີ</option>
+                        <option value="CUSTOM">ກຳນົດເອງ</option>
                     </select>
 
                 </div>

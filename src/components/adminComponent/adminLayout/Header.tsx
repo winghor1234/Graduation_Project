@@ -40,7 +40,7 @@ export function Header({
                 theme.text
             )}
         >
-            {/* LEFT */}
+            {/* ຊ້າຍ */}
             <div className="flex items-center gap-3 w-full max-w-md">
 
                 <button
@@ -53,7 +53,7 @@ export function Header({
                     ☰
                 </button>
 
-                {/* SEARCH */}
+                {/* ຊ່ອງຄົ້ນຫາ */}
                 <div
                     className={cn(
                         "flex items-center w-full rounded-xl px-3 py-2 transition-all duration-200",
@@ -66,7 +66,7 @@ export function Header({
                     <input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search product, order..."
+                        placeholder="ຄົ້ນຫາສິນຄ້າ, ຄຳສັ່ງຊື້..."
                         className="
               bg-transparent outline-none ml-2 w-full text-sm
               text-slate-700 placeholder:text-slate-400
@@ -75,10 +75,10 @@ export function Header({
                 </div>
             </div>
 
-            {/* RIGHT */}
+            {/* ຂວາ */}
             <div className="flex items-center gap-3">
 
-                {/* NOTIFICATION */}
+                {/* ການແຈ້ງເຕືອນ */}
                 <button
                     className={cn(
                         "relative p-2 rounded-xl transition",
@@ -95,7 +95,7 @@ export function Header({
                     />
                 </button>
 
-                {/* USER MENU */}
+                {/* ເມນູຜູ້ໃຊ້ */}
                 <div className="relative">
 
                     <button
@@ -110,7 +110,7 @@ export function Header({
                                 src={user.avatar}
                                 width={36}
                                 height={36}
-                                alt="avatar"
+                                alt="ຮູບໂປຣໄຟລ໌"
                                 className="rounded-full border border-gray-200"
                             />
                         ) : (
@@ -127,7 +127,7 @@ export function Header({
                         <ChevronDown className="w-4 h-4 text-slate-400" />
                     </button>
 
-                    {/* DROPDOWN */}
+                    {/* ເມນູແບບ Dropdown */}
                     {openMenu && (
                         <div
                             className={cn(
@@ -135,7 +135,7 @@ export function Header({
                                 theme.card
                             )}
                         >
-                            {/* USER INFO */}
+                            {/* ຂໍ້ມູນຜູ້ໃຊ້ */}
                             <div className="px-3 py-2 border-b border-gray-200">
                                 <p className="text-sm font-semibold text-slate-800 truncate">
                                     {user?.name}
@@ -146,15 +146,15 @@ export function Header({
                                 </p>
                             </div>
 
-                            {/* MENU */}
+                            {/* ລາຍການເມນູ */}
                             <button className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm text-slate-700 hover:bg-gray-100 transition">
                                 <User size={16} />
-                                Profile
+                                ໂປຣໄຟລ໌
                             </button>
 
                             <button className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm text-slate-700 hover:bg-gray-100 transition">
                                 <Settings size={16} />
-                                Settings
+                                ຕັ້ງຄ່າ
                             </button>
 
                             <button
@@ -162,7 +162,7 @@ export function Header({
                                 className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 transition"
                             >
                                 <LogOut size={16} />
-                                Logout
+                                ອອກຈາກລະບົບ
                             </button>
                         </div>
                     )}

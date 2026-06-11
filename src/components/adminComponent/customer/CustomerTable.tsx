@@ -15,22 +15,22 @@ type Props = {
 
 export function CustomerTable({ customers, isLoading, onEdit, onDelete }: Props) {
     if (isLoading) {
-        return <Card className="p-6 text-center">Loading customers...</Card>
+        return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນລູກຄ້າ...</Card>
     }
     if (!customers?.length) {
-        return <Card className="p-6 text-center">No customers found</Card>
+        return <Card className="p-6 text-center">ບໍ່ພົບຂໍ້ມູນລູກຄ້າ</Card>
     }
     return (
         <Card>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>Points</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead>ຊື່</TableHead>
+                        <TableHead>ອີເມວ</TableHead>
+                        <TableHead>ເບີໂທ</TableHead>
+                        <TableHead>ຄະແນນ</TableHead>
+                        <TableHead>ສະຖານະ</TableHead>
+                        <TableHead className="text-right">ການຈັດການ</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -51,8 +51,8 @@ export function CustomerTable({ customers, isLoading, onEdit, onDelete }: Props)
                             </TableCell>
                             <TableCell>
                                 {customer.isActive
-                                    ? <Badge>Active</Badge>
-                                    : <Badge variant="secondary">Disabled</Badge>
+                                    ? <Badge>ໃຊ້ງານຢູ່</Badge>
+                                    : <Badge variant="secondary">ປິດໃຊ້ງານ</Badge>
                                 }
                             </TableCell>
                             <TableCell className="flex justify-end gap-2">

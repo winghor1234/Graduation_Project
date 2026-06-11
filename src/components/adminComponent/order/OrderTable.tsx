@@ -1,104 +1,3 @@
-// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
-// import { Button } from "@/components/ui/button"
-// import { Badge } from "@/components/ui/badge"
-// import { Order, OrderStatus } from "@/modules/order/order.types"
-// import { Eye, Trash2 } from "lucide-react"
-// import { formatDate } from "@/utils/FormatDate"
-// import { formatCurrency } from "@/utils/FormatCurrency"
-
-// type Props = {
-//     orders: Order[]
-//     isLoading: boolean
-//     onView: (order: Order) => void
-//     onDelete: (id: string) => void
-//     onUpdateStatus: (id: string, status: OrderStatus) => void
-// }
-
-// const getStatusBadge = (status: OrderStatus) => {
-//     switch (status) {
-//         case "WAITING_PAYMENT":
-//             return <Badge className="bg-yellow-100 text-yellow-700">Waiting</Badge>
-//         case "PAID":
-//             return <Badge className="bg-blue-100 text-blue-700">Paid</Badge>
-//         case "SHIPPED":
-//             return <Badge className="bg-purple-100 text-purple-700">Shipped</Badge>
-//         case "COMPLETED":
-//             return <Badge className="bg-green-100 text-green-700">Completed</Badge>
-//         case "CANCELLED":
-//             return <Badge className="bg-red-100 text-red-700">Cancelled</Badge>
-//         default:
-//             // return <Badge>{status}</Badge>
-//             return null
-//     }
-// }
-
-// export function OrderTable({ orders, isLoading, onView, onDelete, onUpdateStatus }: Props) {
-//     return (
-//         <Table>
-//             <TableHeader>
-//                 <TableRow>
-//                     <TableHead>NO:</TableHead>
-//                     <TableHead>Order code</TableHead>
-//                     <TableHead>Customer</TableHead>
-//                     <TableHead>Date</TableHead>
-//                     <TableHead>Total</TableHead>
-//                     <TableHead>Status</TableHead>
-//                     <TableHead>Action</TableHead>
-//                     <TableHead />
-//                 </TableRow>
-//             </TableHeader>
-
-//             <TableBody>
-//                 {isLoading ? (
-//                     <TableRow>
-//                         <TableCell colSpan={6}>Loading...</TableCell>
-//                     </TableRow>
-//                 ) : orders.length === 0 ? (
-//                     <TableRow>
-//                         <TableCell colSpan={6}>No data</TableCell>
-//                     </TableRow>
-//                 ) : (
-//                     orders.map((o,index) => (
-//                         <TableRow key={o.order_id}>
-//                             <TableCell>{index + 1}</TableCell>
-//                             <TableCell>{o.order_code}</TableCell>
-//                             <TableCell>
-//                                 {o.customer?.customer_name}
-//                             </TableCell>
-//                             <TableCell>
-//                                 {formatDate(o.order_date)}
-//                             </TableCell>
-//                             <TableCell>
-//                                 {formatCurrency(o.total_amount)}
-//                             </TableCell>
-//                             <TableCell>
-//                                 {getStatusBadge(o.status)}
-//                             </TableCell>
-
-//                             <TableCell className="flex gap-2">
-//                                 <Button size="sm" variant="ghost" onClick={() => onView(o)}>
-//                                     <Eye className="w-4 h-4" />
-//                                 </Button>
-
-//                                 <Button
-//                                     size="sm"
-//                                     variant="ghost"
-//                                     onClick={() => onDelete(o.order_id)}
-//                                 >
-//                                     <Trash2 className="w-4 h-4 text-red-500" />
-//                                 </Button>
-//                             </TableCell>
-
-//                         </TableRow>
-//                     ))
-//                 )}
-//             </TableBody>
-//         </Table>
-//     )
-// }
-
-
-
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
@@ -130,12 +29,14 @@ export function OrderTable({ data, isLoading, onView }: Props) {
     const [openDeliveryDialog, setOpenDeliveryDialog] = useState(false)
     const [selectedPayment, setSelectedPayment] = useState<Payment | undefined>()
     const [selectedDelivery, setSelectedDelivery] = useState<Delivery | undefined>()
-    if (isLoading) return <div>Loading...</div>
+    
+    if (isLoading) return <div>ກຳລັງໂຫຼດຂໍ້ມູນ...</div>
 
     const handleVerify = (payment: Payment) => {
         setSelectedPayment(payment)
         setOpenDialog(true)
     }
+    
     const handleSubmitVerify = (status: "VERIFIED" | "REJECTED") => {
         if (!selectedPayment) return
         verifyPayment.mutate(
@@ -145,23 +46,20 @@ export function OrderTable({ data, isLoading, onView }: Props) {
             },
             {
                 onSuccess: () => {
-                    toast.success("Payment updated")
+                    toast.success("ອັບເດດການຊຳລະເງິນສຳເລັດແລ້ວ")
                     setOpenDialog(false)
                 },
                 onError: () => {
-                    toast.error("Update failed")
+                    toast.error("ການອັບເດດລົ້ມເຫຼວ")
                 }
             }
         )
     }
 
-
-
     const handleUpdateDeliveryDialog = (delivery: Delivery) => {
         setSelectedDelivery(delivery)
         setOpenDeliveryDialog(true)
     }
-
 
     const handleUpdateDelivery = (status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED") => {
         if (!selectedDelivery?.delivery_id) return
@@ -172,37 +70,33 @@ export function OrderTable({ data, isLoading, onView }: Props) {
             },
             {
                 onSuccess: () => {
-                    toast.success("Delivery updated")
+                    toast.success("ອັບເດດສະຖານະການຈັດສົ່ງສຳເລັດແລ້ວ")
                     setOpenDeliveryDialog(false)
                 },
                 onError: () => {
-                    toast.error("Update failed")
+                    toast.error("ການອັບເດດລົ้มເຫຼວ")
                 }
             }
         )
-
     }
 
-
-
     return (
-
         <div>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>NO:</TableHead>
-                        <TableHead>Order</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Total</TableHead>
+                        <TableHead>ລຳດັບ:</TableHead>
+                        <TableHead>ລະຫັດອໍເດີ້</TableHead>
+                        <TableHead>ຊື່ລູກຄ້າ</TableHead>
+                        <TableHead>ຍອດລວມ</TableHead>
 
-                        <TableHead>Payment</TableHead>
-                        <TableHead>Slip</TableHead>
+                        <TableHead>ການຊຳລະເງິນ</TableHead>
+                        <TableHead>ບິນໂອນ (Slip)</TableHead>
 
-                        <TableHead>Delivery</TableHead>
-                        <TableHead>Tracking</TableHead>
+                        <TableHead>ການຈັດສົ່ງ</TableHead>
+                        <TableHead>ເລກຕິດຕາມພັດສະດຸ</TableHead>
 
-                        <TableHead>Action</TableHead>
+                        <TableHead>ການຈັດການ</TableHead>
                     </TableRow>
                 </TableHeader>
 
@@ -238,7 +132,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                             <TableCell className="flex gap-2">
 
                                 <Button size="sm" onClick={() => onView(o)}>
-                                    View
+                                    ເບິ່ງ
                                 </Button>
 
                                 {/* verify payment */}
@@ -255,10 +149,10 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                     }
                                 >
                                     {o.payment?.status === "PENDING"
-                                        ? "Verify"
+                                        ? "ກວດສອບ"
                                         : o.payment?.status === "REJECTED"
-                                            ? "REJECTED"
-                                            : "Verified"}
+                                            ? "ປະຕິເສດແລ້ວ"
+                                            : "ກວດສອບແລ້ວ"}
                                 </Button>
 
                                 {/* update delivery */}
@@ -267,7 +161,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                     onClick={() => o.delivery && handleUpdateDeliveryDialog(o.delivery)}
                                     disabled={!o.delivery}
                                 >
-                                    {o.delivery?.status}
+                                    {o.delivery?.status || "ບໍ່ມີຂໍ້ມູນ"}
                                 </Button>
 
                             </TableCell>

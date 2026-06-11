@@ -25,7 +25,7 @@ export function TopProducts({ products }: Props) {
             {/* HEADER */}
             <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-slate-900">
-                    Top Products
+                    ສິນຄ້າຍອດນິຍົມ
                 </h3>
 
                 <button
@@ -35,7 +35,7 @@ export function TopProducts({ products }: Props) {
                         theme.primary
                     )}
                 >
-                    View All
+                    ເບິ່ງທັງໝົດ
                 </button>
             </div>
 
@@ -77,7 +77,7 @@ export function TopProducts({ products }: Props) {
                                         theme.subText
                                     )}
                                 >
-                                    {p.sold} sold
+                                    ຂາຍແລ້ວ {p.sold} ຊິ້ນ
                                 </span>
                             </div>
                         </div>
@@ -94,7 +94,7 @@ export function TopProducts({ products }: Props) {
                             </p>
 
                             <p className="text-xs text-slate-400">
-                                Revenue
+                                ລາຍຮັບ
                             </p>
                         </div>
                     </div>

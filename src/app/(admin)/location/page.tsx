@@ -13,9 +13,9 @@ export default function LocationLayout() {
     const [tab, setTab] = useState<"province" | "district" | "branch">("province")
 
     const tabs = [
-        { key: "province", label: "Province", icon: Map },
-        { key: "district", label: "District", icon: GitBranch },
-        { key: "branch", label: "Branch", icon: Building2 },
+        { key: "province", label: "ແຂວງ", icon: Map },
+        { key: "district", label: "ເມືອງ", icon: GitBranch },
+        { key: "branch", label: "ສາຂາ", icon: Building2 },
     ]
 
     return (

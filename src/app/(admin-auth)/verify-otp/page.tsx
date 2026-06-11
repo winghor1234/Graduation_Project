@@ -7,24 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useRef, useEffect } from "react";
-import { AlertCircle, ArrowLeft, Shield } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { useAdminResendOTP, useAdminVerifyOtp } from "@/app/features/hooks";
-// import { VerifyOTPInput } from "@/modules/auth/auth.type";
-// import z from "zod";
+import { useEmployeeResendOTP, useEmployeeVerifyOtp } from "@/app/features/hooks/Auth";
 
-// const otpSchema = z.object({
-//   email: z.string().email(),
-//   otp: z.string().length(6),
-// });
 
 export default function VerifyOTPPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
-  const { mutate: verifyOtp, isPending } = useAdminVerifyOtp();
-  const { mutate: resendOtp, isPending: isResending } = useAdminResendOTP();
+  const { mutate: verifyOtp, isPending } = useEmployeeResendOTP();
+  const { mutate: resendOtp, isPending: isResending } = useEmployeeVerifyOtp();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [resendTimer, setResendTimer] = useState(60);
@@ -62,7 +56,7 @@ export default function VerifyOTPPage() {
     const otpValue = otp.join("");
 
     if (otpValue.length !== 6) {
-      setError("otp", { message: "Please enter all 6 digits" });
+      setError("otp", { message: "ກະລຸນາປ້ອນຕົວເລກໃຫ້ຄົບທັງ 6 ຫຼັກ" });
       return;
     }
 
@@ -70,12 +64,12 @@ export default function VerifyOTPPage() {
       { email, otp: otpValue },
       {
         onSuccess: () => {
-          toast.success("OTP verified successfully!");
+          toast.success("ຢືນຢັນ OTP ສຳເລັດແລ້ວ!");
           router.push(`/reset-password?email=${email}`);
         },
         onError: () => {
-          setError("otp", { message: "Invalid OTP" });
-          toast.error("Invalid OTP");
+          setError("otp", { message: "ລະຫັດ OTP ບໍ່ຖືກຕ້ອງ" });
+          toast.error("ລະຫັດ OTP ບໍ່ຖືກຕ້ອງ");
         },
       }
     );
@@ -89,7 +83,7 @@ export default function VerifyOTPPage() {
         <div className="space-y-2">
           <Label className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
-            Enter OTP
+            ປ້ອນລະຫັດ OTP
           </Label>
 
           <div className="flex gap-2 justify-center">
@@ -123,7 +117,7 @@ export default function VerifyOTPPage() {
           className="w-full"
           disabled={isPending}
         >
-          {isPending ? "Verifying..." : "Verify OTP"}
+          {isPending ? "ກຳລັງຢືນຢັນ..." : "ຢືນຢັນ OTP"}
         </Button>
         <button
           type="button"
@@ -131,19 +125,19 @@ export default function VerifyOTPPage() {
           onClick={() => {
             resendOtp({ email }, {
               onSuccess: () => {
-                toast.success("OTP resent successfully")
+                toast.success("ສົ່ງລະຫັດ OTP ໃໝ່ສຳເລັດແລ້ວ")
                 setResendTimer(60)
               },
               onError: () => {
-                toast.error("Failed to resend OTP")
+                toast.error("ບໍ່ສາມາດສົ່ງລະຫັດ OTP ໃໝ່ໄດ້")
               }
             })
           }}
           className="text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400"
         >
           {resendTimer > 0
-            ? `Resend OTP in ${resendTimer}s`
-            : "Resend OTP"}
+            ? `ສົ່ງ OTP ອີກຄັ້ງໃນ ${resendTimer} ວິນາທີ`
+            : "ສົ່ງ OTP ອີກຄັ້ງ"}
         </button>
 
         <button
@@ -152,7 +146,7 @@ export default function VerifyOTPPage() {
           className="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-gray-900 w-full py-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          ກັບຄືນ
         </button>
 
       </form>

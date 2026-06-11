@@ -51,7 +51,7 @@ export function Sidebar({
                     : "-left-64 md:left-0"
             )}
         >
-            {/* LOGO */}
+            {/* ໂລໂກ້ */}
             <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
 
                 <div className="flex items-center gap-2">
@@ -64,7 +64,7 @@ export function Sidebar({
                             </h1>
 
                             <p className="text-xs text-slate-500">
-                                Retail System
+                                ລະບົບຂາຍຍ່ອຍ
                             </p>
                         </div>
                     )}
@@ -81,7 +81,7 @@ export function Sidebar({
                 </button>
             </div>
 
-            {/* NAV */}
+            {/* ເມນູນຳທາງ */}
             <nav className="flex-1 space-y-1 px-2 py-4">
 
                 {user &&
@@ -130,7 +130,7 @@ export function Sidebar({
                         })}
             </nav>
 
-            {/* FOOTER */}
+            {/* ສ່ວນລຸ່ມ */}
             <div className="border-t border-gray-200 p-4">
 
                 <div
@@ -166,7 +166,7 @@ export function Sidebar({
                                 onClick={onLogout}
                                 className="text-xs text-red-500 hover:text-red-600 transition"
                             >
-                                Logout
+                                ອອກຈາກລະບົບ
                             </button>
                         </>
                     )}

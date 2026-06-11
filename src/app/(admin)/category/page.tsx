@@ -22,8 +22,8 @@ export default function CategoriesPage() {
     const [showDialog, setShowDialog] = useState(false)
     const [editingCategory, setEditingCategory] = useState<Category | null>(null)
     const [formData, setFormData] = useState({ category_name: "", description: "", })
-    if (isPending) return <div>Loading...</div>
-    if (isError) return <div>Error</div>
+    if (isPending) return <div>ກຳລັງໂຫຼດຂໍ້ມູນ...</div>
+    if (isError) return <div>ເກີດຂໍ້ຜິດພາດ</div>
     console.log("category : ", data)
 
     // ✅ ADD
@@ -47,9 +47,9 @@ export default function CategoriesPage() {
     const handleDelete = async (id: string) => {
         try {
             await del.mutateAsync(id)
-            toast.success("Category deleted")
+            toast.success("ລຶບໝວດໝູ່ສຳເລັດແລ້ວ")
         } catch {
-            toast.error("Delete failed")
+            toast.error("ບໍ່ສາມາດລຶບໄດ້")
         }
     }
 
@@ -63,15 +63,15 @@ export default function CategoriesPage() {
                     id: editingCategory.category_id,
                     data: formData,
                 })
-                toast.success("Updated")
+                toast.success("ອັບເດດສຳເລັດແລ້ວ")
             } else {
                 await create.mutateAsync(formData)
-                toast.success("Created")
+                toast.success("ສ້າງໝວດໝູ່ສຳເລັດແລ້ວ")
             }
 
             setShowDialog(false)
         } catch {
-            toast.error("Something went wrong")
+            toast.error("ເກີດຂໍ້ຜິດພາດບາງຢ່າງ")
         }
     }
 
@@ -86,54 +86,54 @@ export default function CategoriesPage() {
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <FolderTree className="w-8 h-8 text-accent" />
-                        <h1>Categories</h1>
+                        <h1>ໝວດໝູ່</h1>
                     </div>
                     <p className="text-muted-foreground">
-                        Manage product categories
+                        ຈັດການໝວດໝູ່ສິນຄ້າ
                     </p>
                 </div>
 
                 <Button onClick={handleAdd}>
                     <Plus className="w-4 h-4 mr-2" />
-                    Add Category
+                    ເພີ່ມໝວດໝູ່
                 </Button>
             </div>
 
             {/* GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {categories?.map((category: Category) => (
-                <Card key={category?.category_id} className="p-6">
-                    <div className="flex justify-between mb-4">
-                        <FolderTree />
+                    <Card key={category?.category_id} className="p-6">
+                        <div className="flex justify-between mb-4">
+                            <FolderTree />
 
-                        <div className="flex gap-2">
-                            <Button onClick={() => handleEdit(category)}>
-                                <Edit />
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button onClick={() => handleEdit(category)}>
+                                    <Edit />
+                                </Button>
 
-                            <Button
-                                onClick={() =>
-                                    handleDelete(category?.category_id)
-                                }
-                            >
-                                <Trash2 />
-                            </Button>
+                                <Button
+                                    onClick={() =>
+                                        handleDelete(category?.category_id)
+                                    }
+                                >
+                                    <Trash2 />
+                                </Button>
+                            </div>
                         </div>
-                    </div>
 
-                    <h3>{category.category_name}</h3>
+                        <h3>{category.category_name}</h3>
 
-                    <p>{category.description}</p>
+                        <p>{category.description}</p>
 
-                    <div className="flex justify-between">
-                        <Badge>
-                            {category.products?.length || 0}
-                        </Badge>
+                        <div className="flex justify-between">
+                            <Badge>
+                                {category.products?.length || 0}
+                            </Badge>
 
-                        {/* <span>{formatDate(categories.createdAt)}</span> */}
-                    </div>
-                </Card>
-                 ))} 
+                            {/* <span>{formatDate(categories.createdAt)}</span> */}
+                        </div>
+                    </Card>
+                ))}
             </div>
 
             {/* TABLE */}
@@ -141,33 +141,33 @@ export default function CategoriesPage() {
                 <table className="w-full">
                     <tbody>
                         {categories?.map((category: Category) => (
-                        <tr key={category.category_id}>
-                            <td>{category.category_name}</td>
-                            <td>{category.description}</td>
+                            <tr key={category.category_id}>
+                                <td>{category.category_name}</td>
+                                <td>{category.description}</td>
 
-                            <td>
-                                <Badge>
-                                    {category.products?.length || 0}
-                                </Badge>
-                            </td>
+                                <td>
+                                    <Badge>
+                                        {category.products?.length || 0}
+                                    </Badge>
+                                </td>
 
-                            {/* <td>{formatDate(category.createdAt)}</td> */}
+                                {/* <td>{formatDate(category.createdAt)}</td> */}
 
-                            <td>
-                                <Button onClick={() => handleEdit(category)}>
-                                    Edit
-                                </Button>
+                                <td>
+                                    <Button onClick={() => handleEdit(category)}>
+                                        ແກ້ໄຂ
+                                    </Button>
 
-                                <Button
-                                    onClick={() =>
-                                        handleDelete(category.category_id)
-                                    }
-                                >
-                                    Delete
-                                </Button>
-                            </td>
-                        </tr>
-                         ))} 
+                                    <Button
+                                        onClick={() =>
+                                            handleDelete(category.category_id)
+                                        }
+                                    >
+                                        ລຶບ
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </Card>
@@ -177,7 +177,7 @@ export default function CategoriesPage() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
-                            {editingCategory ? "Edit" : "Create"}
+                            {editingCategory ? "ແກ້ໄຂ" : "ສ້າງໃໝ່"}
                         </DialogTitle>
                     </DialogHeader>
 
@@ -203,7 +203,7 @@ export default function CategoriesPage() {
                         />
 
                         <Button type="submit">
-                            {editingCategory ? "Update" : "Create"}
+                            {editingCategory ? "ອັບເດດ" : "ສ້າງ"}
                         </Button>
                     </form>
                 </DialogContent>

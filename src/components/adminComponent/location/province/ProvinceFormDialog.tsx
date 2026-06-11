@@ -47,14 +47,14 @@ export function ProvinceFormDialog({ open, onOpenChange, province, create, updat
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {isEdit ? "Edit Province" : "Add Province"}
+                        {isEdit ? "ແກ້ໄຂແຂວງ" : "ເພີ່ມແຂວງ"}
                     </DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <Input {...register("province_name")} placeholder="Province name..." />
+                    <Input {...register("province_name")} placeholder="ຊື່ແຂວງ..." />
                     <Button type="submit" className="w-full">
-                        {isEdit ? "Update" : "Create"}
+                        {isEdit ? "ອັບເດດ" : "ບັນທຶກ"}
                     </Button>
                 </form>
             </DialogContent>

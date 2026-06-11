@@ -13,16 +13,16 @@ export function RecentOrders({orders }: Props ) {
     return (
         <div className="bg-white p-5 rounded-2xl shadow-sm border">
             <h3 className="font-semibold text-gray-800 mb-4">
-                Recent Orders
+                ລາຍການສັ່ງຊື້ຫຼ້າສຸດ
             </h3>
 
             <table className="w-full text-sm">
                 <thead className="text-gray-500">
                     <tr className="text-left">
-                        <th>Order</th>
-                        <th>Customer</th>
-                        <th>Total</th>
-                        <th>Status</th>
+                        <th>ອໍເດີ້</th>
+                        <th>ລູກຄ້າ</th>
+                        <th>ລວມທັງໝົດ</th>
+                        <th>ສະຖານະ</th>
                     </tr>
                 </thead>
 

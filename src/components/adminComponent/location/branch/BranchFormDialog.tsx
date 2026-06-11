@@ -62,14 +62,14 @@ export function BranchFormDialog({ open, onOpenChange, branch, create, update, d
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{isEdit ? "Edit" : "Create"} Branch</DialogTitle>
+                    <DialogTitle>{isEdit ? "ແກ້ໄຂ" : "ສ້າງ"} ສາຂາ</DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
                     {/* branch name */}
                     <div>
-                        <Input {...register("branch_name")} placeholder="Branch name..." />
+                        <Input {...register("branch_name")} placeholder="ຊື່ສາຂາ..." />
                         <div className="h-6 text-red-500">{errors.branch_name?.message}</div>
                     </div>
 
@@ -80,7 +80,7 @@ export function BranchFormDialog({ open, onOpenChange, branch, create, update, d
                             defaultValue={watch("district_id")}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select district..." />
+                                <SelectValue placeholder="ເລືອກເມືອງ..." />
                             </SelectTrigger>
 
                             <SelectContent>
@@ -98,7 +98,7 @@ export function BranchFormDialog({ open, onOpenChange, branch, create, update, d
                     </div>
 
                     <Button type="submit" className="w-full">
-                        Submit
+                        ບັນທຶກ
                     </Button>
                 </form>
             </DialogContent>

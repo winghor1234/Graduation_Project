@@ -88,7 +88,7 @@ const StatCard = ({
                         theme.subText
                     )}
                 >
-                    vs last month
+                    ທຽບກັບເດືອນຜ່ານມາ
                 </span>
             </div>
         </div>

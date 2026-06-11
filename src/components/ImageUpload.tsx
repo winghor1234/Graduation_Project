@@ -29,8 +29,8 @@ export default function ImageUpload({ files, setFiles, max = 5 }: Props) {
         <div className="space-y-4">
             {/* drop zone */}
             <div
-                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
-        ${dragging ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
+                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+                ${dragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"}`}
                 onDragOver={(e) => {
                     e.preventDefault()
                     setDragging(true)
@@ -42,16 +42,6 @@ export default function ImageUpload({ files, setFiles, max = 5 }: Props) {
                     handleFiles(e.dataTransfer.files)
                 }}
             >
-                <Upload className="mx-auto mb-2 w-8 h-8 text-gray-400" />
-
-                <p className="text-sm text-gray-600">
-                    Drag & drop images here
-                </p>
-
-                <p className="text-xs text-gray-400">
-                    or click to upload (max {max})
-                </p>
-
                 <input
                     type="file"
                     multiple
@@ -61,8 +51,20 @@ export default function ImageUpload({ files, setFiles, max = 5 }: Props) {
                     id="imageUpload"
                 />
 
-                <label htmlFor="imageUpload" className="cursor-pointer block mt-2">
-                    Select Images
+                <label htmlFor="imageUpload" className="cursor-pointer block w-full h-full">
+                    <Upload className="mx-auto mb-2 w-8 h-8 text-gray-400" />
+
+                    <p className="text-sm text-gray-600">
+                        ລາກ ແລະ ວາງຮູບພາບຂອງທ່ານໃສ່ນີ້
+                    </p>
+
+                    <p className="text-xs text-gray-400 mt-1">
+                        ຫຼື ຄລິກເພື່ອອັບໂຫຼດ (ສູງສຸດ {max} ຮູບ)
+                    </p>
+                    
+                    <span className="inline-block mt-3 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md font-medium transition-colors">
+                        ເລືອກຮູບພາບ
+                    </span>
                 </label>
             </div>
 
@@ -73,24 +75,21 @@ export default function ImageUpload({ files, setFiles, max = 5 }: Props) {
                         const preview = URL.createObjectURL(file)
 
                         return (
-                            <div key={index} className="relative group">
-
+                            <div key={index} className="relative group aspect-square">
                                 <Image
                                     src={preview}
-                                    width={48}
-                                    height={48}
-                                    className="w-full h-24 object-cover rounded"
+                                    fill
+                                    className="object-cover rounded border"
                                     alt="preview"
                                 />
 
                                 <button
                                     type="button"
                                     onClick={() => removeImage(index)}
-                                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100"
+                                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                                 >
                                     <X size={14} />
                                 </button>
-
                             </div>
                         )
                     })}

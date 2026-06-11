@@ -23,7 +23,7 @@ export function PurchaseOrderToolbar({ table, onAdd }: PropsTable) {
             <div className="flex gap-2">
 
                 <Input
-                    placeholder="Search purchase orders..."
+                    placeholder="ຄົ້ນຫາໃບບິນສັ່ງຊື້..."
                     value={table.search}
                     onChange={(e) => table.setSearch(e.target.value)}
                     className="w-[250px]"
@@ -33,7 +33,7 @@ export function PurchaseOrderToolbar({ table, onAdd }: PropsTable) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
                             <ArrowUpDown className="w-4 h-4" />
-                            Sort
+                            ລຽງລຳດັບ
                         </Button>
                     </DropdownMenuTrigger>
 
@@ -42,49 +42,49 @@ export function PurchaseOrderToolbar({ table, onAdd }: PropsTable) {
                         <DropdownMenuItem
                             onClick={() => setSort("createdAt", "desc")}
                         >
-                            Date (Newest)
+                            ວັນທີ (ໃໝ່ສຸດ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("createdAt", "asc")}
                         >
-                            Date (Oldest)
+                            ວັນທີ (ເກົ່າສຸດ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("purchase_id", "asc")}
                         >
-                            Purchase ID (A → Z)
+                            ລະຫັດສັ່ງຊື້ (A → Z)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("purchase_id", "desc")}
                         >
-                            Purchase ID (Z → A)
+                            ລະຫັດສັ່ງຊື້ (Z → A)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("total_amount", "asc")}
                         >
-                            Amount (Low → High)
+                            ຈຳນວນເງິນ (ຕ່ຳ → ສູງ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("total_amount", "desc")}
                         >
-                            Amount (High → Low)
+                            ຈຳນວນເງິນ (ສູງ → ຕ່ຳ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("status", "asc")}
                         >
-                            Status (A → Z)
+                            ສະຖານະ (A → Z)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("status", "desc")}
                         >
-                            Status (Z → A)
+                            ສະຖານະ (Z → A)
                         </DropdownMenuItem>
 
                     </DropdownMenuContent>
@@ -94,7 +94,7 @@ export function PurchaseOrderToolbar({ table, onAdd }: PropsTable) {
             {/* ➕ ADD */}
             <Button onClick={onAdd} className="gap-2">
                 <Plus className="w-4 h-4" />
-                Add Purchase Order
+                ເພີ່ມໃບບິນສັ່ງຊື້
             </Button>
         </div>
     )

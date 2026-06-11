@@ -15,7 +15,7 @@ export default function ExportButton({ title,onExport, loading = false, }: Expor
             onClick={onExport}
             className="h-11 rounded-xl px-5 gap-2 shadow-sm border"
         >
-            {loading ? "Exporting..." : title }
+            {loading ? "ກຳລັງດາວໂຫຼດ..." : title }
         </Button>
 
     )

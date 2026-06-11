@@ -1,112 +1,72 @@
 "use client"
 
-import { useEffect } from "react"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
-
+import { Card } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useForm } from "react-hook-form"
-import { DeliveryStatus } from "@prisma/client"
+import { Eye, Pencil } from "lucide-react"
 import { Delivery } from "@/modules/delivery/delivery.type"
-
-type FormValues = {
-    status: DeliveryStatus
-    tracking_number: string
-}
+import { Badge } from "@/components/ui/badge"
 
 type Props = {
-    open: boolean
-    onOpenChange: (open: boolean) => void
-    delivery?: Delivery
-    onSubmit: (data: FormValues) => void
+    data: Delivery[]
+    isLoading: boolean
+    onView: (d: Delivery) => void
+    onEdit: (d: Delivery) => void
 }
 
-export function DeliveryUpdateDialog({
-    open,
-    onOpenChange,
-    delivery,
-    onSubmit,
-}: Props) {
+export function DeliveryTable({ data, isLoading, onView, onEdit }: Props) {
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-    } = useForm<FormValues>({
-        defaultValues: {
-            status: "PENDING",
-            tracking_number: ""
-        }
-    })
-
-    // 🔥 sync data when open
-    useEffect(() => {
-        if (!delivery) return
-
-        reset({
-            status: delivery.status,
-            tracking_number: delivery.tracking_number || ""
-        })
-    }, [delivery, reset])
-
-    if (!delivery) return null
+    if (isLoading) return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md">
+        <Card>
 
-                <DialogHeader>
-                    <DialogTitle>Update Delivery</DialogTitle>
-                </DialogHeader>
+            <Table>
 
-                <form
-                    onSubmit={handleSubmit((data) => {
-                        onSubmit(data)
-                        onOpenChange(false)
-                    })}
-                    className="space-y-4"
-                >
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>ອໍເດີ້</TableHead>
+                        <TableHead>ສະຖານະ</TableHead>
+                        <TableHead>ຜູ້ຂົນສົ່ງ</TableHead>
+                        <TableHead>ເລກຕິດຕາມພັດສະດຸ</TableHead>
+                        <TableHead className="text-right">ການຈັດການ</TableHead>
+                    </TableRow>
+                </TableHeader>
 
-                    {/* Status */}
-                    <div>
-                        <p className="text-sm text-muted-foreground mb-1">
-                            Status
-                        </p>
+                <TableBody>
+                    {data.map(d => (
+                        <TableRow key={d.delivery_id}>
 
-                        <select
-                            {...register("status")}
-                            className="w-full border rounded-md p-2"
-                        >
-                            <option value="PENDING">PENDING</option>
-                            <option value="SHIPPED">SHIPPED</option>
-                            <option value="DELIVERED">DELIVERED</option>
-                        </select>
-                    </div>
+                            <TableCell>{d.order_id}</TableCell>
 
-                    {/* Tracking */}
-                    <div>
-                        <p className="text-sm text-muted-foreground mb-1">
-                            Tracking Number
-                        </p>
+                            <TableCell>
+                                <Badge>{d.status}</Badge>
+                            </TableCell>
 
-                        <Input
-                    {...register("tracking_number")}
-                            placeholder="Enter tracking number..."
-                        />
-                    </div>
+                            <TableCell>{d.provider}</TableCell>
 
-                    <Button type="submit" className="w-full">
-                        Update
-                    </Button>
+                            <TableCell>
+                                {d.tracking_number || "-"}
+                            </TableCell>
 
-                </form>
+                            <TableCell className="text-right flex justify-end gap-2">
 
-            </DialogContent>
-        </Dialog>
+                                <Button size="icon" onClick={() => onView(d)}>
+                                    <Eye className="w-4 h-4" />
+                                </Button>
+
+                                <Button size="icon" onClick={() => onEdit(d)}>
+                                    <Pencil className="w-4 h-4" />
+                                </Button>
+
+                            </TableCell>
+
+                        </TableRow>
+                    ))}
+                </TableBody>
+
+            </Table>
+
+        </Card>
     )
 }

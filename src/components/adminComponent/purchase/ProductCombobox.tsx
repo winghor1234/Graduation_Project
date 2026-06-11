@@ -16,7 +16,7 @@ type Props = {
     placeholder?: string
 }
 
-export function ProductCombobox({ products, value, onChange, onCreateNew, placeholder = "Select product", }: Props) {
+export function ProductCombobox({ products, value, onChange, onCreateNew, placeholder = "ເລືອກສິນຄ້າ", }: Props) {
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState("")
     const selected = products.find((p) => p.product_id === value)
@@ -37,14 +37,14 @@ export function ProductCombobox({ products, value, onChange, onCreateNew, placeh
             <PopoverContent className="w-[300px] p-0">
                 <Command>
                     <CommandInput
-                        placeholder="Search product..."
+                        placeholder="ຄົ້ນຫາສິນຄ້າ..."
                         value={search}
                         onValueChange={setSearch}
                     />
 
                     <CommandEmpty>
                         <div className="p-2 text-sm text-muted-foreground">
-                            No product found
+                            ບໍ່ພົບຂໍ້ມູນສິນຄ້າ
                         </div>
                     </CommandEmpty>
 
@@ -71,14 +71,14 @@ export function ProductCombobox({ products, value, onChange, onCreateNew, placeh
                         ))}
                         <Button
                             variant="ghost"
-                            className="w-full justify-start"
+                            className="w-full justify-start text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                             onClick={() => {
                                 setOpen(false)
                                 onCreateNew()
                             }}
                         >
                             <Plus className="w-4 h-4 mr-2" />
-                            Create new product
+                            ເພີ່ມສິນຄ້າໃໝ່
                         </Button>
                     </CommandGroup>
                 </Command>

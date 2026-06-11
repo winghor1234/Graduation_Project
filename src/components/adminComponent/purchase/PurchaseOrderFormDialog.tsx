@@ -36,8 +36,6 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
     const createProduct = useCreateProduct()
     const updateProduct = useUpdateProduct()
 
-
-
     const { register, control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<PurchaseFormValues>({
         resolver: zodResolver(purchaseSchema),
         defaultValues: {
@@ -50,6 +48,7 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
         control,
         name: "purchase_details"
     })
+
     /* ---------------- RESET ---------------- */
     useEffect(() => {
         if (!open) return
@@ -79,10 +78,9 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
     const onSubmit: SubmitHandler<PurchaseFormValues> = async (data) => {
         try {
             if (!data.supplier_id || data.purchase_details.length === 0) {
-                toast.error("Missing data")
+                toast.error("ຂໍ້ມູນບໍ່ຄົບຖ້ວນ")
                 return
             }
-
 
             const payload = {
                 supplier_id: data.supplier_id,
@@ -94,10 +92,10 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                     id: purchaseOrder.purchase_id,
                     data: payload
                 })
-                toast.success("Updated successfully")
+                toast.success("ອັບເດດໃບບິນສັ່ງຊື້ສຳເລັດແລ້ວ")
             } else {
                 await create.mutateAsync(payload)
-                toast.success("Created successfully")
+                toast.success("ສ້າງໃບບິນສັ່ງຊື້ສຳເລັດແລ້ວ")
             }
 
             onOpenChange(false)
@@ -105,43 +103,49 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
 
         } catch (error) {
             console.error(error)
-            toast.error("Something went wrong")
+            toast.error("ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກຂໍ້ມູນ")
         }
     }
 
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="space-y-4">
+            <DialogContent className="space-y-4 max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>
-                        {purchaseOrder ? "Edit Purchase Order" : "Create Purchase Order"}
+                        {purchaseOrder ? "ແກ້ໄຂໃບບິນສັ່ງຊື້" : "ສ້າງໃບບິນສັ່ງຊື້"}
                     </DialogTitle>
                 </DialogHeader>
 
-                {/* SUPPLIER */}
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div>
-                        <select {...register("supplier_id")}>
-                            <option value="">Select supplier</option>
+                    {/* SUPPLIER */}
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium">ຜູ້ສະໜອງ (Supplier)</label>
+                        <select 
+                            {...register("supplier_id")}
+                            className="w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">ເລືອກຜູ້ສະໜອງ</option>
                             {suppliers.map((c) => (
                                 <option key={c.supplier_id} value={c.supplier_id}>
                                     {c.supplier_name}
                                 </option>
                             ))}
                         </select>
-                        <div className="h-6 text-red-500">{errors.supplier_id?.message}</div>
+                        <div className="h-5 text-xs text-red-500 mt-0.5">{errors.supplier_id?.message}</div>
                     </div>
 
                     {/* ITEMS */}
                     <div className="space-y-3">
+                        <label className="text-sm font-medium">ລາຍການສິນຄ້າ</label>
+                        
                         {fields.map((field, index) => (
-                            <div key={field.id} className="flex gap-2">
+                            <div key={field.id} className="flex gap-2 items-start">
                                 {/* PRODUCT */}
-                                <div>
+                                <div className="flex-1">
                                     <ProductCombobox
                                         products={products}
                                         value={watch(`purchase_details.${index}.product_id`)}
+                                        placeholder="ເລືອກສິນຄ້າ"
                                         onChange={(val) => {
                                             setValue(`purchase_details.${index}.product_id`, val)
 
@@ -156,11 +160,13 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                                             setOpenProductDialog(true)
                                         }}
                                     />
-                                    <div className="h-6 text-red-500">{errors.purchase_details?.[index]?.product_id?.message}</div>
+                                    <div className="h-5 text-xs text-red-500 mt-0.5">
+                                        {errors.purchase_details?.[index]?.product_id?.message}
+                                    </div>
                                 </div>
 
                                 {/* QTY */}
-                                <div>
+                                <div className="w-28">
                                     <Controller
                                         name={`purchase_details.${index}.quantity`}
                                         control={control}
@@ -168,7 +174,7 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                                             <NumericFormat
                                                 value={field.value === 0 ? "" : field.value}
                                                 customInput={Input}
-                                                placeholder="Qty"
+                                                placeholder="ຈຳນວນ"
                                                 thousandSeparator=","
                                                 allowNegative={false}
                                                 decimalScale={0}
@@ -180,12 +186,14 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                                             />
                                         )}
                                     />
-                                    <div className="h-6 text-red-500">{errors.purchase_details?.[index]?.quantity?.message}</div>
+                                    <div className="h-5 text-xs text-red-500 mt-0.5">
+                                        {errors.purchase_details?.[index]?.quantity?.message}
+                                    </div>
                                 </div>
 
                                 {/* PRICE (READ ONLY FROM PRODUCT) */}
-                                <div>
-                                    <div className="px-3 py-2 border rounded bg-gray-100">
+                                <div className="w-36">
+                                    <div className="px-3 py-2 border rounded bg-gray-100 text-sm h-10 flex items-center justify-end">
                                         {products
                                             .find(
                                                 (p) =>
@@ -194,8 +202,7 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                                             )
                                             ?.purchase_price?.toLocaleString() || 0}
                                     </div>
-
-                                    <div className="h-6 text-red-500">
+                                    <div className="h-5 text-xs text-red-500 mt-0.5">
                                         {errors.purchase_details?.[index]?.price?.message}
                                     </div>
                                 </div>
@@ -204,24 +211,30 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                                     type="button"
                                     variant="destructive"
                                     onClick={() => remove(index)}
+                                    className="h-10"
                                 >
-                                    X
+                                    ລຶບ
                                 </Button>
                             </div>
                         ))}
                     </div>
 
-                    <Button type="button" onClick={addItem}>
-                        + Add Item
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={addItem} 
+                        className="w-full border-dashed"
+                    >
+                        + ເພີ່ມລາຍການສິນຄ້າ
                     </Button>
 
                     {/* SUBMIT */}
                     <Button
-                        className="w-full"
+                        className="w-full h-10"
                         type="submit"
                         disabled={create.isPending || update.isPending}
                     >
-                        {purchaseOrder ? "Update" : "Create"}
+                        {purchaseOrder ? "ອັບເດດໃບບິນ" : "ບັນທຶກໃບບິນ"}
                     </Button>
                 </form>
 

@@ -34,7 +34,7 @@ export function PaymentToolbar({ table }: Props) {
             {/* 🔍 Search */}
             <div className="flex gap-2">
                 <Input
-                    placeholder="Search order..."
+                    placeholder="ຄົ້ນຫາອໍເດີ້..."
                     value={table.search}
                     onChange={(e) => table.setSearch(e.target.value)}
                     className="w-[250px]"
@@ -45,22 +45,22 @@ export function PaymentToolbar({ table }: Props) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">
                             <Filter className="w-4 h-4 mr-1" />
-                            Status
+                            ສະຖານະ
                         </Button>
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => setStatus("")}>
-                            All
+                            ທັງໝົດ
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setStatus("PENDING")}>
-                            Pending
+                            ລໍຖ້າກວດສອບ
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setStatus("VERIFIED")}>
-                            Verified
+                            ກວດສອບແລ້ວ
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setStatus("REJECTED")}>
-                            Rejected
+                            ປະຕິເສດແລ້ວ
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -70,22 +70,22 @@ export function PaymentToolbar({ table }: Props) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">
                             <ArrowUpDown className="w-4 h-4 mr-1" />
-                            Sort
+                            ລຽງລຳດັບ
                         </Button>
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => setSort("payment_date", "desc")}>
-                            Newest
+                            ໃໝ່ສຸດ
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setSort("payment_date", "asc")}>
-                            Oldest
+                            ເກົ່າສຸດ
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setSort("amount", "desc")}>
-                            Amount (High → Low)
+                            ຈຳນວນເງິນ (ສູງ → ຕ່ຳ)
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setSort("amount", "asc")}>
-                            Amount (Low → High)
+                            ຈຳນວນເງິນ (ຕ່ຳ → ສູງ)
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

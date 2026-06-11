@@ -14,7 +14,7 @@ export function RevenueChart({ data }: { data: MonthlyRevenue[]}) {
     return (
         <div className="bg-white p-5 rounded-2xl shadow-sm border col-span-2">
             <h3 className="font-semibold text-gray-800 mb-4">
-                Revenue Overview
+                ພາບລວມລາຍຮັບ
             </h3>
 
             <div className="h-64">

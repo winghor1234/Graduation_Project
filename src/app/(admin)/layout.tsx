@@ -22,19 +22,19 @@ import { Sidebar } from "@/components/adminComponent/adminLayout/Sidebar"
 import { Header } from "@/components/adminComponent/adminLayout/Header"
 
 const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN"] },
-    { name: "Purchase", href: "/purchase", icon: ShoppingBag, roles: ["ADMIN", "STAFF"] },
-    { name: "Import", href: "/import", icon: Package, roles: ["ADMIN", "STAFF"] },
-    { name: "Supplier", href: "/supplier", icon: Users, roles: ["ADMIN"] },
-    { name: "Category", href: "/category", icon: Store, roles: ["ADMIN"] },
-    { name: "Point of Sale", href: "/POS", icon: ShoppingCart, roles: ["ADMIN", "STAFF"] },
-    { name: "Orders", href: "/order", icon: ShoppingBag, roles: ["ADMIN", "STAFF"] },
-    { name: "Product", href: "/product", icon: Package, roles: ["ADMIN"] },
-    { name: "Customers", href: "/customer", icon: Users, roles: ["ADMIN"] },
-    { name: "Employees", href: "/employee", icon: UserCog, roles: ["ADMIN"] },
-    { name: "Locations", href: "/location", icon: Store, roles: ["ADMIN"] },
-    { name: "Reports", href: "/report", icon: BarChart3, roles: ["ADMIN"] },
-    { name: "Settings", href: "/setting", icon: Settings, roles: ["ADMIN"] },
+    { name: "ໜ້າຫຼັກ", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN"] },
+    { name: "ການສັ່ງຊື້ສິນຄ້າ", href: "/purchase", icon: ShoppingBag, roles: ["ADMIN", "STAFF"] },
+    { name: "ນຳເຂົ້າສິນຄ້າ", href: "/import", icon: Package, roles: ["ADMIN", "STAFF"] },
+    { name: "ຜູ້ສະໜອງ", href: "/supplier", icon: Users, roles: ["ADMIN"] },
+    { name: "ໝວດໝູ່ສິນຄ້າ", href: "/category", icon: Store, roles: ["ADMIN"] },
+    { name: "ໜ້າຂາຍໜ້າຮ້ານ", href: "/POS", icon: ShoppingCart, roles: ["ADMIN", "STAFF"] },
+    { name: "ຄຳສັ່ງຊື້", href: "/order", icon: ShoppingBag, roles: ["ADMIN", "STAFF"] },
+    { name: "ຈັດການສິນຄ້າ", href: "/product", icon: Package, roles: ["ADMIN"] },
+    { name: "ຈັດການລູກຄ້າ", href: "/customer", icon: Users, roles: ["ADMIN"] },
+    { name: "ຈັດການພະນັກງານ", href: "/employee", icon: UserCog, roles: ["ADMIN"] },
+    { name: "ຈັດການສາຂາ", href: "/location", icon: Store, roles: ["ADMIN"] },
+    { name: "ລາຍງານ", href: "/report", icon: BarChart3, roles: ["ADMIN"] },
+    { name: "ຕັ້ງຄ່າ", href: "/setting", icon: Settings, roles: ["ADMIN"] },
 ] as const
 
 export default function AdminLayout({  children,}: { children: React.ReactNode}) {

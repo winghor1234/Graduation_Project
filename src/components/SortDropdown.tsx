@@ -21,7 +21,7 @@ export function SortDropdown({ table }: Props) {
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
                     <ArrowUpDown className="w-4 h-4" />
-                    Sort
+                    ລຽງລຳດັບ
                 </Button>
             </DropdownMenuTrigger>
 
@@ -32,7 +32,7 @@ export function SortDropdown({ table }: Props) {
                         table.setSort("createdAt")
                     }}
                 >
-                    Date (Newest)
+                    ວັນທີ (ໃໝ່ສຸດ)
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -40,7 +40,7 @@ export function SortDropdown({ table }: Props) {
                         table.setSort("product_name")
                     }}
                 >
-                    Name (A → Z)
+                    ຊື່ສິນຄ້າ (ກ → ຮ)
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -49,7 +49,7 @@ export function SortDropdown({ table }: Props) {
                         table.setOrder("desc")
                     }}
                 >
-                    Name (Z → A)
+                    ຊື່ສິນຄ້າ (ຮ → ກ)
                 </DropdownMenuItem>
 
             </DropdownMenuContent>

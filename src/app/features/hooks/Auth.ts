@@ -103,9 +103,31 @@ export const useEmployeeLogout = () => {
     })
 }
 
+
+
 export const useEmployeeRefresh = () => {
     return useMutation({
         mutationFn: AuthApi.employeeRefresh,
     })
 }
 
+
+
+
+
+
+
+
+// Customer 
+export const useCustomerLogout = () => {
+    const qc = useQueryClient()
+
+    return useMutation({
+        mutationFn: AuthApi.customerLogout,
+        onSuccess: () => {
+            qc.removeQueries({ queryKey: ["me"] })
+            window.location.href = "/login"
+
+        },
+    })
+}

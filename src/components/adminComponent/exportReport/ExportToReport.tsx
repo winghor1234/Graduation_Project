@@ -1,4 +1,3 @@
-
 // import { Customers } from "@/modules/customer/customer.type";
 // import { exportExcel } from "@/utils/exportExcel";
 // import { exportPDF } from "@/utils/exportPdf";
@@ -12,77 +11,25 @@ import { PurchaseOrder } from "../purchase/PurchaseType";
 
 
 
-// export const handleCustomerPDFExport = (data: Customers[]) => {
-//     if (!data) return;
-//     exportPDF({
-//         type: "report",
-//         title: "Customer Report",
-//         meta: {
-//             companyName: "Sport Wear Systems",
-//             address: "Vientiane, Laos",
-//             phone: "020 xxxx",
-//             email: "SportWearSystems@gmail.com",
-//         },
-
-//         columns: [
-//             { header: "No", key: "__index" },
-//             { header: "Customer", key: "customerName" },
-//         ],
-
-//         data: data?.map((c, index) => ({
-//             __index: index + 1,
-//             customerName: c.customer_name,
-//         })),
-//     });
-// };
-
-
-// export const handleCustomerExcelExport = (data: Customers[]) => {
-//     if (!data) return;
-
-//     exportExcel({
-//         fileName: "customer-report",
-//         sheetName: "Customers",
-//         columns: [
-//             {
-//                 header: "No",
-//                 key: "__index",
-//             },
-//             {
-//                 header: "Customer Name",
-//                 key: "customer_name",
-//             },
-//         ],
-//         data: data?.map((c, index) => ({
-//             __index: index + 1,
-//             customer_name: c.customer_name,
-//         })),
-//     });
-// };
-
-
-
-
-
 export const handleProductPDFExport = (products: Product[]) => {
     handlePDFExport({
-        title: "Product Report",
+        title: "ລາຍງານສິນຄ້າ",
         fileName: "product-report",
         columns: [
             {
-                header: "Code",
+                header: "ລະຫັດ",
                 key: "product_code",
             },
             {
-                header: "Product",
+                header: "ສິນຄ້າ",
                 key: "product_name",
             },
             {
-                header: "Stock",
+                header: "ຈຳນວນໃນສາງ",
                 key: "stock_qty",
             },
             {
-                header: "Sale Price",
+                header: "ລາຄາຂາຍ",
                 key: "sale_price",
             },
         ],
@@ -98,24 +45,24 @@ export const handleProductPDFExport = (products: Product[]) => {
 
 export const handleProductExcelExport = (products: Product[]) => {
     handleExcelExport({
-        title: "Product Report",
+        title: "ลາຍງານສິນຄ້າ",
         fileName: "product-report",
         sheetName: "Products",
         columns: [
             {
-                header: "Code",
+                header: "ລະຫັດ",
                 key: "product_code",
             },
             {
-                header: "Product",
+                header: "ສິນຄ້າ",
                 key: "product_name",
             },
             {
-                header: "Stock",
+                header: "ຈຳນວນໃນສາງ",
                 key: "stock_qty",
             },
             {
-                header: "Sale Price",
+                header: "ລາຄາຂາຍ",
                 key: "sale_price",
             },
         ],
@@ -132,15 +79,15 @@ export const handleProductExcelExport = (products: Product[]) => {
 
 export const handleCustomerPDFExport = (customers: Customers[]) => {
     handlePDFExport({
-        title: "Customer Report",
+        title: "ລາຍງານຂໍ້ມູນລູກຄ້າ",
         fileName: "customer-report",
         columns: [
             {
-                header: "No",
+                header: "ລຳດັບ",
                 key: "__index",
             },
             {
-                header: "Customer Name",
+                header: "ຊື່ລູກຄ້າ",
                 key: "customer_name",
             },
         ],
@@ -154,16 +101,16 @@ export const handleCustomerPDFExport = (customers: Customers[]) => {
 
 export const handleCustomerExcelExport = (customers: Customers[]) => {
     handleExcelExport({
-        title: "Customer Report",
+        title: "ລາຍງານຂໍ້ມູນລູກຄ້າ",
         fileName: "customer-report",
         sheetName: "Customers",
         columns: [
             {
-                header: "No",
+                header: "ລຳດັບ",
                 key: "__index",
             },
             {
-                header: "Customer Name",
+                header: "ຊື່ລູກຄ້າ",
                 key: "customer_name",
             },
         ],
@@ -178,23 +125,23 @@ export const handleCustomerExcelExport = (customers: Customers[]) => {
 
 export const handlePurchasePDFExport = (purchases: PurchaseOrder[]) => {
     handlePDFExport({
-        title: "Purchase Report",
+        title: "ລາຍງານການຈັດຊື້",
         fileName: "purchase-report",
         columns: [
             {
-                header: "No",
+                header: "ລຳດັບ",
                 key: "__index",
             },
             {
-                header: "Purchase Code",
+                header: "ລະຫັດການຈັດຊື້",
                 key: "purchase_code",
             },
             {
-                header: "Supplier",
+                header: "ຜູ້ສະໜອງ (Supplier)",
                 key: "supplier_name",
             },
             {
-                header: "Amount",
+                header: "ຍອດລວມ",
                 key: "amount",
             },
         ],

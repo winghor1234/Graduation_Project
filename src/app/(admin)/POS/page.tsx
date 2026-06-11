@@ -6,20 +6,19 @@ import { useState } from "react"
 import { useCreateSale } from "@/app/features/hooks/Sale"
 import ProductGrid from "@/components/adminComponent/POS/ProductGrid"
 import CustomerSelect from "@/components/adminComponent/POS/CustomerSelect"
-import CartPanel from "@/components/adminComponent/POS/CartPanel"
 import ConfirmModal from "@/components/adminComponent/POS/ConfirmModal"
-import ReceiptModal from "@/components/adminComponent/POS/ReceiptModal"
 import { useCart } from "@/components/adminComponent/POS/useCart"
 import { Customer } from "@/modules/customer/customer.type"
 import { useRouter } from "next/navigation"
-import { useGetProducts } from "@/app/features/hooks/Product"
+import { useGetAllProducts } from "@/app/features/hooks/Product"
 import { useGetCustomers } from "@/app/features/hooks/Customer"
+import CartPanel from "@/components/adminComponent/POS/CartPanel"
 
 
 export default function POSPage() {
   const router = useRouter()
-  const { data: products = [] } = useGetProducts()
-  const product = products?.data || []
+  const { data: products = [] } = useGetAllProducts()
+  const product = products || []
   const { data: customers = [] } = useGetCustomers()
   const customer = customers?.data || []
   const createSale = useCreateSale()

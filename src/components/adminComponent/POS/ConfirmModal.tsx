@@ -15,7 +15,7 @@ export default function ConfirmModal({ cart, total, onConfirm, onClose }: Props)
 
             <div className="bg-white p-6 rounded-xl w-[400px] space-y-4">
 
-                <h2 className="font-semibold text-lg">Confirm Order</h2>
+                <h2 className="font-semibold text-lg">ຢືນຢັນຄຳສັ່ງຊື້</h2>
 
                 <div className="max-h-60 overflow-auto space-y-2">
                     {cart.map((i) => (
@@ -27,16 +27,16 @@ export default function ConfirmModal({ cart, total, onConfirm, onClose }: Props)
                 </div>
 
                 <div className="flex justify-between font-bold">
-                    <span>Total</span>
+                    <span>ລວມທັງໝົດ (Total)</span>
                     <span>{formatCurrency(total)}</span>
                 </div>
 
                 <div className="flex gap-2">
-                    <button onClick={onClose} className="flex-1 border py-2 rounded">
-                        Cancel
+                    <button onClick={onClose} className="flex-1 border py-2 rounded hover:bg-gray-50">
+                        ຍົກເລີກ
                     </button>
-                    <button onClick={onConfirm} className="flex-1 bg-blue-500 text-white py-2 rounded">
-                        Confirm
+                    <button onClick={onConfirm} className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+                        ຢືນຢັນ
                     </button>
                 </div>
 

@@ -19,11 +19,11 @@ type Props = {
 export function PurchaseDetail({ purchase, isLoading }: Props) {
 
     if (isLoading) {
-        return <Card className="p-6 text-center">Loading purchase...</Card>
+        return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນການສັ່ງຊື້...</Card>
     }
 
     if (!purchase) {
-        return <Card className="p-6 text-center">No purchase data</Card>
+        return <Card className="p-6 text-center">ບໍ່ມີຂໍ້ມູນການສັ່ງຊື້</Card>
     }
 
     const total = purchase.purchase_details?.reduce(
@@ -38,7 +38,7 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
             <Card className="p-4 space-y-2">
                 <div className="flex justify-between">
                     <h2 className="text-lg font-semibold">
-                        Purchase 
+                        ລາຍລະອຽດການສັ່ງຊື້ (Purchase)
                     </h2>
 
                     <Badge>
@@ -48,22 +48,22 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
 
                 <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
-                        <span className="text-gray-500">Supplier:</span>{" "}
+                        <span className="text-gray-500">ຜູ້ສະໜອງ (Supplier):</span>{" "}
                         {purchase.supplier?.supplier_name}
                     </div>
 
                     <div>
-                        <span className="text-gray-500">Employee:</span>{" "}
+                        <span className="text-gray-500">ພະນັກງານ (Employee):</span>{" "}
                         {purchase.employee?.employee_name}
                     </div>
 
                     <div>
-                        <span className="text-gray-500">Date:</span>{" "}
+                        <span className="text-gray-500">ວັນທີ (Date):</span>{" "}
                         {formatDate(purchase.purchase_date)}
                     </div>
 
                     <div>
-                        <span className="text-gray-500">Total:</span>{" "}
+                        <span className="text-gray-500">ຍອດລວມ (Total):</span>{" "}
                         {formatCurrency(total)}
                     </div>
                 </div>
@@ -74,11 +74,11 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>NO:</TableHead>
-                            <TableHead>Product</TableHead>
-                            <TableHead className="text-right">Qty</TableHead>
-                            <TableHead className="text-right">Price</TableHead>
-                            <TableHead className="text-right">Total</TableHead>
+                            <TableHead>ລຳດັບ</TableHead>
+                            <TableHead>ສິນຄ້າ</TableHead>
+                            <TableHead className="text-right">ຈຳນວນ</TableHead>
+                            <TableHead className="text-right">ລາຄາ</TableHead>
+                            <TableHead className="text-right">ລວມ</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -91,7 +91,6 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
                                 <TableCell>
                                     {item.product?.product_name}
                                 </TableCell>
-
 
                                 <TableCell className="text-right">
                                     {item.quantity}
@@ -112,9 +111,9 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
                 {/* ---------------- TOTAL ---------------- */}
                 <TableFooter className="flex justify-end items-center">
                     <TableRow>
-                        <TableHead className="text-right font-bold text-lg">Total: </TableHead>
+                        <TableHead className="text-right font-bold text-lg">ລວມທັງໝົດ: </TableHead>
                         <TableHead className="text-right font-bold text-lg">
-                            {formatCurrency(total)} KIP
+                            {formatCurrency(total)} ກີບ
                         </TableHead>
                     </TableRow>
                 </TableFooter>

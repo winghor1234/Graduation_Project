@@ -28,30 +28,29 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
             <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-semibold">
-                        Import Detail
+                        ລາຍລະອຽດການນຳເຂົ້າ
                     </DialogTitle>
                 </DialogHeader>
 
                 {/* 🔹 SUMMARY */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                        <span className="text-muted-foreground">Supplier</span>
+                        <span className="text-muted-foreground">ຜູ້ສະໜອງ (Supplier)</span>
                         <p className="font-medium">
                             {data?.purchase?.supplier?.supplier_name || "-"}
                         </p>
                     </div>
 
                     <div>
-                        <span className="text-muted-foreground">Employee</span>
+                        <span className="text-muted-foreground">ພະນັກງານ</span>
                         <p className="font-medium">
                             {data?.employee?.employee_name || "-"}
                         </p>
                     </div>
 
                     <div className="col-span-2">
-                        <span className="text-muted-foreground">Import Date</span>
+                        <span className="text-muted-foreground">ວັນທີນຳເຂົ້າ</span>
                         <p className="font-medium">
-                            {/* เอาแค่ตัวเดียวพอ (ไม่ต้อง map ซ้ำ) */}
                             {data?.import_details?.[0]?.createdAt
                                 ? formatDate(data.import_details[0].createdAt as string)
                                 : "-"}
@@ -64,10 +63,10 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Product</TableHead>
-                                <TableHead className="text-center">Quantity</TableHead>
-                                <TableHead className="text-right">Cost</TableHead>
-                                <TableHead className="text-right">Subtotal</TableHead>
+                                <TableHead>ສິນຄ້າ</TableHead>
+                                <TableHead className="text-center">ຈຳນວນ</TableHead>
+                                <TableHead className="text-right">ຕົ້ນທຶນ</TableHead>
+                                <TableHead className="text-right">ລວມຍ່ອຍ</TableHead>
                             </TableRow>
                         </TableHeader>
 
@@ -96,7 +95,7 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={4} className="text-center text-muted-foreground">
-                                        No data
+                                        ບໍ່ມີຂໍ້ມູນ
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -104,7 +103,7 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                         <TableFooter>
                             <TableRow>
                                 <TableCell colSpan={3} className="text-right font-bold text-lg">
-                                    Total:
+                                    ລວມທັງໝົດ:
                                 </TableCell>
 
                                 <TableCell className="text-right font-bold text-lg">

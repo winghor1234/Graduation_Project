@@ -1,6 +1,6 @@
 "use client"
+import { Card, CardContent } from "@/components/ui/card"
 import { LucideIcon } from "lucide-react"
-import { Card, CardContent } from "../ui/card"
 
 export function SummaryCard({ title, value, icon: Icon }: {
     title: string

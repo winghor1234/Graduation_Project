@@ -15,17 +15,17 @@ type Props = {
 
 export function DistrictTable({ data, isLoading, onEdit, onDelete, onView }: Props) {
 
-    if (isLoading) return <Card className="p-6 text-center">Loading...</Card>
+    if (isLoading) return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
 
     return (
         <Card>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>NO:</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Province</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead>ລຳດັບ:</TableHead>
+                        <TableHead>ຊື່ເມືອງ</TableHead>
+                        <TableHead>ແຂວງ</TableHead>
+                        <TableHead className="text-right">ການຈັດການ</TableHead>
                     </TableRow>
                 </TableHeader>
 

@@ -42,7 +42,7 @@ export function DistrictFormDialog({ open, onOpenChange, district, create, updat
             })
         }
     }, [district])
-    console.log("provinces : ",provinces)
+    // console.log("provinces : ",provinces)
 
     const onSubmit = async (values: DistrictFormValues) => {
 
@@ -64,12 +64,12 @@ export function DistrictFormDialog({ open, onOpenChange, district, create, updat
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{isEdit ? "Edit" : "Create"} District</DialogTitle>
+                    <DialogTitle>{isEdit ? "ແກ້ໄຂ" : "ສ້າງ"} ເມືອງ</DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
-                        <Input {...register("district_name")} placeholder="District name..." />
+                        <Input {...register("district_name")} placeholder="ຊື່ເມືອງ..." />
                         <div className="h-6 text-red-500">{errors.district_name?.message}</div>
                     </div>
                     <div>
@@ -78,7 +78,7 @@ export function DistrictFormDialog({ open, onOpenChange, district, create, updat
                             defaultValue={watch("province_id")}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select province..." />
+                                <SelectValue placeholder="ເລືອກແຂວງ..." />
                             </SelectTrigger>
 
                             <SelectContent>
@@ -95,7 +95,7 @@ export function DistrictFormDialog({ open, onOpenChange, district, create, updat
                         </div>
                     </div>
                     <Button type="submit" className="w-full">
-                        Submit
+                        ບັນທຶກ
                     </Button>
                 </form>
             </DialogContent>

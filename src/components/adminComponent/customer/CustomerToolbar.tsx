@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu,  DropdownMenuContent,  DropdownMenuItem,  DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 import { ArrowUpDown, Plus } from "lucide-react"
-import { PropsTable } from "../Type"
+import { PropsTable } from "@/components/Type"
 
 
 /* ----------------------------- Component ----------------------------- */
@@ -22,7 +22,7 @@ export function CustomerToolbar({ table, onAdd }: PropsTable) {
             {/* 🔍 Search + Sort */}
             <div className="flex gap-2">
                 <Input
-                    placeholder="Search customers..."
+                    placeholder="ຄົ້ນຫາລູກຄ້າ..."
                     value={table.search}
                     onChange={(e) => table.setSearch(e.target.value)}
                     className="w-[250px]"
@@ -32,7 +32,7 @@ export function CustomerToolbar({ table, onAdd }: PropsTable) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
                             <ArrowUpDown className="w-4 h-4" />
-                            Sort
+                            ລຽງລຳດັບ
                         </Button>
                     </DropdownMenuTrigger>
 
@@ -40,31 +40,31 @@ export function CustomerToolbar({ table, onAdd }: PropsTable) {
                         <DropdownMenuItem
                             onClick={() => setSort("created_at", "desc")}
                         >
-                            Date (Newest)
+                            ວັນທີ (ໃໝ່ສຸດ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("customer_name", "asc")}
                         >
-                            Name (A → Z)
+                            ຊື່ (A → Z)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("customer_name", "desc")}
                         >
-                            Name (Z → A)
+                            # ຊື່ (Z → A)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("email", "asc")}
                         >
-                            Email (A → Z)
+                            ອີເມວ (A → Z)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
                             onClick={() => setSort("email", "desc")}
                         >
-                            Email (Z → A)
+                            ອີເມວ (Z → A)
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -73,7 +73,7 @@ export function CustomerToolbar({ table, onAdd }: PropsTable) {
             {/* ➕ Add */}
             <Button onClick={onAdd} className="gap-2">
                 <Plus className="w-4 h-4" />
-                Add Customer
+                ເພີ່ມລູກຄ້າ
             </Button>
         </div>
     )

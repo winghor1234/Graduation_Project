@@ -53,17 +53,17 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, create, updat
                     id: supplier.supplier_id,
                     data: values
                 })
-                toast.success("Supplier updated")
+                toast.success("ອັບເດດຂໍ້ມູນຜູ້ສະໜອງສຳເລັດແລ້ວ")
             } else {
                 await create.mutateAsync(values)
-                toast.success("Supplier created")
+                toast.success("ເພີ່ມຜູ້ສະໜອງໃໝ່ສຳເລັດແລ້ວ")
             }
 
             onOpenChange(false)
             reset()
 
         } catch (err) {
-            toast.error("Something went wrong")
+            toast.error("ເກີດຂໍ້ຜິດພາດ ບໍ່ສາມາດບັນທຶກຂໍ້ມູນໄດ້")
         }
     }
 
@@ -72,15 +72,27 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, create, updat
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {isEdit ? "Edit Supplier" : "Add Supplier"}
+                        {isEdit ? "ແກ້ໄຂຂໍ້ມູນຜູ້ສະໜອງ" : "ເພີ່ມຜູ້ສະໜອງ"}
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                    <Input {...register("supplier_name")} placeholder="Name" />
-                    <Input {...register("phone")} placeholder="Phone" />
-                    <Input {...register("address")} placeholder="Address" />
-                    <Button className="w-full">
-                        {isEdit ? "Update" : "Create"}
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium">ຊື່ຜູ້ສະໜອງ</label>
+                        <Input {...register("supplier_name")} placeholder="ປ້ອນຊື່ຜູ້ສະໜອງ..." />
+                    </div>
+                    
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium">ເບີໂທລະສັບ</label>
+                        <Input {...register("phone")} placeholder="ປ້ອນເບີໂທລະສັບ..." />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium">ທີ່ຢູ່</label>
+                        <Input {...register("address")} placeholder="ປ້ອນທີ່ຢູ່..." />
+                    </div>
+
+                    <Button className="w-full mt-2">
+                        {isEdit ? "ອັບເດດ" : "ບັນທຶກ"}
                     </Button>
                 </form>
             </DialogContent>

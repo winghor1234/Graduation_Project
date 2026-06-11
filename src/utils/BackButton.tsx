@@ -22,7 +22,7 @@ export function BackButton() {
             className="flex items-center gap-2"
         >
             <ArrowLeft size={16} />
-            Back
+            ກັບຄືນ
         </Button>
     )
 }

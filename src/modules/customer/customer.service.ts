@@ -49,7 +49,7 @@ export const customerService = {
         });
 
         if (existingUser) {
-            throw new NotFoundError("User already exists")
+            throw new BadRequestError("User already exists")
         }
         const hashedPassword = await hashPassword(data.password);
         const user = await prisma.customer.create({

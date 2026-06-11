@@ -20,20 +20,20 @@ export function ProvinceDetailDialog({ open, onOpenChange, province }: Props) {
             <DialogContent className="sm:max-w-md">
 
                 <DialogHeader>
-                    <DialogTitle>Province Detail</DialogTitle>
+                    <DialogTitle>ລາຍລະອຽດແຂວງ</DialogTitle>
                 </DialogHeader>
 
                 <div className="space-y-4 text-sm">
 
                     {/* Province */}
                     <div>
-                        <p className="text-muted-foreground">Province</p>
+                        <p className="text-muted-foreground">ແຂວງ</p>
                         <p className="font-medium">{province.province_name}</p>
                     </div>
 
                     {/* District */}
                     <div>
-                        <p className="text-muted-foreground">District</p>
+                        <p className="text-muted-foreground">ເມືອງ</p>
                         <div className="flex flex-wrap gap-1">
                             {province.districts?.map(d => (
                                 <Badge key={d.district_id} variant="secondary">
@@ -45,7 +45,7 @@ export function ProvinceDetailDialog({ open, onOpenChange, province }: Props) {
 
                     {/* Branch */}
                     <div>
-                        <p className="text-muted-foreground">Branch</p>
+                        <p className="text-muted-foreground">ສາຂາ</p>
                         <div className="flex flex-wrap gap-1">
                             {branches.map(b => (
                                 <Badge key={b.branch_id}>

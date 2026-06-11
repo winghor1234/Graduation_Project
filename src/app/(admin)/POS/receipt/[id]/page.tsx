@@ -10,7 +10,7 @@ export default function ReceiptPage() {
     const { id } = useParams()
     const { data } = useGetSale(id as string)
 
-    if (!data) return <p className="text-center mt-10">Loading...</p>
+    if (!data) return <p className="text-center mt-10">ກຳລັງໂຫຼດຂໍ້ມູນ...</p>
     // console.log("data : ", data)
 
     return (
@@ -20,18 +20,20 @@ export default function ReceiptPage() {
 
                 {/* HEADER */}
                 <div className="text-center">
-                    <p className="font-bold text-sm">MY STORE</p>
-                    <p>Tel: 020 XXXXXXXX</p>
-                    <p>Vientiane, Laos</p>
+                    <p className="font-bold text-sm">ຮ້ານຂອງຂ້ອຍ (MY STORE)</p>
+                    <p>ໂທ: 020 XXXXXXXX</p>
+                    <p>ນະຄອນຫຼວງວຽງຈັນ, ລາວ</p>
                 </div>
                 <hr className="my-2 border-dashed" />
+                
                 {/* INFO */}
                 <div>
-                    <p>Date: {formatDate(data?.sale_date)}</p>
-                    <p>Customer name: {data?.customer?.customer_name}</p>
+                    <p>ວັນທີ: {formatDate(data?.sale_date)}</p>
+                    <p>ຊື່ລູກຄ້າ: {data?.customer?.customer_name}</p>
                     {/* <p>Receipt:  {id}</p> */}
                 </div>
                 <hr className="my-2 border-dashed" />
+                
                 {/* ITEMS */}
                 {data.sale_details?.map((i) => (
                     <div key={i.product_id} className="mb-1">
@@ -45,6 +47,7 @@ export default function ReceiptPage() {
                     </div>
                 ))}
                 <hr className="my-2 border-dashed" />
+                
                 {/* TOTAL */}
                 <div className="space-y-1">
                     {/* <div className="flex justify-between">
@@ -52,7 +55,7 @@ export default function ReceiptPage() {
                         <span>{data.total}</span>
                     </div> */}
                     <div className="flex justify-between font-bold text-sm">
-                        <span>TOTAL</span>
+                        <span>ລວມທັງໝົດ (TOTAL)</span>
                         <span>{formatCurrency(data.total_amount || 0)}</span>
                     </div>
                 </div>
@@ -61,8 +64,8 @@ export default function ReceiptPage() {
 
                 {/* FOOTER */}
                 <div className="text-center">
-                    <p>Thank you!</p>
-                    <p>Please come again</p>
+                    <p>ຂໍຂອບໃຈ!</p>
+                    <p>ໂອກາດໜ້າເຊີນໃໝ່</p>
                 </div>
 
                 {/* ACTION */}
@@ -71,14 +74,14 @@ export default function ReceiptPage() {
                         onClick={() => window.print()}
                         className="w-full border py-1 rounded"
                     >
-                        Print
+                        ພິມໃບບິນ
                     </button>
 
                     <button
                         onClick={() => window.open(`/api/export/pdf/${id}`)}
                         className="w-full bg-green-500 text-white py-1 rounded"
                     >
-                        Export PDF
+                        ສົ່ງອອກເປັນ PDF
                     </button>
                 </div>
 

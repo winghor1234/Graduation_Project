@@ -14,17 +14,17 @@ type Props = {
 
 export function BranchTable({ data, isLoading, onEdit, onDelete ,onView }: Props) {
 
-    if (isLoading) return <Card className="p-6 text-center">Loading...</Card>
+    if (isLoading) return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
 
     return (
         <Card>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>NO:</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>District</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead>ລຳດັບ:</TableHead>
+                        <TableHead>ຊື່ສາຂາ</TableHead>
+                        <TableHead>ເມືອງ</TableHead>
+                        <TableHead className="text-right">ການຈັດການ</TableHead>
                     </TableRow>
                 </TableHeader>
 

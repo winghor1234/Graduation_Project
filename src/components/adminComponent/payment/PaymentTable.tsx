@@ -12,19 +12,19 @@ type Props = {
 
 export function PaymentTable({ payments, isLoading, onVerify }: Props) {
 
-    if (isLoading) return <div>Loading...</div>
+    if (isLoading) return <div>ກຳລັງໂຫຼດຂໍ້ມູນ...</div>
 
     return (
         <div className="rounded-md border">
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>NO:</TableHead>
-                        <TableHead>Order code</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Slip</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
+                        <TableHead>ລຳດັບ:</TableHead>
+                        <TableHead>ລະຫັດອໍເດີ້</TableHead>
+                        <TableHead>ຈຳນວນເງິນ</TableHead>
+                        <TableHead>ສະຖານະ</TableHead>
+                        <TableHead>ບິນໂອນ (Slip)</TableHead>
+                        <TableHead className="text-right">ການຈັດການ</TableHead>
                     </TableRow>
                 </TableHeader>
 
@@ -55,7 +55,7 @@ export function PaymentTable({ payments, isLoading, onVerify }: Props) {
                                     </Button> */}
                                     {p.status === "PENDING" && (
                                         <Button size="sm" onClick={() => onVerify(p)}>
-                                            Verify
+                                            ກວດສອບ
                                         </Button>
                                     )}
                                 </TableCell>
@@ -63,8 +63,8 @@ export function PaymentTable({ payments, isLoading, onVerify }: Props) {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={5} className="text-center">
-                                No data
+                            <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                ບໍ່ມີຂໍ້ມູນ
                             </TableCell>
                         </TableRow>
                     )}

@@ -10,24 +10,24 @@ export default function ReportFilter() {
             <div className="grid md:grid-cols-3 gap-4">
 
                 <select
-                    className="border rounded p-2"
+                    className="border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500"
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
                 >
                     <option value="WEEK">
-                        Weekly
+                        ລາຍອາທິດ (Weekly)
                     </option>
 
                     <option value="MONTH">
-                        Monthly
+                        |ລາຍເດືອນ (Monthly)
                     </option>
 
                     <option value="YEAR">
-                        Yearly
+                        ລາຍປີ (Yearly)
                     </option>
 
                     <option value="CUSTOM">
-                        Custom Range
+                        ກຳນົດເອງ (Custom Range)
                     </option>
                 </select>
 
@@ -35,12 +35,12 @@ export default function ReportFilter() {
                     <>
                         <input
                             type="date"
-                            className="border rounded p-2"
+                            className="border rounded p-2 text-sm"
                         />
 
                         <input
                             type="date"
-                            className="border rounded p-2"
+                            className="border rounded p-2 text-sm"
                         />
                     </>
                 )}

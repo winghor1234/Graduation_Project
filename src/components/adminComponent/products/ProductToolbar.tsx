@@ -1,72 +1,3 @@
-// "use client"
-// import { Input } from "@/components/ui/input"
-// import { Button } from "@/components/ui/button"
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
-// import { ArrowUpDown, Plus } from "lucide-react"
-// import { PropsTable } from "../Type"
-
-
-
-// export function ProductToolbar({ table, onAdd }: PropsTable) {
-//     const setSort = (sort: string, order: "asc" | "desc") => {
-//         table.setSort(sort)
-//         table.setOrder(order)
-//     }
-//     return (
-//         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-//             <div className="flex gap-2">
-//                 <Input
-//                     placeholder="Search products..."
-//                     value={table.search}
-//                     onChange={(e) => table.setSearch(e.target.value)}
-//                     className="w-[250px]"
-//                 />
-//                 <DropdownMenu>
-//                     <DropdownMenuTrigger asChild>
-//                         <Button variant="outline" size="sm" className="gap-2">
-//                             <ArrowUpDown className="w-4 h-4" />
-//                             Sort
-//                         </Button>
-//                     </DropdownMenuTrigger>
-//                     <DropdownMenuContent>
-//                         <DropdownMenuItem
-//                             onClick={() => setSort("created_at", "desc")}
-//                         >
-//                             Date (Newest)
-//                         </DropdownMenuItem>
-//                         <DropdownMenuItem
-//                             onClick={() => setSort("product_name", "asc")}
-//                         >
-//                             Name (A → Z)
-//                         </DropdownMenuItem>
-//                         <DropdownMenuItem
-//                             onClick={() => setSort("product_name", "desc")}
-//                         >
-//                             Name (Z → A)
-//                         </DropdownMenuItem>
-
-//                         <DropdownMenuItem
-//                             onClick={() => setSort("price", "asc")}
-//                         >
-//                             Price (Low → High)
-//                         </DropdownMenuItem>
-
-//                         <DropdownMenuItem
-//                             onClick={() => setSort("price", "desc")}
-//                         >
-//                             Price (High → Low)
-//                         </DropdownMenuItem>
-//                     </DropdownMenuContent>
-//                 </DropdownMenu>
-//             </div>
-//             <Button onClick={onAdd} className="gap-2">
-//                 <Plus className="w-4 h-4" />
-//                 Add Product
-//             </Button>
-//         </div>
-//     )
-// }
-
 "use client"
 
 import { Input } from "@/components/ui/input"
@@ -92,7 +23,7 @@ export function ProductToolbar({ table, onAdd }: PropsTable) {
             {/* Left: Search + Sort */}
             <div className="flex items-center gap-2">
                 <Input
-                    placeholder="Search products..."
+                    placeholder="ຄົ້ນຫາສິນຄ້າ..."
                     value={table.search}
                     onChange={(e) => table.setSearch(e.target.value)}
                     className="w-60"
@@ -102,26 +33,26 @@ export function ProductToolbar({ table, onAdd }: PropsTable) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-1.5 shrink-0">
                             <ArrowUpDown className="h-3.5 w-3.5" />
-                            Sort
+                            ລຽງລຳດັບ
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-44">
                         <DropdownMenuItem onClick={() => setSort("created_at", "desc")}>
-                            Date (Newest)
+                            ວັນທີ (ໃໝ່ສຸດ)
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => setSort("product_name", "asc")}>
-                            Name (A → Z)
+                            ຊື່ສິນຄ້າ (ກ → ຮ)
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setSort("product_name", "desc")}>
-                            Name (Z → A)
+                            ຊື່ສິນຄ້າ (ຮ → ກ)
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => setSort("price", "asc")}>
-                            Price (Low → High)
+                            ລາຄາ (ຕ່ຳ → ສູງ)
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setSort("price", "desc")}>
-                            Price (High → Low)
+                            ລາຄາ (ສູງ → ຕ່ຳ)
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -130,7 +61,7 @@ export function ProductToolbar({ table, onAdd }: PropsTable) {
             {/* Right: Add button */}
             <Button onClick={onAdd} size="sm" className="gap-1.5 shrink-0">
                 <Plus className="h-4 w-4" />
-                Add Product
+                ເພີ່ມສິນຄ້າ
             </Button>
         </div>
     )

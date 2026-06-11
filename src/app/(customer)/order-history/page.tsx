@@ -10,8 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useGetAllOrders } from '@/app/features/hooks/Order'; // 🌟 เรียกใช้งาน Hook ตัวใหม่ของคุณ
-import { useCreateOrder } from '@/app/features/hooks/Order'; // ใช้สำหรับการอัปโหลด/ส่งสลิปโอนเงินใหม่
+import { useGetAllOrders } from '@/app/features/hooks/Order'; // 🌟 ເອີ້ນນຳໃຊ້ Hook ໂຕໃໝ່ຂອງທ່ານ
+import { useCreateOrder } from '@/app/features/hooks/Order'; // ໃຊ້ສຳລັບການອັບໂຫລດ/ສົ່ງສະລິບໂອນເງິນໃໝ່
 import { Order } from '@/modules/order/order.types';
 
 const statusColors: Record<string, string> = {
@@ -29,19 +29,19 @@ const paymentStatusColors: Record<string, string> = {
 };
 
 export default function OrderHistoryPage() {
-    // ⚡ เรียกใช้งานข้อมูลออเดอร์ทั้งหมดจากฐานข้อมูลหลังบ้าน
+    // ⚡ ເອີ້ນນຳໃຊ້ຂໍ້ມູນອໍເດີ້ທັງໝົດຈາກຖານຂໍ້ມູນລະບົບຫຼັງບ້ານ
     const { data: apiOrders, isLoading } = useGetAllOrders();
-    const { mutate: uploadSlip } = useCreateOrder(); // สำหรับส่งไฟล์ FormData สลิปใหม่ขึ้น Server
+    const { mutate: uploadSlip } = useCreateOrder(); // ສຳລັບສົ່ງໄຟລ໌ FormData ສະລິບໃໝ່ຂຶ້ນ Server
 
     const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
     console.log("data: ", apiOrders)
 
-    // สกัดอาร์เรย์รายการออเดอร์ออกมารองรับโครงสร้าง Object อย่างปลอดภัย
+    // ສະກັດອາເຣລາຍການອໍເດື່ອອກມາຮອງຮັບໂຄງສ້າງ Object ຢ່າງປອດໄພ
     const orders = React.useMemo(() => {
         if (!apiOrders) return [];
-        return (apiOrders) as Order[];
+        return (apiOrders?.data || []) as Order[];
     }, [apiOrders]);
 
     const handleFileUpload = (orderId: string, file: File) => {
@@ -49,14 +49,14 @@ export default function OrderHistoryPage() {
         bodyFormData.append("order_id", orderId);
         bodyFormData.append("file", file);
 
-        // ยิง API อัปเดตไฟล์สลิปหลักฐานโอนเงินผ่านระบบ React Query
+        // ຍິງ API ອັບເດດໄຟລ໌ສະລິບຫຼັກຖານໂອນເງິນຜ່ານລະບົບ React Query
         uploadSlip(bodyFormData, {
             onSuccess: () => {
                 setUploadDialogOpen(false);
-                toast.success('อัปโหลดหลักฐานการโอนเงินเรียบร้อยแล้วครับ! 🎉');
+                toast.success('ອັບໂຫລດຫຼັກຖານການໂอนເງິນຮຽບຮ້ອຍແລ້ວ! 🎉');
             },
             onError: (error) => {
-                toast.error(error?.message || 'เกิดข้อผิดพลาดในการอัปโหลดหลักฐาน ❌');
+                toast.error(error?.message || 'ເກີດຂໍ້ຜິດພາດໃນການອັບໂຫລດຫຼັກຖານ ❌');
             }
         });
     };
@@ -69,7 +69,7 @@ export default function OrderHistoryPage() {
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center text-md font-medium text-gray-500 animate-pulse">
-                กำลังโหลดประวัติการสั่งซื้อของคุณ... 📦
+                ກຳລັງໂຫລດປະຫວັດການສັ່ງຊື້ຂອງທ່ານ... 📦
             </div>
         );
     }
@@ -93,9 +93,9 @@ export default function OrderHistoryPage() {
 
                 <div className="space-y-6">
                     {orders.map((order) => {
-                        // แมปข้อมูลสินค้าในบิลให้ตรงตามโครงสร้าง Prisma (orderDetail)
+                        // ແມັບຂໍ້ມູນສິນຄ້າໃນບິນໃຫ້ກົງຕາມໂຄງສ້າງ Prisma (orderDetail)
                         const orderItems = order.orderDetail || [];
-                        // ดึงสลิปจากก้อนข้อมูล payment แรก (ถ้ามี)
+                        // ດຶງສະລິບຈາກກ້ອນຂໍ້ມູນ payment ທຳອິດ (ຖ້າມີ)
                         const currentPayment = order.payment?.[0] || order.payment || {};
 
                         return (
@@ -129,7 +129,7 @@ export default function OrderHistoryPage() {
                                 </CardHeader>
 
                                 <CardContent className="pt-6 space-y-4">
-                                    {/* รายการสินค้าภายในออเดอร์นี้ */}
+                                    {/* ລາຍການສິນຄ້າພາຍໃນອໍເດື່ອນີ້ */}
                                     <div className="divide-y divide-gray-100">
                                         {orderItems.map((item: any, idx: number) => {
                                             const productInfo = item.product || {};
@@ -149,7 +149,7 @@ export default function OrderHistoryPage() {
                                                             {productInfo.product_name || "Unknown Product"}
                                                         </p>
                                                         <p className="text-xs text-gray-400 mt-0.5">
-                                                            Quantity: {item.quantity} ชิ้น × ฿{Number(item.price).toLocaleString()}
+                                                            Quantity: {item.quantity} ຊິ້ນ × ฿{Number(item.price).toLocaleString()}
                                                         </p>
                                                     </div>
                                                     <div className="text-right">
@@ -162,7 +162,7 @@ export default function OrderHistoryPage() {
                                         })}
                                     </div>
 
-                                    {/* สรุปราคาสุทธิและปุ่มดำเนินการตรวจสอบ */}
+                                    {/* ສະຫຼຸບລາຄາສຸດທິ ແລະ ປຸ່ມດຳເນີນການກວດສອບ */}
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t gap-4">
                                         <div>
                                             <p className="text-xs text-gray-400 font-light">Total Amount</p>
@@ -172,7 +172,7 @@ export default function OrderHistoryPage() {
                                         </div>
 
                                         <div className="flex gap-3 justify-end">
-                                            {/* ปุ่มส่องพรีวิวดูรูปสลิปโอนเงินเดิมที่เคยแนบไว้ */}
+                                            {/* ປຸ່ມເບິ່ງຕົວຢ່າງຮູບສະລິບໂອນເງິນເດີມທີ່ເຄີຍແນບໄວ້ */}
                                             {currentPayment.slip_url && (
                                                 <Dialog>
                                                     <DialogTrigger asChild>
@@ -197,7 +197,7 @@ export default function OrderHistoryPage() {
                                                 </Dialog>
                                             )}
 
-                                            {/* แสดงปุ่มอัปโหลดสลิปใหม่กรณีค้างจ่าย หรือสลิปโดนปฏิเสธ (REJECTED) */}
+                                            {/* ສະແດງປຸ່ມອັບໂຫລດສະລິບໃໝ່ກໍລະນີຄ້າງຈ່າຍ ຫຼື ສະລິບຖືກປະຕິເສດ (REJECTED) */}
                                             {(order.status === 'WAITING_PAYMENT' || currentPayment.status === 'REJECTED') && (
                                                 <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-9 shadow-sm" onClick={() => openUploadDialog(order.order_id)}>
                                                     <Upload className="size-3.5 mr-1.5" />
@@ -212,7 +212,7 @@ export default function OrderHistoryPage() {
                     })}
                 </div>
 
-                {/* กล่องอัปโหลดไฟล์หลักฐาน (Upload Dialog) */}
+                {/* ກ່ອງອັບໂຫລດໄຟລ໌ຫຼັກຖານ (Upload Dialog) */}
                 <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
                     <DialogContent className="max-w-md rounded-xl">
                         <DialogHeader>
@@ -235,10 +235,10 @@ export default function OrderHistoryPage() {
                                 <label htmlFor="slip-upload" className="cursor-pointer block">
                                     <Upload className="size-10 mx-auto mb-3 text-gray-400" />
                                     <p className="text-sm font-semibold text-gray-800 mb-1">
-                                        คลิกเพื่ออัปโหลดไฟล์สลิปโอนเงิน
+                                        ຄລິກເພື່ອອັບໂຫລດໄຟລ໌ສະລິບໂອນເງິນ
                                     </p>
                                     <p className="text-xs text-gray-400">
-                                        รองรับไฟล์รูปภาพ PNG, JPG สูงสุด 10MB
+                                        ຮອງຮັບໄຟລ໌ຮູບພາບ PNG, JPG ສູງສຸດ 10MB
                                     </p>
                                 </label>
                             </div>

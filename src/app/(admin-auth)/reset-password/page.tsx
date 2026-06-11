@@ -2,125 +2,93 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { AlertCircle, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, ArrowLeft, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { useAdminResetPassword } from "@/app/features/hooks";
-import { ResetPasswordInput } from "@/modules/auth/auth.type";
+import { useEmployeeForgotPassword } from "@/app/features/hooks/Auth";
+import { ForgotPasswordInput } from "@/modules/auth/auth.type";
 import z from "zod";
-import { getRedirectPath } from "@/utils/auth";
 
-const resetPasswordSchema = z.object({
+const forgotPasswordSchema = z.object({
     email: z.string().email(),
-    password: z.string().min(6),
-})
+});
 
-export default function ResetPasswordPage() {
-
+export default function ForgotPasswordPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const email = searchParams.get("email") || "";
-    const { mutate: resetPassword, isPending } = useAdminResetPassword();
-    const [showPassword, setShowPassword] = useState(false);
-    // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { mutate: sendOtp, isPending } = useEmployeeForgotPassword();
 
-    const { register, handleSubmit, formState: { errors }, } = useForm<ResetPasswordInput>({
-        resolver: zodResolver(resetPasswordSchema), defaultValues: {
-            email,
-        },
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<ForgotPasswordInput>({
+        resolver: zodResolver(forgotPasswordSchema),
     });
 
-
-    const onSubmit = (data: ResetPasswordInput) => {
-
-        resetPassword(
-            { email, password: data.password },
-            {
-                onSuccess: () => {
-                    toast.success("Password reset successfully!");
-                    router.replace("/dashboard")
-                    // router.replace(getRedirectPath(resetPassword.user?.role));
-                },
-                onError: () => {
-                    toast.error("Failed to reset password");
-                },
-            }
-        );
-
+    const onSubmit = (data: ForgotPasswordInput) => {
+        sendOtp(data, {
+            onSuccess: () => {
+                toast.success("ສົ່ງລະຫັດ OTP ໄປທີ່ອີເມວຂອງທ່ານແລ້ວ!");
+                router.push(`/verify-otp?email=${data.email}`);
+            },
+            onError: () => {
+                toast.error("ບໍ່ສາມາດສົ່ງລະຫັດ OTP ໄດ້");
+            },
+        });
     };
 
     return (
         <>
             <Toaster />
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <input type="hidden" {...register("email")} />
+
                 <div className="space-y-2">
-                    <Label htmlFor="password">New password</Label>
+                    <Label htmlFor="email">ທີ່ຢູື່ອີເມວ</Label>
 
                     <div className="relative">
-                        <Input
-                            id="password"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter new password"
-                            {...register("password")}
-                            className={errors.password ? "border-red-500" : ""}
-                        />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
 
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        >
-                            {showPassword ? <EyeOff /> : <Eye />}
-                        </button>
+                        <Input
+                            id="email"
+                            type="email"
+                            placeholder="admin@sportswear.com"
+                            {...register("email")}
+                            className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
+                        />
                     </div>
 
-                    {errors.password && (
+                    {errors.email && (
                         <p className="text-sm text-red-500 flex items-center gap-1">
-                            <AlertCircle />
-                            {errors.password.message}
+                            <AlertCircle className="h-4 w-4" />
+                            {errors.email.message}
                         </p>
                     )}
                 </div>
 
-                {/* <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirm password</Label>
-
-                        <div className="relative">
-                            <Input
-                                id="confirmPassword"
-                                type={showConfirmPassword ? "text" : "password"}
-                                {...register("confirmPassword")}
-                                className={errors.confirmPassword ? "border-red-500" : ""}
-                            />
-
-                            <button
-                                type="button"
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                            >
-                                {showConfirmPassword ? <EyeOff /> : <Eye />}
-                            </button>
-                        </div>
-
-                        {errors.confirmPassword && (
-                            <p className="text-sm text-red-500 flex items-center gap-1">
-                                <AlertCircle />
-                                {errors.confirmPassword.message}
-                            </p>
-                        )}
-                    </div>  */}
-
                 <Button type="submit" className="w-full" disabled={isPending}>
-                    {isPending ? "Resetting password..." : "Reset password"}
+                    {isPending ? "ກຳລັງສົ່ງ OTP..." : "ສົ່ງ OTP"}
                 </Button>
 
+                <Link
+                    href="/login"
+                    className="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-gray-900 py-2"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    ກັບຄືນໄປໜ້າເຂົ້າສູ່ລະບົບ
+                </Link>
+
             </form>
+
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-900">
+                    <strong>ໝາຍເຫດ:</strong> ລະຫັດ OTP ຈະມີອາຍຸການໃຊ້ງານໄດ້ 10 ນາທີ.
+                </p>
+            </div>
         </>
     );
 }

@@ -17,18 +17,18 @@ type Props = {
 
 export function ImportTable({ imports, isLoading, onView, onDelete }: Props) {
 
-    if (isLoading) return <Card className="p-6 text-center">Loading...</Card>
+    if (isLoading) return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
 
     return (
         <Card>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>NO:</TableHead>
-                        <TableHead>Import code</TableHead>
-                        <TableHead>Purchase code</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Employee</TableHead>
+                        <TableHead>ລຳດັບ:</TableHead>
+                        <TableHead>ລະຫັດນຳເຂົ້າ</TableHead>
+                        <TableHead>ລະຫັດສັ່ງຊື້</TableHead>
+                        <TableHead>ວັນທີ</TableHead>
+                        <TableHead>ພະນັກງານ</TableHead>
                         <TableHead />
                     </TableRow>
                 </TableHeader>

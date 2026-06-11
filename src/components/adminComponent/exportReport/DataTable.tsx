@@ -17,12 +17,12 @@ export default function DataTable<T>({
     data,
     columns,
     loading = false,
-    emptyMessage = "No data found",
+    emptyMessage = "ບໍ່ພົບຂໍ້ມູນ",
 }: Props<T>) {
     if (loading) {
         return (
             <div className="bg-white rounded-xl p-6">
-                Loading...
+                ກຳລັງໂຫຼດຂໍ້ມູນ...
             </div>
         );
     }

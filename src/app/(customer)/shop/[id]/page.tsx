@@ -17,7 +17,7 @@ import { Product } from '@/components/adminComponent/products/ProductType';
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
 
-    // เปลี่ยนชื่อตัวแปรผลลัพธ์ของ Hook เป็น apiProductResponse เพื่อไม่ให้สับสนกับตัว Type Product
+    // ປ່ຽນຊື່ຕົວແປຜົນລັບຂອງ Hook ເປັນ apiProductResponse ເພື່ອບໍ່ໃຫ້ສັບສົນກັບຕົວ Type Product
     const { data: apiProductResponse, } = useGetProduct(id);
     const { data: apiAllProductsResponse, isLoading: isAllLoading } = useGetAllProducts();
 
@@ -26,11 +26,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const [quantity, setQuantity] = useState<number>(1);
     const [selectedImage, setSelectedImage] = useState<number>(0);
 
-    // ✅ ปรับความปลอดภัย: แกะข้อมูลผ่านรูปแบบที่รองรับกรณีข้อมูลยังมาไม่ถึงหน้าบ้าน
+    // ✅ ປັບຄວາມປອດໄພ: ແກະຂໍ້ມູນຜ່ານຮູບແບບທີ່ຮອງຮັບກໍລະນີຂໍ້ມູນຍັງມາບໍ່ເຖິງໜ້າບ້ານ
     const product = (apiProductResponse || apiProductResponse) as Product | null;
     const allProducts = (apiAllProductsResponse || apiAllProductsResponse || []) as Product[];
 
-    // ✨ [Rules of Hooks] ประกาศใช้กลุ่ม useMemo ด้านบนสุดร่วมกันอย่างปลอดภัย ไร้ if คั่นกลาง
+    // ✨ [ກົດລະບຽບຂອງ Hooks] ປະກາດໃຊ້ກຸ່ມ useMemo ດ້ານເທິງສຸດຮ່ວມກັນຢ່າງປອດໄພ ບໍ່ມີ if ຂັ້ນກາງ
     const images = useMemo(() => {
         if (!product) return ['/placeholder.png'];
         const firstImg = product.images?.[0]?.image_url || '/placeholder.png';
@@ -42,13 +42,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         return allProducts.filter(p => p.category_id === product.category_id && p.product_id !== product.product_id).slice(0, 4);
     }, [allProducts, product]);
 
-    // 🛑 [Early Return] สเต็ปดักเช็คสถานะแอปพลิเคชัน (ย้ายลงมาด้านล่าง Hooks ทั้งหมดถูกต้องตามกติกา)
+    // 🛑 [Early Return] ສະເຕັບດັກເຊັກສະຖານະແອັບພລິເຄຊັນ (ຍ້າຍລົງມາດ້ານລຸ່ມ Hooks ທັງໝົດ ຖືກຕ້ອງຕາມກົດລະບຽບ)
     // if (isProductLoading || isAllLoading) return <LoadingDetailSkeleton />;
     if (!product) return <ProductNotFoundState />;
 
     const handleAddToCart = () => {
         addToCart(product.product_id, quantity);
-        toast.success(`เพิ่ม ${product.product_name} ลงตะกร้าเรียบร้อยแล้วครับ! 🛒`);
+        toast.success(`ເພີ່ມ ${product.product_name} ລົງກະຕ່າຮຽບຮ້ອຍແລ້ວ! 🛒`);
         router.push('/cart');
     };
 
@@ -57,12 +57,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <div className="container mx-auto px-4">
                 <Link href="/products">
                     <Button variant="ghost" className="mb-6">
-                        <ArrowLeft className="size-4 mr-2" /> Back to Shop
+                        <ArrowLeft className="size-4 mr-2" /> ກັບຄືນໄປໜ້າຮ້ານ
                     </Button>
                 </Link>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-                    {/* ซีกซ้าย: แกลเลอรีรูปภาพ */}
+                    {/* ຊີກຊ້າຍ: ແກເລີຣີຮູບພາບ */}
                     <div>
                         <div className="aspect-square relative bg-gray-50 rounded-xl overflow-hidden mb-4 border shadow-sm">
                             <Image src={images[selectedImage]} alt={product.product_name} fill priority className="object-cover" />
@@ -76,20 +76,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         </div>
                     </div>
 
-                    {/* ซีกขวา: ข้อมูลรายละเอียดและปุ่มสั่งซื้อ */}
+                    {/* ຊີກຂວາ: ຂໍ້ມູນລາຍລະອຽດ ແລະ ປຸ່ມສັ່ງຊື້ */}
                     <div>
-                        <Badge className="mb-4">{product.category?.category_name || "Sportswear"}</Badge>
+                        <Badge className="mb-4">{product.category?.category_name || "ເຄື່ອງກີລາ"}</Badge>
                         <h1 className="text-4xl font-bold mb-4 text-gray-900 tracking-tight">{product.product_name}</h1>
                         <p className="text-3xl font-bold mb-6 text-gray-900">฿{product.sale_price.toLocaleString()}</p>
-                        <Badge variant={product.stock_qty > 20 ? 'secondary' : 'destructive'} className="mb-6">{product.stock_qty > 0 ? `${product.stock_qty} in stock` : 'Out of stock'}</Badge>
+                        <Badge variant={product.stock_qty > 20 ? 'secondary' : 'destructive'} className="mb-6">{product.stock_qty > 0 ? `${product.stock_qty} ຊິ້ນໃນສາງ` : 'ສິນຄ້າໝົດແລ້ວ'}</Badge>
 
                         <div className="mb-8">
-                            <h3 className="text-lg font-semibold mb-2 text-gray-900">Description</h3>
-                            <p className="text-gray-600 font-light leading-relaxed">{product.description || "ไม่มีข้อมูลรายละเอียดของสินค้าชิ้นนี้"}</p>
+                            <h3 className="text-lg font-semibold mb-2 text-gray-900">ລາຍລະອຽດສິນຄ້າ</h3>
+                            <p className="text-gray-600 font-light leading-relaxed">{product.description || "ບໍ່ມີຂໍ້ມູນລາຍລະອຽດຂອງສິນຄ້າຊິ້ນນີ້"}</p>
                         </div>
 
                         <div className="mb-6">
-                            <label className="mb-2 block font-semibold text-gray-900">Quantity</label>
+                            <label className="mb-2 block font-semibold text-gray-900">ຈຳນວນ</label>
                             <div className="flex items-center gap-4">
                                 <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}><Minus className="size-4" /></Button>
                                 <span className="text-xl font-semibold w-12 text-center text-gray-900">{quantity}</span>
@@ -98,15 +98,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         </div>
 
                         <Button size="lg" className="w-full text-lg py-6 bg-blue-600 hover:bg-blue-700 text-white" onClick={handleAddToCart} disabled={product.stock_qty === 0}>
-                            <ShoppingCart className="size-5 mr-2" /> Add to Cart
+                            <ShoppingCart className="size-5 mr-2" /> ເພີ່ມໃສ່ກະຕ່າ
                         </Button>
                     </div>
                 </div>
 
-                {/* สินค้าแนะนำหมวดหมู่เดียวกัน */}
+                {/* ສິນຄ້າແນະນຳໝວດໝູ່ດຽວກັນ */}
                 {relatedProducts.length > 0 && (
                     <div className="border-t pt-16">
-                        <h2 className="text-3xl font-bold mb-8 text-gray-900 tracking-tight">You May Also Like</h2>
+                        <h2 className="text-3xl font-bold mb-8 text-gray-900 tracking-tight">ສິນຄ້າທີ່ທ່ານອາດຈະສົນໃຈ</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {relatedProducts.map((item) => (
                                 <Card key={item.product_id} className="group cursor-pointer border shadow-sm overflow-hidden bg-white">
@@ -133,7 +133,7 @@ function LoadingDetailSkeleton() {
     return (
         <div className="flex h-screen w-full flex-col items-center justify-center gap-3 bg-white">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
-            <p className="text-sm font-medium text-gray-500 animate-pulse">กำลังดึงข้อมูลสินค้า... 📦</p>
+            <p className="text-sm font-medium text-gray-500 animate-pulse">ກຳລັງດຶງຂໍ້ມູນສິນຄ້າ... 📦</p>
         </div>
     );
 }
@@ -141,8 +141,8 @@ function LoadingDetailSkeleton() {
 function ProductNotFoundState() {
     return (
         <div className="container mx-auto px-4 py-20 text-center">
-            <h1 className="text-2xl font-bold mb-4 text-gray-900">Product not found</h1>
-            <Link href="/products"><Button>Back to Shop</Button></Link>
+            <h1 className="text-2xl font-bold mb-4 text-gray-900">ບໍ່ພົບສິນຄ້າທີ່ຄົ້ນຫາ</h1>
+            <Link href="/products"><Button>ກັບຄືນໄປໜ້າຮ້ານ</Button></Link>
         </div>
     );
 }

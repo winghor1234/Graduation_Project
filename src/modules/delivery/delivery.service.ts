@@ -130,7 +130,7 @@ export const deliveryService = {
                 data: {
                     order_id: data.order_id,
                     address_id: address.address_id,
-                    tracking_number: generateTrackingCode(),
+                    // tracking_number: code,
                     status: "PENDING",
                     provider: "Anousith Express"
                 }
@@ -143,11 +143,11 @@ export const deliveryService = {
         const delivery = await prisma.delivery.findUnique({
             where: { delivery_id: id }
         })
-        console.log(data)
+        // console.log(data)
         if (!delivery) throw new NotFoundError("Delivery not found")
-        if (data.status === DeliveryStatus.SHIPPED) {
-            throw new BadRequestError("Tracking number required before shipping")
-        }
+        // if (data.status === DeliveryStatus.SHIPPED) {
+        //     throw new BadRequestError("Tracking number required before shipping")
+        // }
         return prisma.delivery.update({
             where: { delivery_id: id },
             data

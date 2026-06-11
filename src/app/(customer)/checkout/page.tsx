@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, { useMemo, useEffect } from 'react';
@@ -56,11 +54,11 @@ type Province = {
     updatedAt?: string;
 }
 
-// 🛡️ 1. กำหนด Zod Schema ให้ตรงตามข้อมูลฟอร์ม
+// 🛡️ 1. ກຳນົດ Zod Schema ໃຫ້ກົງຕາມຂໍ້ມູນຟອມ
 const checkoutSchema = z.object({
-    province_id: z.string().min(1, 'กรุณาระบุจังหวัด'),
-    district_id: z.string().min(1, 'กรุณาระบุอำเภอ'),
-    branch_id: z.string().min(1, 'กรุณาระบุสาขา'),
+    province_id: z.string().min(1, 'ກະລຸນາລະບຸແຂວງ'),
+    district_id: z.string().min(1, 'ກະລຸນาລະບຸເມືອງ'),
+    branch_id: z.string().min(1, 'ກະລຸນາລະບຸສາຂາ'),
     paymentSlip: z.any().optional(),
 });
 
@@ -78,7 +76,7 @@ export default function CheckoutPage() {
     const userData = useAuthMe();
     const user: User = userData?.user;
 
-    // ⚡ 2. ประกาศใช้งาน React Hook Form พร้อมกำหนดค่าเริ่มต้น
+    // ⚡ 2. ປະກາດໃຊ້ງານ React Hook Form ພ້ອມກຳນົດຄ່າເລີ່ມຕົ້ນ
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CheckoutFormData>({
         resolver: zodResolver(checkoutSchema),
         defaultValues: {
@@ -89,39 +87,39 @@ export default function CheckoutPage() {
     });
 
     // ==========================================
-    // 🔄 ตรรกะคัดกรองข้อมูล Dropdown สัมพันธ์ (Cascading Dropdown)
+    // 🔄 ຕັກກະຄັດກອງຂໍ້ມູນ Dropdown ສຳພັນ (Cascading Dropdown)
     // ==========================================
 
-    // เฝ้าติดตามค่า ID ที่ถูกเลือกใน Dropdown ปัจจุบัน
+    // ຕິດຕາມຄ່າ ID ທີ່ຖືກເລືອກໃນ Dropdown ປັດຈຸບັນ
     const selectedProvinceId = watch('province_id');
     const selectedDistrictId = watch('district_id');
 
-    // 🔍 ดึงข้อมูล "จังหวัด" ที่เลือก เพื่อเอาไปใช้ดึงรายชื่ออำเภอข้างใน
+    // 🔍 ດຶງຂໍ້ມູນ "ແຂວງ" ທີ່ເລືອກ ເພື່ອນຳໄປໃຊ້ດຶງລາຍຊື່ເມືອງຂ້າງໃນ
     const selectedProvinceData = useMemo(() => {
         if (!provinces || !selectedProvinceId) return null;
         return provinces.find((p) => p.province_id === selectedProvinceId);
     }, [provinces, selectedProvinceId]);
 
-    // 🔍 ดึงข้อมูล "อำเภอ" ที่เลือก เพื่อเอาไปใช้ดึงรายชื่อสาขาข้างใน
+    // 🔍 ດຶงຂໍ້ມູນ "ເມືອງ" ທີ່ເລືອກ ເພື່ອນຳໄປໃຊ້ດຶງລายຊື່ສາຂາຂ້າງໃນ
     const selectedDistrictData = useMemo(() => {
         if (!selectedProvinceData || !selectedDistrictId) return null;
         return selectedProvinceData.districts?.find((d) => d.district_id === selectedDistrictId);
     }, [selectedProvinceData, selectedDistrictId]);
 
-    // 🧼 ล้างค่าอำเภอและสาขาทันที เมื่อผู้ใช้งานทำการเปลี่ยนจังหวัดใหม่
+    // 🧼 ລ້າງຄ່າເມືອງ ແລະ ສາຂາທັນທີ ເມື່ອຜູ້ໃຊ້ງານທຳການປ່ຽນແຂວງໃໝ່
     useEffect(() => {
         setValue('district_id', '');
         setValue('branch_id', '');
     }, [selectedProvinceId, setValue]);
 
-    // 🧼 ล้างค่าสาขาทันที เมื่อผู้ใช้งานทำการเปลี่ยนอำเภอใหม่
+    // 🧼 ล້າງຄ່າສາຂາທันທີ ເມື່ອຜູ້ໃຊ້ງານທຳການປ່ຽນເມືອງໃໝ່
     useEffect(() => {
         setValue('branch_id', '');
     }, [selectedDistrictId, setValue]);
 
     // ==========================================
 
-    // ตรวจจับไฟล์สลิปเพื่อนำมาทำพรีวิวรูปภาพ
+    // ກວດຈັບໄຟລ໌ສະລິບເພື່ອນຳມາທຳພຣີວິວຮູບພາບ
     const currentSlipFile = watch('paymentSlip');
 
     const previewUrl = useMemo(() => {
@@ -133,7 +131,7 @@ export default function CheckoutPage() {
 
     const allProducts = (apiAllProducts || []) as Product[];
 
-    // 1. นำข้อมูลตะกร้าหน้าบ้านมารวมตรรกะราคาและภาพถ่ายจริงร่วมกับคลังสินค้าหลังบ้าน
+    // 1. ນຳຂໍ້ມູນກະຕ່າໜ້າບ້ານມາລວມຕັກກະຣາຄາ ແລະ ພາບຖ່າຍຈິງຮ່ວມກັບສາງສິນຄ້າຫຼັງບ້ານ
     const cartItems = useMemo(() => {
         if (!cart?.length) return [];
 
@@ -164,7 +162,7 @@ export default function CheckoutPage() {
     }, [cart, allProducts]);
     console.log("cart item ; ", cartItems)
 
-    // 2. คำนวณราคายอดรวมสินค้าทั้งหมด
+    // 2. ຄຳນວນລາຄາຍອດລວມສິນຄ້າທັງໝົດ
     const subtotal = useMemo(() => {
         return cartItems.reduce((sum, item) => {
             const price = item.product?.sale_price || 0;
@@ -172,10 +170,10 @@ export default function CheckoutPage() {
         }, 0);
     }, [cartItems]);
 
-    const shipping = subtotal > 0 ? 100 : 0; // ยอดค่าจัดส่งแบบสกุลเงินบาท ฿100
+    const shipping = subtotal > 0 ? 100 : 0; // ຍອດຄ່າຈັດສົ່ງແບບສະກຸນເງິນບາດ ฿100
     const total = subtotal + shipping;
 
-    // 3. ใช้ useEffect ดีดหน้าเว็บกลับไปที่ตะกร้าหากไม่มีสิ่งของค้างอยู่
+    // 3. ໃຊ້ useEffect ດີດໜ້າເວັບກັບໄປທີ່ກະຕ່າຫາກບໍ່ມີສິນຄ້າຄ້າງຢູ່
     useEffect(() => {
         if (!isLoading && (!cart || cart.length === 0)) {
             router.push('/cart');
@@ -189,7 +187,7 @@ export default function CheckoutPage() {
         }
     };
 
-    // 🚀 4. ฟังก์ชันส่งข้อมูลเมื่อผ่านเกณฑ์เงื่อนไขของ Schema ทั้งหมดแล้ว
+    // 🚀 4. ຟັງຊັນສົ່ງຂໍ້ມູນເມື່ອຜ່ານເກນເງື່ອນໄຂຂອງ Schema ທັງໝົດແລ້ວ
     const onFormSubmit = (data: CheckoutFormData) => {
         console.log("data : ", user);
         const bodyFormData = new FormData();
@@ -212,15 +210,15 @@ export default function CheckoutPage() {
             bodyFormData.append("file", data.paymentSlip);
         }
 
-        // เรียกใช้ Mutation ของ React Query เพื่อบันทึกข้อมูล
+        // ເອີ້ນໃຊ້ Mutation ຂອງ React Query ເພື່ອບັນທຶກຂໍ້ມູນ
         createOrder(bodyFormData, {
             onSuccess: () => {
                 clearCart();
-                toast.success('ทำการสั่งซื้อสินค้าเรียบร้อยแล้วครับ! 🎉');
+                toast.success('ທຳການສັ່ງຊື້ສິນຄ້າສຳເລັດຮຽບຮ້ອຍແລ້ວ! 🎉');
                 router.push('/products');
             },
             onError: (error) => {
-                toast.error(error?.message || 'เกิดข้อผิดพลาดในการสั่งซื้อสินค้า กรุณาลองใหม่อีกครั้งครับ ❌');
+                toast.error(error?.message || 'ເກີດຂໍ້ຜິດພາດໃນການສັ່ງຊື້ສິນຄ້າ ກະລຸນາລອງໃໝ່ອີກຄັ້ງ ❌');
             }
         });
     };
@@ -228,7 +226,7 @@ export default function CheckoutPage() {
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center text-md font-medium text-gray-500 animate-pulse">
-                กำลังจัดเตรียมหน้ารายการสั่งซื้อ... 📦
+                ກຳລັງຈັດຕຽມໜ້າລາຍການສັ່ງຊື້... 📦
             </div>
         );
     }
@@ -236,7 +234,7 @@ export default function CheckoutPage() {
     if (!cart || cart.length === 0) return null;
     if (isLoadingProvinces) return (
         <div className="flex h-screen items-center justify-center text-md font-medium text-gray-500 animate-pulse">
-            กำลังดึงข้อมูลจังหวัด... 📦
+            ກຳລັງດຶງຂໍ້ມູນແຂວງ... 📦
         </div>
     );
 
@@ -248,10 +246,10 @@ export default function CheckoutPage() {
                 <form onSubmit={handleSubmit(onFormSubmit)}>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-                        {/* ซีกซ้าย: ฟอร์มกรอกที่อยู่และอัพโหลดหลักฐานสลิป */}
+                        {/* ຊີກຊ້າຍ: ຟອມກອກທີ່ຢູ່ ແລະ ອັບໂຫລດຫຼັກຖານສະລິບ */}
                         <div className="lg:col-span-2 space-y-6">
 
-                            {/*ข้อมูลที่อยู่ลูกค้าและสาขา */}
+                            {/* ຂໍ້ມູນທີ່ຢູ່ລູກຄ້າ ແລະ ສາຂາ */}
                             <Card className="border shadow-sm bg-white">
                                 <CardHeader>
                                     <CardTitle className="text-gray-900">Branch & Location Information</CardTitle>
@@ -286,11 +284,11 @@ export default function CheckoutPage() {
                                             <select
                                                 id="district_id"
                                                 {...register('district_id')}
-                                                disabled={!selectedProvinceId} // ล็อกไว้ถ้ายังไม่เลือกจังหวัด
+                                                disabled={!selectedProvinceId} // ລັອກໄວ້ຖ້າຍັງບໍ່ເລືອກແຂວງ
                                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background mt-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 <option value="">-- Select District --</option>
-                                                {/* วนลูปแสดงอำเภอเฉพาะที่สังกัดอยู่ในจังหวัดที่เลือกเท่านั้น */}
+                                                {/* ວົນລູບສະແດງເມືອງສະເພາະທີ່ສັງກັດຢູ່ໃນແຂວງທີ່ເລືອກເທົ່ານັ້ນ */}
                                                 {selectedProvinceData?.districts?.map((dist) => (
                                                     <option key={dist.district_id} value={dist.district_id}>
                                                         {dist.district_name}
@@ -308,11 +306,11 @@ export default function CheckoutPage() {
                                             <select
                                                 id="branch_id"
                                                 {...register('branch_id')}
-                                                disabled={!selectedDistrictId} // ล็อกไว้ถ้ายังไม่เลือกอำเภอ
+                                                disabled={!selectedDistrictId} // ລັອກໄວ້ຖ້າຍັງບໍ່ເລືອກເມືອງ
                                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background mt-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 <option value="">-- Select Branch --</option>
-                                                {/* วนลูปแสดงสาขาเฉพาะที่สังกัดอยู่ในอำเภอที่เลือกเท่านั้น */}
+                                                {/* ວົນລູບສະແດງສາຂາສະເພາະທີ່ສັງກັດຢູ່ໃນເມືອງທີ່ເລືອກເທົ່ານັ້ນ */}
                                                 {selectedDistrictData?.branches?.map((branch) => (
                                                     <option key={branch.branch_id} value={branch.branch_id}>
                                                         {branch.branch_name}
@@ -328,7 +326,7 @@ export default function CheckoutPage() {
                                 </CardContent>
                             </Card>
 
-                            {/* คำแนะนำการโอนเงินชำระเงิน */}
+                            {/* ຄຳແນະນຳການໂອນເງິນຊຳລະເງິນ */}
                             <Card className="border shadow-sm bg-white">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-gray-900">
@@ -338,29 +336,29 @@ export default function CheckoutPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-5">
-                                        <h4 className="font-semibold text-blue-900 mb-2">ข้อมูลบัญชีธนาคารสำหรับโอนเงิน:</h4>
+                                        <h4 className="font-semibold text-blue-900 mb-2">ຂໍ້ມູນບັນຊີທະນາຄານສຳລັບໂອນເງິນ:</h4>
                                         <div className="space-y-1.5 text-sm text-blue-800">
-                                            <p>ธนาคาร: SportPro Bank (ธนาคารเพื่อการกีฬา)</p>
-                                            <p>เลขที่บัญชี: 123-456-7890</p>
-                                            <p>ชื่อบัญชี: SportPro E-Commerce Co., Ltd.</p>
+                                            <p>ທະນາຄານ: SportPro Bank (ທະນາຄານເພື່ອການກິລາ)</p>
+                                            <p>ເລກທີບັນຊີ: 123-456-7890</p>
+                                            <p>ຊື່ບັນຊີ: SportPro E-Commerce Co., Ltd.</p>
                                             <p className="font-bold text-base text-gray-900 mt-3 pt-2 border-t border-blue-200/50">
-                                                ยอดเงินที่ต้องโอนชำระ: <span className="text-blue-600 text-lg">฿{total.toLocaleString()}</span>
+                                                ຍອດເງິນທີ່ຕ້ອງໂอนຊຳລະ: <span className="text-blue-600 text-lg">฿{total.toLocaleString()}</span>
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
                                         <p className="text-sm font-semibold text-amber-900 mb-1">
-                                            ⚠️ สำคัญ: โปรดแนบหลักฐานการโอนเงิน (สลิป) ทุกครั้งหลังโอนเสร็จ
+                                            ⚠️ ສຳຄັນ: ກະລຸນາແນບຫຼັກຖານການໂອນເງິນ (ສະລິບ) ທຸກຄັ້ງຫຼັງໂອນສຳເລັດ
                                         </p>
                                         <p className="text-xs text-amber-800 font-light leading-relaxed">
-                                            ระบบจะทำการตรวจสอบและอนุมัติยอดจัดส่งสินค้าของท่านทันทีเมื่อได้รับไฟล์หลักฐานชิ้นนี้ โดยปกติจะดำเนินการเสร็จสิ้นภายใน 24 ชั่วโมงครับ
+                                            ລະບົບຈະທຳການກວດສອບ ແລະ ອະນຸມັດຍອດຈັດສົ່ງສິນຄ້າຂອງທ່ານທັນທີເມື່ອໄດ້ຮັບໄຟລ໌ຫຼັກຖານນີ້ ໂດຍປົກກະຕິຈະດຳເນີນການໃຫ້ສຳເລັດພາຍໃນ 24 ຊົ່ວໂມງ
                                         </p>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            {/* พื้นที่สำหรับอัพโหลดหลักฐานสลิปโอนเงิน */}
+                            {/* ພື້ນທີ່ສຳລັບອັບໂຫລດຫຼັກຖານສະລິບໂອນເງິນ */}
                             <Card className="border shadow-sm bg-white">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-gray-900">
@@ -389,20 +387,20 @@ export default function CheckoutPage() {
                                                         />
                                                     </div>
                                                     <p className="text-sm font-medium text-emerald-600 flex items-center justify-center gap-1.5">
-                                                        <CheckCircle className="size-4" /> แนบหลักฐานสลิปโอนเงินเรียบร้อยแล้ว
+                                                        <CheckCircle className="size-4" /> ແנบຫຼັກຖານສະລິບໂອນเງິນຮຽບຮ້ອຍແລ້ວ
                                                     </p>
                                                     <Button type="button" variant="outline" size="sm" className="text-gray-600">
-                                                        เปลี่ยนรูปภาพหลักฐาน
+                                                        ປ່ຽນຮູບພາບຫຼັກຖານ
                                                     </Button>
                                                 </div>
                                             ) : (
                                                 <div className="py-4">
                                                     <Upload className="size-10 mx-auto mb-3 text-gray-400" />
                                                     <p className="text-base font-semibold text-gray-800 mb-1">
-                                                        คลิกที่นี่เพื่อเลือกไฟล์ภาพสลิปโอนเงิน
+                                                        ຄລິກທີ່ນີ້ເພື່ອເລືອກໄຟລ໌ພາບສະລິບໂອນເງິນ
                                                     </p>
                                                     <p className="text-xs text-gray-400">
-                                                        รองรับไฟล์ไฟล์รูปภาพสากล PNG, JPG ขนาดสูงสุดไม่เกิน 10MB
+                                                        ຮອງຮັບໄຟລ໌ຮູບພາບສາກົນ PNG, JPG ຂະໜາດສູงສຸດບໍ່ເກີນ 10MB
                                                     </p>
                                                 </div>
                                             )}
@@ -412,7 +410,7 @@ export default function CheckoutPage() {
                             </Card>
                         </div>
 
-                        {/* ซีกขวา: ตารางบิลสรุปรายการสิ่งของและยอดราคาสุทธิ (Order Summary) */}
+                        {/* ຊີກຂວາ: ຕາຕະລາງບິນສະຫຼຸບລາຍການສິນຄ້າ ແລະ ຍອດລາຄາສຸດທິ (Order Summary) */}
                         <div className="sticky top-24">
                             <Card className="border shadow-sm bg-white">
                                 <CardHeader>
@@ -420,7 +418,7 @@ export default function CheckoutPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
 
-                                    {/* รายชื่อสรุปสิ่งของทั้งหมดในบิล */}
+                                    {/* ລາຍຊື່ສະຫຼຸບສິນຄ້າທັງໝົດໃນບິນ */}
                                     <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
                                         {cartItems.map((item) => {
                                             if (!item.product) return null;
@@ -440,7 +438,7 @@ export default function CheckoutPage() {
                                                             {item.product.product_name}
                                                         </p>
                                                         <p className="text-[11px] text-gray-400 mt-0.5">
-                                                            จำนวน: {item.quantity} ชิ้น
+                                                            ຈຳນວນ: {item.quantity} ຊິ້ນ
                                                         </p>
                                                         <p className="text-xs font-bold text-gray-700 mt-0.5">
                                                             ฿{(item.product.sale_price * item.quantity).toLocaleString()}
@@ -453,14 +451,14 @@ export default function CheckoutPage() {
 
                                     <Separator className="bg-gray-100" />
 
-                                    {/* คำนวณค่าตัวเลขผลรวมผลลัพธ์สุทธิ */}
+                                    {/* ຄຳແນະນຳຄ່າຕົວເລກຜົນລວມຜົນລັບສຸດທິ */}
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between text-gray-500">
-                                            <span>ยอดรวมสินค้า</span>
+                                            <span>ຍອດລວມສິນຄ້າ</span>
                                             <span className="font-semibold text-gray-900">฿{subtotal.toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between text-gray-500">
-                                            <span>ค่าจัดส่งสินค้า</span>
+                                            <span>ຄ່າຈັດສົ່ງສິນຄ້າ</span>
                                             <span className="font-semibold text-gray-900">฿{shipping.toLocaleString()}</span>
                                         </div>
                                     </div>
@@ -468,7 +466,7 @@ export default function CheckoutPage() {
                                     <Separator className="bg-gray-100" />
 
                                     <div className="flex justify-between items-end pt-1">
-                                        <span className="text-base font-bold text-gray-900">ยอดชำระสุทธิ</span>
+                                        <span className="text-base font-bold text-gray-900">ຍອດຊຳລະສຸດທິ</span>
                                         <span className="text-xl font-extrabold text-blue-600">฿{total.toLocaleString()}</span>
                                     </div>
 
@@ -478,7 +476,7 @@ export default function CheckoutPage() {
                                         disabled={isSubmitting}
                                         className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors mt-2 shadow-sm"
                                     >
-                                        {isSubmitting ? "กำลังดำเนินการออเดอร์..." : "ยืนยันการสั่งซื้อสินค้า"}
+                                        {isSubmitting ? "ກຳລັງດຳເນີນການອໍເດີ້..." : "ຢືນຢັນການສັ່ງຊື້ສິນຄ້າ"}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -490,4 +488,3 @@ export default function CheckoutPage() {
         </div>
     );
 }
-

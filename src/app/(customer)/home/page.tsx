@@ -14,6 +14,7 @@ import { useCustomer } from '@/components/customerComponent/CustomerContext';
 import { useGetAllProducts } from '@/app/features/hooks/Product';
 
 // กำหนด Type Interface ตามโครงสร้างของ Prisma Database จริง
+// กำหนด Type Interface ຕາມໂຄງສ້າງຂອງ Prisma Database ຈິງ
 interface ProductImage {
     image_id: string;
     image_url: string;
@@ -43,23 +44,28 @@ export default function HomePage() {
     const { data: apiResponse, isLoading, error } = useGetAllProducts();
 
     // 📦 แกะข้อมูลสินค้าเตรียมไว้ล่วงหน้า (ถ้าข้อมูลยังไม่มา ให้ดักเป็นอาเรย์ว่างเพื่อป้องกัน Error)
+    // 📦 ແກະຂໍ້ມູນສິນຄ້າກຽມໄວ້ລ່ວງໜ້າ (ຖ້າຂໍ້ມູນຍັງບໍ່ມາ ໃຫ້ດັກເປັນອາເຣວ່າງເພື່ອປ້ອງກັນ Error)
     const products: Product[] = apiResponse || [];
     // console.log("product ; ",products);
 
     // ✨ [แก้ไขตามกฎ Rules of Hooks] ย้าย useMemo ขึ้นมาประกาศไว้ด้านบนสุดร่วมกันทันที ห้ามมี if คั่น
+    // ✨ [ແກ້ໄຂຕາມກົດ Rules of Hooks] ຍ້າຍ useMemo ຂຶ້ນມາປະກາດໄວ້ດ້ານເທິງສຸດຮ່ວມກັນທັນທີ ຫ້າມມີ if ຂັ້ນ
     // 1. กรองสินค้าแนะนำ (Featured Products)
+    // 1. ກັ່ນຕອງສິນຄ້າແນະນຳ (Featured Products)
     const featuredProducts = useMemo(() => {
         const filtered = products.filter((product) => product.featured);
         return filtered.length > 0 ? filtered : products.slice(0, 4);
     }, [products]);
 
     // 2. ดึงข้อมูลหมวดหมู่สินค้าแบบ Dynamic ไม่ให้ซ้ำกันโดยใช้ข้อมูลตรงจากฐานข้อมูลสินค้า
+    // 2. ດຶງຂໍ້ມູນໝວດໝູ່ສິນຄ້າແບບ Dynamic ບໍ່ໃຫ້ຊ້ຳກັນໂດຍໃຊ້ຂໍ້ມູນກົງຈາກຖານຂໍ້ມູນສິນຄ້າ
     const categories = useMemo(() => {
         const uniqueCategoriesMap = new Map<string, { name: string; image: string; link: string }>();
 
         products.forEach((product) => {
             if (product.category && !uniqueCategoriesMap.has(product.category.category_id)) {
                 // เอารูปภาพแรกสุดของสินค้าในหมวดหมู่นั้นๆ มาทำเป็นภาพหน้าปก Category
+                // ເອົາຮູບພາບທຳອິດສຸດຂອງສິນຄ້າໃນໝວດໝູ່ນັ້ນໆ ມາເຮັດເປັນພາບໜ້າປົກ Category
                 const categoryImage = product.images?.[0]?.image_url || '/placeholder.png';
 
                 uniqueCategoriesMap.set(product.category.category_id, {
@@ -75,29 +81,33 @@ export default function HomePage() {
 
 
     // 🛑 [Early Return] ประกาศตรวจสอบสถานะแอปพลิเคชันไว้หลังจากรันกลุ่ม Hooks ทั้งหมดเสร็จสิ้นแล้ว
+    // 🛑 [Early Return] ປະກາດກວດສອບສະຖານະແອັບພລິເຄຊັນໄວ້ຫຼັງຈາກລັນກຸ່ມ Hooks ທັງໝົດເສັດສິ້ນແລ້ວ
     // ตรวจสอบสถานะกำลังโหลดข้อมูล
+    // ກວດສອບສະຖານະກຳລັງໂຫລດຂໍ້ມູນ
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center text-lg font-medium text-gray-500 animate-pulse">
-                กำลังดึงข้อมูลสินค้าจากหลังบ้าน... 📦
+                ກຳລັງດຶງຂໍ້ມູນສິນຄ້າຈາກລະບົບຫຼັງບ້ານ... 📦
             </div>
         );
     }
 
     // ตรวจสอบสถานะกรณีเกิดข้อผิดพลาดในการดึงข้อมูลจาก API
+    // ກວດສອບສະຖານະກໍລະນີເກີດຂໍ້ຜິດພາດໃນການດຶງຂໍ້ມູນຈາກ API
     if (error || !apiResponse) {
         return (
             <div className="flex h-screen items-center justify-center text-lg font-medium text-destructive">
-                เกิดข้อผิดพลาดในการดึงข้อมูลสินค้า กรุณาลองใหม่อีกครั้งครับ ❌
+                ເກີດຂໍ้ຜິດພາດໃນການດຶງຂໍ້ມູນສິນຄ້າ ກະລຸນາລອງໃໝ່ອີກຄັ້ງຄຣັບ ❌
             </div>
         );
     }
 
     // Handler ฟังก์ชันสำหรับดักจับการหยิบของใส่ตะกร้าสินค้าของลูกค้า
+    // Handler ຟັງຊັນສຳລັບດັກຈັບການຢິບເຄື່ອງໃສ່ກະຕ່າສິນຄ້າຂອງລູກຄ້າ
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-        e.preventDefault(); // ป้องกันไม่ให้การกดปุ่มนี้ไปลิ้งก์เปิดหน้ารายละเอียดสินค้ากวนใจ
+        e.preventDefault(); // ป้องกันไม่ให้การกดปุ่มนี้ไปลิ้งก์เปิดหน้ารายละเอียดสินค้ากวนใจ / ປ້ອງກັນບໍ່ໃຫ້ການກົດປຸ່ມນີ້ໄປລິ້ງເປີດໜ້າລາຍລະອຽດສິນຄ້າກວນໃຈ
         addToCart(product.product_id, 1);
-        toast.success(`เพิ่ม ${product.product_name} ลงตะกร้าแล้วครับ! 🛒`);
+        toast.success(`ເພີ່ມ ${product.product_name} ລົງກະຕ່າຮຽບຮ້ອຍແລ້ວ! 🛒`);
     };
 
     return (
@@ -170,7 +180,7 @@ export default function HomePage() {
                                             {product.product_name}
                                         </h3>
                                         <p className="text-sm text-gray-500 mb-4 line-clamp-2 min-h-[40px]">
-                                            {product.description || "ไม่มีรายละเอียดสินค้า"}
+                                            {product.description || "ບໍ່ມີລາຍລະອຽດສິນຄ້າ"}
                                         </p>
                                         <div className="flex items-center justify-between mt-2">
                                             <span className="text-lg font-bold text-gray-900">
@@ -189,7 +199,7 @@ export default function HomePage() {
                                         disabled={product.stock_qty <= 0}
                                         className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
                                     >
-                                        หยิบใส่ตะกร้า
+                                        ຢິບໃສ່ກະຕ່າ
                                     </Button>
                                 </div>
                             </Card>
@@ -230,18 +240,18 @@ export default function HomePage() {
             )}
 
             {/* Promotional Banner */}
-            <section className="py-20 bg-black text-white relative overflow-hidden">
+           <section className="py-20 bg-black text-white relative overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-2xl mx-auto text-center">
                         <TrendingUp className="size-12 mx-auto mb-6 text-blue-500" />
                         <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-                            Join SportPro Rewards
+                            ເຂົ້າຮ່ວມ SportPro Rewards
                         </h2>
                         <p className="text-lg text-gray-400 mb-8 font-light">
-                            Get exclusive access to new products, special offers, and member-only events.
+                            ຮັບສິດເຂົ້າເຖິງສິນຄ້າໃໝ່, ຂໍ້ສະເໜີສຸດພິເສດ ແລະ ກິດຈະກຳສະເພາະສະມາຊິກກ່ອນໃຜ.
                         </p>
                         <Button size="lg" variant="outline" className="bg-white text-black hover:bg-gray-100 font-medium">
-                            Sign Up Now
+                            ສະໝັກສະມາຊິກຕອນນີ້
                         </Button>
                     </div>
                 </div>

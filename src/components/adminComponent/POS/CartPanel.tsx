@@ -1,8 +1,8 @@
 'use client'
 import { Button } from "@/components/ui/button"
-import CartItem from "./CartItem"
 import { CartItemType } from "./type"
 import { formatCurrency } from "@/utils/FormatCurrency"
+import CartItems from "./CartItems"
 
 
 type Props = {
@@ -22,7 +22,7 @@ export default function CartPanel({ cart, update, remove, subtotal, tax, total, 
             {/* LIST */}
             <div className="flex-1 overflow-auto p-2 space-y-2">
                 {cart.map((i) => (
-                    <CartItem key={i.product_id} item={i} onUpdate={update} onRemove={remove} />
+                    <CartItems key={i.product_id} item={i} onUpdate={update} onRemove={remove} />
                 ))}
             </div>
 
@@ -30,17 +30,17 @@ export default function CartPanel({ cart, update, remove, subtotal, tax, total, 
             <div className="p-4 border-t bg-gray-50 space-y-2 text-sm">
 
                 {/* <div className="flex justify-between">
-                    <span>Subtotal</span>
+                    <span>ລວມຍ່ອຍ (Subtotal)</span>
                     <span>{formatCurrency(subtotal)}</span>
                 </div> */}
 
                 {/* <div className="flex justify-between">
-                    <span>Tax (8%)</span>
+                    <span>ອາກອນ / Tax (8%)</span>
                     <span>{formatCurrency(tax)}</span>
                 </div> */}
 
                 <div className="flex justify-between font-semibold text-lg">
-                    <span>Total</span>
+                    <span>ລວມທັງໝົດ (Total)</span>
                     <span>{formatCurrency(total)}</span>
                 </div>
 
@@ -49,7 +49,7 @@ export default function CartPanel({ cart, update, remove, subtotal, tax, total, 
                     onClick={onCheckout}
                     disabled={!cart.length}
                 >
-                    Checkout
+                    ຊຳລະເງິນ (Checkout)
                 </Button>
             </div>
         </div>

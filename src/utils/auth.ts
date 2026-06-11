@@ -14,6 +14,6 @@ export function getRedirectPath(role: Role | undefined) {
       return "/order"
 
     default:
-      return "/order"
+      return "/home"
   }
 }

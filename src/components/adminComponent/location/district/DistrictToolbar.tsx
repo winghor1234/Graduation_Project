@@ -7,7 +7,7 @@ export function DistrictToolbar({ table, onAdd }: PropsTable) {
     return (
         <div className="flex justify-between">
             <Input
-                placeholder="Search..."
+                placeholder="ຄົ້ນຫາ..."
                 value={table.search}
                 onChange={(e) => table.setSearch(e.target.value)}
                 className="w-[250px]"
@@ -15,7 +15,7 @@ export function DistrictToolbar({ table, onAdd }: PropsTable) {
 
             <Button onClick={onAdd}>
                 <Plus className="w-4 h-4" />
-                Add District
+                ເພີ່ມເມືອງ
             </Button>
         </div>
     )

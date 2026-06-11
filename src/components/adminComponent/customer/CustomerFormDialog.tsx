@@ -73,14 +73,14 @@ export function CustomerFormDialog({ open, onOpenChange, customer, create, updat
                     data: updatePayload
                 })
 
-                toast.success("Customer updated")
+                toast.success("ອັບເດດຂໍ້ມູນລູກຄ້າສຳເລັດແລ້ວ")
 
             } else {
                 const payload: CustomerRegisterInput = values as CustomerCreateFormValues
 
                 await create.mutateAsync(payload)
 
-                toast.success("Customer created")
+                toast.success("ເພີ່ມລູກຄ້າໃໝ່ສຳເລັດແລ້ວ")
             }
 
             onOpenChange(false)
@@ -88,7 +88,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer, create, updat
 
         } catch (error) {
             console.error(error)
-            toast.error("Something went wrong")
+            toast.error("ເກີດຂໍ້ຜິດພາດບາງຢ່າງ")
         }
     }
 
@@ -99,31 +99,31 @@ export function CustomerFormDialog({ open, onOpenChange, customer, create, updat
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle>
-                        {isEdit ? "Edit Customer" : "Add Customer"}
+                        {isEdit ? "ແກ້ໄຂຂໍ້ມູນລູກຄ້າ" : "ເພີ່ມລູກຄ້າ"}
                     </DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
-                    <Input {...register("customer_name")} placeholder="Customer name..." />
+                    <Input {...register("customer_name")} placeholder="ຊື່ລູກຄ້າ..." />
                     <div className="text-red-500 text-sm">{errors.customer_name?.message}</div>
 
-                    <Input type="number" {...register("phone")} placeholder="Phone..." />
+                    <Input type="number" {...register("phone")} placeholder="ເບີໂທລະສັບ..." />
                     <div className="text-red-500 text-sm">{errors.phone?.message}</div>
 
-                    <Input {...register("email")} placeholder="Email..." />
+                    <Input {...register("email")} placeholder="ອີເມວ..." />
                     <div className="text-red-500 text-sm">{errors.email?.message}</div>
 
-                    {/* <Input {...register("address")} placeholder="Address..." />
+                    {/* <Input {...register("address")} placeholder="ທີ່ຢູ່..." />
                     <div className="text-red-500 text-sm">{errors.address?.message}</div> */}
 
-                    <Input {...register("gender")} placeholder="Gender..." />
+                    <Input {...register("gender")} placeholder="ເພດ..." />
                     <div className="text-red-500 text-sm">{errors.gender?.message}</div>
 
                     {/* ✅ show password เฉพาะ create */}
                     {!isEdit && (
                         <>
-                            <Input type="password" {...register("password")} placeholder="Password..." />
+                            <Input type="password" {...register("password")} placeholder="ລະຫັດຜ່ານ..." />
                             <div className="text-red-500 text-sm">{"password" in errors ? errors.password?.message : null}</div>
                         </>
                     )}
@@ -133,7 +133,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer, create, updat
                         className="w-full"
                         disabled={create.isPending || update.isPending}
                     >
-                        {isEdit ? "Update Customer" : "Create Customer"}
+                        {isEdit ? "ອັບເດດຂໍ້ມູນລູກຄ້າ" : "ບັນທຶກຂໍ້ມູນລູກຄ້າ"}
                     </Button>
                 </form>
             </DialogContent>

@@ -17,89 +17,12 @@ type Props = {
 
 export function ProductTable({ products, isLoading, onEdit, onDelete }: Props) {
     if (isLoading) {
-        return <Card className="p-6 text-center">Loading products...</Card>
+        return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນສິນຄ້າ...</Card>
     }
     if (!products?.length) {
-        return <Card className="p-6 text-center">No products found</Card>
+        return <Card className="p-6 text-center">ບໍ່ພົບຂໍ້ມູນສິນຄ້າ</Card>
     }
     return (
-        // <Card>
-        //     <Table>
-        //         <TableHeader>
-        //             <TableRow>
-        //                 <TableHead >NO:</TableHead>
-        //                 <TableHead >Product</TableHead>
-        //                 <TableHead >Product code</TableHead>
-        //                 <TableHead>Purchase price</TableHead>
-        //                 <TableHead>Sale price</TableHead>
-        //                 <TableHead>Stock</TableHead>
-        //                 <TableHead className="text-center">Action</TableHead>
-        //             </TableRow>
-        //         </TableHeader>
-        //         <TableBody>
-        //             {products.map((product, index) => (
-        //                 <TableRow key={product.product_id}>
-        //                     <TableCell>
-        //                         {index + 1}
-        //                     </TableCell>
-        //                     <TableCell>
-        //                         <div className="flex items-center gap-3 ">
-        //                             {product.images?.[0]?.image_url ?
-        //                                 <Image
-        //                                     src={product.images[0].image_url}
-        //                                     alt={product.product_name}
-        //                                     width={48}
-        //                                     height={48}
-        //                                     className="rounded "
-        //                                 />
-        //                                 :
-        //                                 <div className=" w-12 h-12 bg-gray-200 flex items-center justify-center rounded ">
-        //                                     No Image
-        //                                 </div>
-        //                             }
-        //                             <span className="font-medium">
-        //                                 {product.product_name}
-        //                             </span>
-        //                         </div>
-        //                     </TableCell>
-        //                     <TableCell>
-        //                         {product.product_code}
-        //                     </TableCell>
-        //                     <TableCell>
-        //                         {formatCurrency(product.purchase_price)}
-        //                     </TableCell>
-        //                     <TableCell>
-        //                         {formatCurrency(product.sale_price)}
-        //                     </TableCell>
-        //                     <TableCell>
-        //                         <Badge>{product.stock_qty}</Badge>
-        //                     </TableCell>
-        //                     <TableCell className="flex justify-center gap-2">
-        //                         <Button
-        //                             size="icon"
-        //                             variant="ghost"
-        //                             className="group hover:bg-blue-50"
-        //                             onClick={() => onEdit(product)}
-        //                         >
-        //                             <Edit className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-all" />
-        //                         </Button>
-
-        //                         <Button
-        //                             size="icon"
-        //                             variant="ghost"
-        //                             className="group h-8 w-8 p-0 hover:bg-blue-50 active:scale-95 transition-all duration-150"
-        //                             onClick={() => onDelete(product.product_id)}
-        //                         >
-        //                             <Trash2 className="w-4 h-4 text-gray-600 group-hover:text-red-600 transition-all" />
-        //                         </Button>
-        //                     </TableCell>
-        //                 </TableRow>
-        //             ))}
-        //         </TableBody>
-        //     </Table>
-        // </Card>
-
-
         <Card className="rounded-2xl border shadow-sm">
             <div className="w-full overflow-x-auto">
 
@@ -107,13 +30,13 @@ export function ProductTable({ products, isLoading, onEdit, onDelete }: Props) {
 
                     <TableHeader>
                         <TableRow className="bg-gray-50">
-                            <TableHead>#</TableHead>
-                            <TableHead>Product</TableHead>
-                            <TableHead className="hidden md:table-cell">Code</TableHead>
-                            <TableHead className="text-right">Purchase</TableHead>
-                            <TableHead className="text-right">Sale</TableHead>
-                            <TableHead className="text-center">Stock</TableHead>
-                            <TableHead className="text-center">Action</TableHead>
+                            <TableHead>ລຳດັບ</TableHead>
+                            <TableHead>ສິນຄ້າ</TableHead>
+                            <TableHead className="hidden md:table-cell">ລະຫັດສິນຄ້າ</TableHead>
+                            <TableHead className="text-right">ລາຄາຕົ້ນທຶນ</TableHead>
+                            <TableHead className="text-right">ລາຄາຂາຍ</TableHead>
+                            <TableHead className="text-center">ຈຳນວນໃນສາງ</TableHead>
+                            <TableHead className="text-center">ການຈັດການ</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -125,13 +48,19 @@ export function ProductTable({ products, isLoading, onEdit, onDelete }: Props) {
 
                                 <TableCell>
                                     <div className="flex items-center gap-2 min-w-[160px]">
-                                        <Image
-                                            src={product.images?.[0]?.image_url || ""}
-                                            alt=""
-                                            width={40}
-                                            height={40}
-                                            className="rounded-md"
-                                        />
+                                        <div className="w-10 h-10 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center flex-shrink-0">
+                                            {product.images?.[0]?.image_url ? (
+                                                <Image
+                                                    src={product.images[0].image_url}
+                                                    alt={product.product_name}
+                                                    width={40}
+                                                    height={40}
+                                                    className="object-cover w-full h-full"
+                                                />
+                                            ) : (
+                                                <span className="text-[10px] text-gray-400">ບໍ່ມີຮູບ</span>
+                                            )}
+                                        </div>
                                         <span className="truncate">
                                             {product.product_name}
                                         </span>
@@ -156,11 +85,21 @@ export function ProductTable({ products, isLoading, onEdit, onDelete }: Props) {
 
                                 <TableCell>
                                     <div className="flex justify-center gap-1">
-                                        <Button size="icon" variant="ghost">
-                                            <Edit className="w-4 h-4" />
+                                        <Button 
+                                            size="icon" 
+                                            variant="ghost"
+                                            className="hover:bg-blue-50"
+                                            onClick={() => onEdit(product)}
+                                        >
+                                            <Edit className="w-4 h-4 text-gray-600 hover:text-blue-600" />
                                         </Button>
-                                        <Button size="icon" variant="ghost">
-                                            <Trash2 className="w-4 h-4" />
+                                        <Button 
+                                            size="icon" 
+                                            variant="ghost"
+                                            className="hover:bg-red-50"
+                                            onClick={() => onDelete(product.product_id)}
+                                        >
+                                            <Trash2 className="w-4 h-4 text-gray-600 hover:text-red-600" />
                                         </Button>
                                     </div>
                                 </TableCell>

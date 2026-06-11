@@ -17,20 +17,20 @@ export function BranchDetailDialog({ open, onOpenChange, branch }: Props) {
             <DialogContent className="sm:max-w-md">
 
                 <DialogHeader>
-                    <DialogTitle>Branch Detail</DialogTitle>
+                    <DialogTitle>ລາຍລະອຽດສາຂາ</DialogTitle>
                 </DialogHeader>
 
                 <div className="space-y-4 text-sm">
 
                     {/* Branch */}
                     <div>
-                        <p className="text-muted-foreground">Branch</p>
+                        <p className="text-muted-foreground">ສາຂາ</p>
                         <p className="font-medium">{branch.branch_name}</p>
                     </div>
 
                     {/* District */}
                     <div>
-                        <p className="text-muted-foreground">District</p>
+                        <p className="text-muted-foreground">ເມືອງ</p>
                         <p className="font-medium">
                             {branch.district?.district_name}
                         </p>
@@ -38,7 +38,7 @@ export function BranchDetailDialog({ open, onOpenChange, branch }: Props) {
 
                     {/* Province */}
                     <div>
-                        <p className="text-muted-foreground">Province</p>
+                        <p className="text-muted-foreground">ແຂວງ</p>
                         <p className="font-medium">
                             {branch.district?.province?.province_name}
                         </p>

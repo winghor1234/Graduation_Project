@@ -1,4 +1,3 @@
-
 import { exportExcel } from "@/utils/exportExcel";
 import { exportPDF } from "@/utils/exportPdf";
 
@@ -16,8 +15,8 @@ interface ExportReportProps {
 }
 
 const companyInfo = {
-    companyName: "Sport Wear Systems",
-    address: "Vientiane, Laos",
+    companyName: "ຮ້ານ ເສື້ອຜ້າກິລາ ສະປອດແວຣ໌ (Sport Wear Systems)",
+    address: "ນະຄອນຫຼວງວຽງຈັນ, ປະເທດລາວ",
     phone: "02098924536",
     email: "SportWearSystems@gmail.com",
 };

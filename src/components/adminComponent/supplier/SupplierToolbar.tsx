@@ -20,7 +20,7 @@ export function SupplierToolbar({ table, onAdd }: PropsTable) {
 
             <div className="flex gap-2">
                 <Input
-                    placeholder="Search suppliers..."
+                    placeholder="ຄົ້ນຫາຜູ້ສະໜອງ..."
                     value={table.search}
                     onChange={(e) => table.setSearch(e.target.value)}
                     className="w-[250px]"
@@ -30,21 +30,21 @@ export function SupplierToolbar({ table, onAdd }: PropsTable) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">
                             <ArrowUpDown className="w-4 h-4 mr-2" />
-                            Sort
+                            ລຽງລຳດັບ
                         </Button>
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => setSort("supplier_name", "asc")}>
-                            Name A → Z
+                            ຊື່ ກ → ຮ (Name A → Z)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem onClick={() => setSort("supplier_name", "desc")}>
-                            Name Z → A
+                            |ຊື່ ຮ → ກ (Name Z → A)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem onClick={() => setSort("created_at", "desc")}>
-                            Newest
+                            ໃໝ່ສຸດ (Newest)
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -52,7 +52,7 @@ export function SupplierToolbar({ table, onAdd }: PropsTable) {
 
             <Button onClick={onAdd}>
                 <Plus className="w-4 h-4 mr-2" />
-                Add Supplier
+                ເພີ່ມຜູ້ສະໜອງ
             </Button>
         </div>
     )

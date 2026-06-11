@@ -1,6 +1,3 @@
-
-
-
 "use client"
 
 import { useEffect, useState } from "react"
@@ -133,7 +130,7 @@ export function ProductFormDialog({
 
         <DialogHeader className="mb-2">
           <DialogTitle className="text-lg font-semibold">
-            {product ? "Edit Product" : "Add Product"}
+            {product ? "ແກ້ໄຂສິນຄ້າ" : "ເພີ່ມສິນຄ້າ"}
           </DialogTitle>
         </DialogHeader>
 
@@ -143,7 +140,7 @@ export function ProductFormDialog({
           <div className="grid grid-cols-2 gap-4">
 
             <div className="space-y-1">
-              <label className="text-sm font-medium">Product Name</label>
+              <label className="text-sm font-medium">ຊື່ສິນຄ້າ</label>
               <Input {...register("product_name")} />
               <p className="text-xs text-red-500 h-4">
                 {errors.product_name?.message}
@@ -151,12 +148,12 @@ export function ProductFormDialog({
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium">Category</label>
+              <label className="text-sm font-medium">ໝວດໝູ່</label>
               <select
                 {...register("category_id")}
                 className="w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select</option>
+                <option value="">ເລືອກໝວດໝູ່</option>
                 {categories.map((c) => (
                   <option key={c.category_id} value={c.category_id}>
                     {c.category_name}
@@ -174,7 +171,7 @@ export function ProductFormDialog({
           <div className="grid grid-cols-2 gap-4">
 
             <div className="space-y-1">
-              <label className="text-sm font-medium">Purchase price</label>
+              <label className="text-sm font-medium">ລາຄາຕົ້ນທຶນ</label>
               <Controller
                 name="purchase_price"
                 control={control}
@@ -196,7 +193,7 @@ export function ProductFormDialog({
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium">Sale price</label>
+              <label className="text-sm font-medium">ລາຄາຂາຍ</label>
               <Controller
                 name="sale_price"
                 control={control}
@@ -223,7 +220,7 @@ export function ProductFormDialog({
           <div className="grid grid-cols-2 gap-4">
 
             <div className="space-y-1">
-              <label className="text-sm font-medium">Stock</label>
+              <label className="text-sm font-medium">ຈຳນວນໃນສາງ (Stock)</label>
               <Controller
                 name="stock_qty"
                 control={control}
@@ -245,7 +242,7 @@ export function ProductFormDialog({
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium">Description</label>
+              <label className="text-sm font-medium">ລາຍລະອຽດ</label>
               <Textarea
                 {...register("description")}
                 className="h-[42px] resize-none"
@@ -256,7 +253,7 @@ export function ProductFormDialog({
 
           {/* IMAGE */}
           <div className="space-y-1">
-            <label className="text-sm font-medium">Images</label>
+            <label className="text-sm font-medium">ຮູບພາບສິນຄ້າ</label>
             <div className="border rounded-md p-2">
               <ImageUpload files={files} setFiles={setFiles} />
             </div>
@@ -268,7 +265,7 @@ export function ProductFormDialog({
             className="w-full h-10"
             disabled={create.isPending || update.isPending}
           >
-            {product ? "Update" : "Create"}
+            {product ? "ອັບເດດ" : "ບັນທຶກ"}
           </Button>
 
         </form>
@@ -276,6 +273,3 @@ export function ProductFormDialog({
     </Dialog>
   )
 }
-
-
-

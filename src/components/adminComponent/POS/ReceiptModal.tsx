@@ -35,10 +35,10 @@ export default function ReceiptModal({ data, onClose }: Props) {
 
                 <div id="receipt" className="space-y-2 text-sm">
 
-                    <h2 className="text-center font-bold">Receipt</h2>
+                    <h2 className="text-center font-bold">ໃບບິນຮັບເງິນ (Receipt)</h2>
 
-                    <p>Customer: {data.customer}</p>
-                    <p>Date: {data.date}</p>
+                    <p>ລູກຄ້າ: {data.customer}</p>
+                    <p>ວັນທີ: {data.date}</p>
 
                     <hr />
 
@@ -52,18 +52,18 @@ export default function ReceiptModal({ data, onClose }: Props) {
                     <hr />
 
                     <div className="flex justify-between font-bold">
-                        <span>Total</span>
+                        <span>ລວມທັງໝົດ (Total)</span>
                         <span>{data.total}</span>
                     </div>
 
                 </div>
 
                 <div className="flex gap-2 mt-4">
-                    <button onClick={onClose} className="flex-1 border py-2 rounded">
-                        Close
+                    <button onClick={onClose} className="flex-1 border py-2 rounded hover:bg-gray-50">
+                        ປິດ
                     </button>
-                    <button onClick={exportPDF} className="flex-1 bg-green-500 text-white py-2 rounded">
-                        Export PDF
+                    <button onClick={exportPDF} className="flex-1 bg-green-500 text-white py-2 rounded hover:bg-green-600">
+                        ສົ່ງອອກເປັນ PDF
                     </button>
                 </div>
 

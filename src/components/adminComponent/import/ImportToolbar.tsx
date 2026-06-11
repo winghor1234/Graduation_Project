@@ -19,7 +19,7 @@ export function ImportToolbar({ table, onAdd }: PropsTable) {
         <div className="flex justify-between gap-4">
             <div className="flex gap-2">
                 <Input
-                    placeholder="Search supplier..."
+                    placeholder="ຄົ້ນຫາຜູ້ສະໜອງ..."
                     value={table.search}
                     onChange={(e) => table.setSearch(e.target.value)}
                 />
@@ -28,12 +28,12 @@ export function ImportToolbar({ table, onAdd }: PropsTable) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">
                             <ArrowUpDown className="w-4 h-4 mr-1" />
-                            Sort
+                            ລຽງລຳດັບ
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => setSort("createdAt", "desc")}>
-                            Newest
+                            ໃໝ່ສຸດ
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -41,7 +41,7 @@ export function ImportToolbar({ table, onAdd }: PropsTable) {
 
             <Button onClick={onAdd}>
                 <Plus className="w-4 h-4 mr-1" />
-                Add Import
+                ເພີ່ມການນຳເຂົ້າ
             </Button>
         </div>
     )

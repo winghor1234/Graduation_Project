@@ -12,29 +12,29 @@ type Props = {
 
 export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete }: Props) {
 
-    if (isLoading) return <p>Loading...</p>
+    if (isLoading) return <p className="text-center p-4">ກຳລັງໂຫຼດຂໍ້ມູນ...</p>
 
     return (
         <table className="w-full text-sm border">
             <thead>
-                <tr className="border-b">
-                    <th className="p-3">Supplier</th>
-                    <th className="p-3">Total</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3">Actions</th>
+                <tr className="border-b bg-gray-50">
+                    <th className="p-3 text-left">ຜູ້ສະໜອງ (Supplier)</th>
+                    <th className="p-3 text-left">ຍອດລວມ (Total)</th>
+                    <th className="p-3 text-left">ສະຖານະ (Status)</th>
+                    <th className="p-3 text-left">ການຈັດການ (Actions)</th>
                 </tr>
             </thead>
 
             <tbody>
                 {purchases.map((p) => (
-                    <tr key={p.purchase_id} className="border-b">
+                    <tr key={p.purchase_id} className="border-b hover:bg-gray-50/50">
                         <td className="p-3">{p.supplier?.supplier_name}</td>
                         <td className="p-3">{p.total_amount}</td>
                         <td className="p-3">{p.status}</td>
 
                         <td className="p-3 flex gap-2">
                             <Button size="sm" onClick={() => onEdit(p)}>
-                                Edit
+                                ແກ́ໄຂ
                             </Button>
 
                             <Button
@@ -42,7 +42,7 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete }: P
                                 variant="destructive"
                                 onClick={() => onDelete(p.purchase_id)}
                             >
-                                Delete
+                                ລຶບ
                             </Button>
                         </td>
                     </tr>

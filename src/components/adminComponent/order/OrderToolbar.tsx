@@ -23,7 +23,7 @@ export function OrderToolbar({ table }: Props) {
         <div className="flex justify-between gap-4">
             <div className="flex gap-2">
                 <Input
-                    placeholder="Search supplier..."
+                    placeholder="ຄົ້ນຫາ..."
                     value={table.search}
                     onChange={(e) => table.setSearch(e.target.value)}
                 />
@@ -32,12 +32,12 @@ export function OrderToolbar({ table }: Props) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">
                             <ArrowUpDown className="w-4 h-4 mr-1" />
-                            Sort
+                            ລຽງລຳດັບ
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => setSort("createdAt", "desc")}>
-                            Newest
+                            ໃໝ່ສຸດ
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
