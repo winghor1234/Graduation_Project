@@ -20,7 +20,7 @@ import { PurchaseOrderTable } from "@/components/adminComponent/purchase/Purchas
 import { PurchaseOrderToolbar } from "@/components/adminComponent/purchase/PurchaseOrderToolbar"
 import { PurchaseDetail } from "@/components/adminComponent/purchase/PurchaseDetail"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useGetProducts } from "@/app/features/hooks/Product"
+import { useGetAllProducts } from "@/app/features/hooks/Product"
 import { useGetSuppliers } from "@/app/features/hooks/Supplier"
 import { useGetCategories } from "@/app/features/hooks/Category"
 
@@ -32,8 +32,8 @@ export default function PurchaseOrderPage() {
     const updatePurchase = useUpdatePurchaseOrder()
     const deletePurchase = useDeletePurchaseOrder()
 
-    const { data: products } = useGetProducts()
-    const product = products?.data
+    const { data: products } = useGetAllProducts()
+    const product = products
     const { data: suppliers } = useGetSuppliers()
     const supplier = suppliers?.data
     const { data: categories } = useGetCategories()
