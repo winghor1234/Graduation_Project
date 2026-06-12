@@ -53,6 +53,7 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                             </TableCell>
                             <TableCell>
                                 {getStatusBadge(item.status)}
+                                {item.payment_status}
                             </TableCell>
                             <TableCell>
                                 {formatDate(item.purchase_date)}
