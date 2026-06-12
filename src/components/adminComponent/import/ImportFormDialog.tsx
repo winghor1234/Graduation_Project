@@ -1,16 +1,17 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+// import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { toast } from "sonner"
 import { PurchaseOrder } from "@/modules/purchase/purchase.type"
 import { UseMutationResult } from "@tanstack/react-query"
 import { CreateImportInput, Import } from "@/modules/import/import.type"
 import { ImportFormValue } from "@/schemas/schema"
+import { Button } from "@/components/ui/button"
+import SearchSelect from "@/components/SearchSelectOption"
 
 type Props = {
     open: boolean
@@ -20,6 +21,7 @@ type Props = {
 }
 
 export function ImportFormDialog({ open, onOpenChange, create, purchases }: Props) {
+
 
     /* ✅ FIX: ใช้ ImportFormValue */
     const { register, control, handleSubmit, setValue, watch, reset } = useForm<ImportFormValue>({
@@ -94,100 +96,103 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
 
     /* 🔥 only pending purchase */
     const pendingPurchases = purchases.filter(p => p.status === "pending")
+    console.log("purchase : ", pendingPurchases)
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange} >
-            <DialogContent className="space-y-4">
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-3xl p-6 space-y-6">
 
+                {/* HEADER */}
                 <DialogHeader>
-                    <DialogTitle>ສ້າງລາຍການນຳເຂົ້າ</DialogTitle>
+                    <DialogTitle className="text-lg font-semibold">
+                        ສ້າງລາຍການນຳເຂົ້າ
+                    </DialogTitle>
                 </DialogHeader>
 
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-4"
-                >
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-                    {/* SELECT PURCHASE */}
-                    <Select
-                        value={purchaseId}
-                        onValueChange={(v) =>
-                            setValue("purchase_id", v, {
-                                shouldValidate: true,
-                                shouldDirty: true
-                            })
-                        }
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="ເລືອກລາຍການຈັດຊື້" />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                            {pendingPurchases.map(p => (
-                                <SelectItem
-                                    key={p.purchase_id}
-                                    value={p.purchase_id}
-                                >
-                                    {p.supplier?.supplier_name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-
-                    {/* ITEMS */}
+                    {/* ================= SELECT PURCHASE ================= */}
                     <div className="space-y-2">
-                        {fields.map((f, i) => (
-                            <div
-                                key={f.id}
-                                className="flex gap-2"
-                            >
-                                {/* PRODUCT */}
-                                {/* 👁️ แสดงชื่อ */}
-                                <Input
-                                    value={f.product_name || ""}
-                                    disabled
-                                />
-
-                                {/* 📦 เก็บ id ไว้ submit */}
-                                <input
-                                    type="hidden"
-                                    {...register(`import_details.${i}.product_id`)}
-                                />
-
-                                {/* QTY */}
-                                <Input
-                                    type="number"
-                                    placeholder="ຈຳນວນ"
-                                    {...register(
-                                        `import_details.${i}.quantity`,
-                                        { valueAsNumber: true }
-                                    )}
-                                />
-
-                                {/* COST */}
-                                <Input
-                                    value={f.cost_price}
-                                    disabled
-                                    type="number"
-                                    placeholder="ຕົ້ນທຶນ"
-                                    {...register(
-                                        `import_details.${i}.cost_price`,
-                                        { valueAsNumber: true }
-                                    )}
-                                />
-                            </div>
-                        ))}
+                        <SearchSelect
+                            value={watch("purchase_id")}
+                            placeholder="ຄົ້ນຫາລາຍການຈັດຊື້..."
+                            options={pendingPurchases.map((purchase) => ({
+                                value: purchase.purchase_id,
+                                label: `${purchase.purchase_code} - ${purchase.supplier?.supplier_name}`,
+                            }))}
+                            onChange={(value) =>
+                                setValue("purchase_id", value, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                })
+                            }
+                        />
+                       
                     </div>
 
-                    {/* SUBMIT */}
-                    <Button
-                        variant={"default"}
-                        type="submit"
-                        className="w-full"
-                        disabled={create.isPending}
-                    >
-                        บันທຶກການນຳເຂົ້າ
-                    </Button>
+                    {/* ================= ITEMS ================= */}
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-semibold text-gray-700">
+                                ລາຍການສິນຄ້າ
+                            </h3>
+                        </div>
+
+                        <div className="space-y-3">
+                            {fields.map((f, i) => (
+                                <div
+                                    key={f.id}
+                                    className="grid grid-cols-12 gap-2 items-center p-3 border rounded-lg bg-gray-50"
+                                >
+                                    {/* PRODUCT NAME */}
+                                    <div className="col-span-5">
+                                        <Input
+                                            value={f.product_name || ""}
+                                            disabled
+                                            className="bg-white"
+                                        />
+                                    </div>
+
+                                    {/* QTY */}
+                                    <div className="col-span-3">
+                                        <Input
+                                            type="number"
+                                            placeholder="ຈຳນວນ"
+                                            {...register(`import_details.${i}.quantity`, {
+                                                valueAsNumber: true,
+                                            })}
+                                        />
+                                    </div>
+
+                                    {/* COST */}
+                                    <div className="col-span-4">
+                                        <Input
+                                            value={f.cost_price}
+                                            disabled
+                                            className="bg-white text-gray-600"
+                                        />
+                                    </div>
+
+                                    {/* hidden id */}
+                                    <input
+                                        type="hidden"
+                                        {...register(`import_details.${i}.product_id`)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* ================= ACTION ================= */}
+                    <div className="pt-4 border-t flex justify-end">
+                        <Button
+                            type="submit"
+                            className="w-full sm:w-auto px-6"
+                            disabled={create.isPending}
+                        >
+                            ບັນທຶກການນຳເຂົ້າ
+                        </Button>
+                    </div>
 
                 </form>
             </DialogContent>

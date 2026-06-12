@@ -2,8 +2,8 @@
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
-import { ArrowUpDown, Plus } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { ArrowUpDown, Plus, Search, X } from "lucide-react"
 import { PropsTable } from "../../Type"
 
 
@@ -22,12 +22,26 @@ export function PurchaseOrderToolbar({ table, onAdd }: PropsTable) {
             {/* 🔍 SEARCH + SORT */}
             <div className="flex gap-2">
 
-                <Input
-                    placeholder="ຄົ້ນຫາໃບບິນສັ່ງຊື້..."
-                    value={table.search}
-                    onChange={(e) => table.setSearch(e.target.value)}
-                    className="w-[250px]"
-                />
+                <div className="relative w-[350px]">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+                    <Input
+                        placeholder="ຄົ້ນຫາໃບບິນສັ່ງຊື້: ລະຫັດສັ່ງຊື້ , ຜູ້ສະໜອງ..."
+                        value={table.search}
+                        onChange={(e) => table.setSearch(e.target.value)}
+                        className="pl-10 pr-10"
+                    />
+
+                    {table.search && (
+                        <button
+                            type="button"
+                            onClick={() => table.setSearch("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    )}
+                </div>
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -99,3 +113,4 @@ export function PurchaseOrderToolbar({ table, onAdd }: PropsTable) {
         </div>
     )
 }
+

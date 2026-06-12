@@ -18,12 +18,22 @@ export const purchaseController = {
             const orderBy = getSortingParams(req)
             const where: Prisma.PurchaseOrderWhereInput = search
                 ? {
-                    supplier: {
-                        supplier_name: {
-                            contains: search,
-                            mode: "insensitive"
-                        }
-                    }
+                    OR: [
+                        {
+                            supplier: {
+                                supplier_name: {
+                                    contains: search,
+                                    mode: "insensitive",
+                                },
+                            },
+                        },
+                        {
+                            purchase_code: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                        },
+                    ],
                 }
                 : {}
             const [purchases, total] = await Promise.all([

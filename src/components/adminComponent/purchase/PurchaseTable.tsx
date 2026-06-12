@@ -28,6 +28,7 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                 <TableHeader>
                     <TableRow>
                         <TableHead>ລຳດັບ</TableHead>
+                        <TableHead>ລະຫັດສັ່ງຊື້</TableHead>
                         <TableHead>ຜູ້ສະໜອງ</TableHead>
                         <TableHead>ຈຳນວນສິນຄ້າ</TableHead>
                         <TableHead>ຍອດລວມທັງໝົດ</TableHead>
@@ -41,6 +42,9 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                         <TableRow key={item.purchase_id}>
                             <TableCell>
                                 {index + 1}
+                            </TableCell>
+                            <TableCell>
+                                {item.purchase_code}
                             </TableCell>
                             <TableCell>
                                 {item.supplier?.supplier_name}

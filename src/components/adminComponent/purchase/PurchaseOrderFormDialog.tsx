@@ -17,6 +17,7 @@ import { ProductCombobox } from "./ProductCombobox"
 import { ProductFormDialog } from "../products/ProductFormDialog"
 import { Category } from "@/modules/category/category.type"
 import { NumericFormat } from "react-number-format"
+import SearchSelect from "@/components/SearchSelectOption"
 
 type Props = {
     open: boolean
@@ -81,12 +82,10 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                 toast.error("ຂໍ້ມູນບໍ່ຄົບຖ້ວນ")
                 return
             }
-
             const payload = {
                 supplier_id: data.supplier_id,
                 purchase_details: data.purchase_details
             }
-
             if (purchaseOrder) {
                 await update.mutateAsync({
                     id: purchaseOrder.purchase_id,
@@ -107,6 +106,9 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
         }
     }
 
+
+
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="space-y-4 max-w-2xl">
@@ -118,26 +120,31 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     {/* SUPPLIER */}
-                    <div className="space-y-1">
-                        <label className="text-sm font-medium">ຜູ້ສະໜອງ (Supplier)</label>
-                        <select 
-                            {...register("supplier_id")}
-                            className="w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">ເລືອກຜູ້ສະໜອງ</option>
-                            {suppliers.map((c) => (
-                                <option key={c.supplier_id} value={c.supplier_id}>
-                                    {c.supplier_name}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="h-5 text-xs text-red-500 mt-0.5">{errors.supplier_id?.message}</div>
+                    <div className="space-y-2">
+                        <SearchSelect
+                            value={watch("supplier_id")}
+                            placeholder="ຄົ້ນຫາຜູ້ສະໜອງ..."
+                            options={suppliers.map((supplier) => ({
+                                value: supplier.supplier_id,
+                                label: supplier.supplier_name,
+                            }))}
+                            onChange={(value) =>
+                                setValue("supplier_id", value, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                })
+                            }
+                        />
+
+                        <div className="h-5 text-xs text-red-500">
+                            {errors.supplier_id?.message}
+                        </div>
                     </div>
 
                     {/* ITEMS */}
                     <div className="space-y-3">
                         <label className="text-sm font-medium">ລາຍການສິນຄ້າ</label>
-                        
+
                         {fields.map((field, index) => (
                             <div key={field.id} className="flex gap-2 items-start">
                                 {/* PRODUCT */}
@@ -219,10 +226,10 @@ export function PurchaseOrderFormDialog({ open, onOpenChange, purchaseOrder, cre
                         ))}
                     </div>
 
-                    <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={addItem} 
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addItem}
                         className="w-full border-dashed"
                     >
                         + ເພີ່ມລາຍການສິນຄ້າ

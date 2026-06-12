@@ -65,7 +65,7 @@ export default function PurchaseOrderPage() {
     }
     // const products?.data 
     // console.log("products",products?.data)
-    console.log("data",product)
+    // console.log("data",product)
 
     /* -------------------- UI -------------------- */
 

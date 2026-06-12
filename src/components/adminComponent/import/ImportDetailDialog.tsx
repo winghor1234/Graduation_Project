@@ -12,6 +12,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { formatCurrency } from "@/utils/FormatCurrency"
 
 type Props = {
     open: boolean,
@@ -21,7 +22,7 @@ type Props = {
 
 
 export function ImportDetail({ open, onOpenChange, data }: Props) {
-    console.log(data)
+    console.log("import : ",data)
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -35,21 +36,21 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                 {/* 🔹 SUMMARY */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                        <span className="text-muted-foreground">ຜູ້ສະໜອງ (Supplier)</span>
+                        <span className="text-muted-foreground">ຜູ້ສະໜອງ:</span>
                         <p className="font-medium">
                             {data?.purchase?.supplier?.supplier_name || "-"}
                         </p>
                     </div>
 
                     <div>
-                        <span className="text-muted-foreground">ພະນັກງານ</span>
+                        <span className="text-muted-foreground">ພະນັກງານ:</span>
                         <p className="font-medium">
                             {data?.employee?.employee_name || "-"}
                         </p>
                     </div>
 
                     <div className="col-span-2">
-                        <span className="text-muted-foreground">ວັນທີນຳເຂົ້າ</span>
+                        <span className="text-muted-foreground">ວັນທີນຳເຂົ້າ:</span>
                         <p className="font-medium">
                             {data?.import_details?.[0]?.createdAt
                                 ? formatDate(data.import_details[0].createdAt as string)
@@ -63,10 +64,10 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>ສິນຄ້າ</TableHead>
-                                <TableHead className="text-center">ຈຳນວນ</TableHead>
-                                <TableHead className="text-right">ຕົ້ນທຶນ</TableHead>
-                                <TableHead className="text-right">ລວມຍ່ອຍ</TableHead>
+                                <TableHead>ຊື່ສິນຄ້າ:</TableHead>
+                                <TableHead className="text-center">ຈຳນວນ:</TableHead>
+                                <TableHead className="text-right">ລາຄາ:</TableHead>
+                                <TableHead className="text-right">ລວມ:</TableHead>
                             </TableRow>
                         </TableHeader>
 
@@ -83,11 +84,11 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                                         </TableCell>
 
                                         <TableCell className="text-right">
-                                            {d.cost_price}
+                                            {formatCurrency(d.cost_price)} ກີບ
                                         </TableCell>
 
                                         <TableCell className="text-right">
-                                            {d.quantity * d.cost_price}
+                                            {formatCurrency(d.quantity * d.cost_price)} ກີບ
                                         </TableCell>
                                     </TableRow>
 
@@ -107,10 +108,9 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                                 </TableCell>
 
                                 <TableCell className="text-right font-bold text-lg">
-                                    {data?.import_details?.reduce(
-                                        (sum, item) => sum + item.quantity * item.cost_price,
-                                        0
-                                    )} KIP
+                                    {data?.import_details && data?.import_details.length > 0
+                                        ? formatCurrency(data.import_details.reduce((sum, item) => sum + item.quantity * item.cost_price, 0))
+                                        : "0"} ກີບ
                                 </TableCell>
                             </TableRow>
                         </TableFooter>

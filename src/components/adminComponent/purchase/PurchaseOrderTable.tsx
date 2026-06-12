@@ -34,7 +34,7 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete }: P
 
                         <td className="p-3 flex gap-2">
                             <Button size="sm" onClick={() => onEdit(p)}>
-                                ແກ́ໄຂ
+                                ແກ້ໄຂ
                             </Button>
 
                             <Button

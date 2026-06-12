@@ -16,9 +16,7 @@ type Props = {
 }
 
 export function ImportTable({ imports, isLoading, onView, onDelete }: Props) {
-
     if (isLoading) return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
-
     return (
         <Card>
             <Table>
@@ -27,8 +25,9 @@ export function ImportTable({ imports, isLoading, onView, onDelete }: Props) {
                         <TableHead>ລຳດັບ:</TableHead>
                         <TableHead>ລະຫັດນຳເຂົ້າ</TableHead>
                         <TableHead>ລະຫັດສັ່ງຊື້</TableHead>
-                        <TableHead>ວັນທີ</TableHead>
+                        <TableHead>ຊື່ຜູ້ສະໜອງ</TableHead>
                         <TableHead>ພະນັກງານ</TableHead>
+                        <TableHead>ວັນທີນຳເຂົ້າ</TableHead>
                         <TableHead />
                     </TableRow>
                 </TableHeader>
@@ -39,10 +38,11 @@ export function ImportTable({ imports, isLoading, onView, onDelete }: Props) {
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{i.import_code}</TableCell>
                             <TableCell>{i.purchase?.purchase_code}</TableCell>
+                            <TableCell>{i.purchase?.supplier?.supplier_name}</TableCell>
+                            <TableCell>{i.employee?.employee_name}</TableCell>
                             <TableCell>
                            {formatDate(i.import_date)}
                             </TableCell>
-                            <TableCell>{i.employee?.employee_name}</TableCell>
 
                             <TableCell className="flex gap-2 justify-end">
                                 <Button size="icon" onClick={() => onView(i)}>
