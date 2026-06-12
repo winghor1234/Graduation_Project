@@ -208,12 +208,7 @@ export const purchaseService = {
                 throw new NotFoundError("Purchase not found");
             }
 
-            // ❗ SAFE GUARD: ห้ามแก้ถ้ามี import แล้ว
-            if (existing.import && existing.import.length > 0) {
-                throw new BadRequestError(
-                    "Cannot update purchase after import has been created"
-                );
-            }
+
 
             if (existing.status !== "pending") {
                 throw new BadRequestError(

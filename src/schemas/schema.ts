@@ -22,13 +22,15 @@ export type ProductFormValues = z.infer<typeof productSchema>
 
 
 // Category Schema
-export const categorySchema = z.object({
+export const categoryCreateSchema = z.object({
   category_name: z.string().min(1, "Category name is required"),
   description: z.string().optional()
 })
-export type CategoryInput = z.infer<typeof categorySchema>
-export const categoryUpdateSchema = categorySchema.partial()
-export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>
+export type CategoryCreateFormInput = z.infer<typeof categoryCreateSchema>
+export type CategoryUpdateFormInput = z.infer<typeof categoryUpdateSchema>
+export const categoryUpdateSchema = categoryCreateSchema.partial()
+
+
 
 
 

@@ -1,213 +1,76 @@
 "use client"
 
 import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Plus, Edit, Trash2, FolderTree } from "lucide-react"
-import { toast } from "sonner"
+import { useGetCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from "@/app/features/hooks/Category"
+import { useDataTable } from "@/hooks/useDataTable"
 import { Category } from "@/modules/category/category.type"
-import { useCreateCategory, useDeleteCategory, useGetCategories, useUpdateCategory } from "@/app/features/hooks/Category"
+import { CategoryToolbar } from "@/components/adminComponent/category/CategoryToolbar"
+import { CategoryTable } from "@/components/adminComponent/category/CategoryTable"
+import { AppPagination } from "@/components/AppPagination"
+import { CategoryFormDialog } from "@/components/adminComponent/category/CategoryFormDialog"
+import { toast } from "sonner"
 
+export default function CategoryPage() {
+    const table = useDataTable()
 
-export default function CategoriesPage() {
-    const { data, isError, isPending } = useGetCategories()
-    const categories = data?.data
-    const create = useCreateCategory()
-    const update = useUpdateCategory()
-    const del = useDeleteCategory()
-    const [showDialog, setShowDialog] = useState(false)
-    const [editingCategory, setEditingCategory] = useState<Category | null>(null)
-    const [formData, setFormData] = useState({ category_name: "", description: "", })
-    if (isPending) return <div>ກຳລັງໂຫຼດຂໍ້ມູນ...</div>
-    if (isError) return <div>ເກີດຂໍ້ຜິດພາດ</div>
-    console.log("category : ", data)
+    const { data, isLoading } = useGetCategories(table.params)
+    const createCategory = useCreateCategory()
+    const updateCategory = useUpdateCategory()
+    const deleteCategory = useDeleteCategory()
 
-    // ✅ ADD
-    const handleAdd = () => {
-        setEditingCategory(null)
-        setFormData({ category_name: "", description: "" })
-        setShowDialog(true)
-    }
+    const [selectedCategory, setSelectedCategory] = useState<Category | undefined>()
+    const [openForm, setOpenForm] = useState(false)
 
-    // ✅ EDIT
+    const categories = data?.data ?? []
+
     const handleEdit = (category: Category) => {
-        setEditingCategory(category)
-        setFormData({
-            category_name: category.category_name,
-            description: category.description || "",
-        })
-        setShowDialog(true)
+        setSelectedCategory(category)
+        setOpenForm(true)
     }
 
-    // ✅ DELETE
     const handleDelete = async (id: string) => {
         try {
-            await del.mutateAsync(id)
-            toast.success("ລຶບໝວດໝູ່ສຳເລັດແລ້ວ")
+            await deleteCategory.mutateAsync(id)
+            toast.success("ລຶບປະເພດສິນຄ້າສຳເລັດແລ້ວ")
         } catch {
             toast.error("ບໍ່ສາມາດລຶບໄດ້")
         }
     }
 
-    // ✅ SUBMIT
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
 
-        try {
-            if (editingCategory) {
-                await update.mutateAsync({
-                    id: editingCategory.category_id,
-                    data: formData,
-                })
-                toast.success("ອັບເດດສຳເລັດແລ້ວ")
-            } else {
-                await create.mutateAsync(formData)
-                toast.success("ສ້າງໝວດໝູ່ສຳເລັດແລ້ວ")
-            }
 
-            setShowDialog(false)
-        } catch {
-            toast.error("ເກີດຂໍ້ຜິດພາດບາງຢ່າງ")
-        }
-    }
-
-    const formatDate = (date: string) => {
-        return new Date(date).toLocaleDateString()
-    }
 
     return (
-        <div className="p-8">
-            {/* HEADER */}
-            <div className="mb-8 flex items-center justify-between">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <FolderTree className="w-8 h-8 text-accent" />
-                        <h1>ໝວດໝູ່</h1>
-                    </div>
-                    <p className="text-muted-foreground">
-                        ຈັດການໝວດໝູ່ສິນຄ້າ
-                    </p>
-                </div>
+        <div className="space-y-4">
+            {/* Header */}
+            <CategoryToolbar table={table} onAdd={() => {
+                setSelectedCategory(undefined) // Reset choice for new additions
+                setOpenForm(true)
+            }} />
 
-                <Button onClick={handleAdd}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    ເພີ່ມໝວດໝູ່
-                </Button>
-            </div>
+            {/* Table */}
+            <CategoryTable
+                categories={categories}
+                isLoading={isLoading}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
 
-            {/* GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {categories?.map((category: Category) => (
-                    <Card key={category?.category_id} className="p-6">
-                        <div className="flex justify-between mb-4">
-                            <FolderTree />
+            {/* Pagination */}
+            <AppPagination
+                page={table.params.page}
+                totalPages={data?.meta?.totalPages ?? 0}
+                onPageChange={table.setPage}
+            />
 
-                            <div className="flex gap-2">
-                                <Button onClick={() => handleEdit(category)}>
-                                    <Edit />
-                                </Button>
-
-                                <Button
-                                    onClick={() =>
-                                        handleDelete(category?.category_id)
-                                    }
-                                >
-                                    <Trash2 />
-                                </Button>
-                            </div>
-                        </div>
-
-                        <h3>{category.category_name}</h3>
-
-                        <p>{category.description}</p>
-
-                        <div className="flex justify-between">
-                            <Badge>
-                                {category.products?.length || 0}
-                            </Badge>
-
-                            {/* <span>{formatDate(categories.createdAt)}</span> */}
-                        </div>
-                    </Card>
-                ))}
-            </div>
-
-            {/* TABLE */}
-            <Card>
-                <table className="w-full">
-                    <tbody>
-                        {categories?.map((category: Category) => (
-                            <tr key={category.category_id}>
-                                <td>{category.category_name}</td>
-                                <td>{category.description}</td>
-
-                                <td>
-                                    <Badge>
-                                        {category.products?.length || 0}
-                                    </Badge>
-                                </td>
-
-                                {/* <td>{formatDate(category.createdAt)}</td> */}
-
-                                <td>
-                                    <Button onClick={() => handleEdit(category)}>
-                                        ແກ້ໄຂ
-                                    </Button>
-
-                                    <Button
-                                        onClick={() =>
-                                            handleDelete(category.category_id)
-                                        }
-                                    >
-                                        ລຶບ
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </Card>
-
-            {/* DIALOG */}
-            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
-                            {editingCategory ? "ແກ້ໄຂ" : "ສ້າງໃໝ່"}
-                        </DialogTitle>
-                    </DialogHeader>
-
-                    <form onSubmit={handleSubmit}>
-                        <Input
-                            value={formData.category_name}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    category_name: e.target.value,
-                                })
-                            }
-                        />
-
-                        <Textarea
-                            value={formData.description}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    description: e.target.value,
-                                })
-                            }
-                        />
-
-                        <Button type="submit">
-                            {editingCategory ? "ອັບເດດ" : "ສ້າງ"}
-                        </Button>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            {/* Form Dialog Modal */}
+            <CategoryFormDialog
+                open={openForm}
+                onOpenChange={setOpenForm}
+                create={createCategory}
+                update={updateCategory}
+                category={selectedCategory}
+            />
         </div>
     )
 }

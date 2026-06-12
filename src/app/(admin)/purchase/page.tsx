@@ -107,7 +107,7 @@ export default function PurchaseOrderPage() {
             <Dialog open={openDetail} onOpenChange={setOpenDetail}>
                 <DialogContent className="max-w-4xl">
                     <DialogHeader>
-                        <DialogTitle>Purchase Detail</DialogTitle>
+                        <DialogTitle>ລາຍລະອຽດໃບບິນສັ່ງຊື້</DialogTitle>
                     </DialogHeader>
                     <PurchaseDetail purchase={selectedPurchase} />
                 </DialogContent>

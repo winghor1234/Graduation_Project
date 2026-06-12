@@ -15,7 +15,12 @@ export const importService = {
                 employee: true,
                 purchase: {
                     include: {
-                        supplier: true
+                        supplier: true,
+                        purchase_details: {
+                            include: {
+                                product: true
+                            }
+                        }
                     }
                 },
                 import_details: {
@@ -34,7 +39,11 @@ export const importService = {
             where: { import_id: id },
             include: {
                 employee: true,
-                purchase: true,
+                purchase: {
+                    include: {
+                        purchase_details: true
+                    }
+                },
                 import_details: {
                     include: {
                         product: true

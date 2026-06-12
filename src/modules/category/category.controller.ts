@@ -15,10 +15,14 @@ export const categoryController = {
             const orderBy = getSortingParams(req)
             const where: Prisma.CategoryWhereInput = search
                 ? {
-                    category_name: {
-                        contains: search,
-                        mode: "insensitive"
-                    }
+                    OR: [
+                        {
+                            category_name: {
+                                contains: search,
+                                mode: "insensitive"
+                            },
+                        },
+                    ],
                 }
                 : {}
 
