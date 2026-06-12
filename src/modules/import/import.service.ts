@@ -56,7 +56,7 @@ export const importService = {
             })
 
             if (!purchase) {
-               throw new NotFoundError("Purchase not found")
+                throw new NotFoundError("Purchase not found")
             }
 
             if (purchase.status !== "pending") {
@@ -64,9 +64,7 @@ export const importService = {
             }
 
             // 🔍 map purchase detail
-            const detailMap = new Map(
-                purchase.purchase_details.map(d => [d.product_id, d])
-            )
+            const detailMap = new Map(purchase.purchase_details.map(d => [d.product_id, d]))
 
 
             // ✅ 2. validate import
@@ -133,7 +131,7 @@ export const importService = {
             })
 
             const isCompleted = updatedDetails.every(
-                d => d.received_qty >= d.quantity
+                d => (d.received_qty ?? 0) <= d.quantity
             )
 
             if (isCompleted) {

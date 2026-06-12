@@ -233,7 +233,10 @@ model PurchaseOrder {
   purchase_code String      @unique
   purchase_date DateTime @default(now())
   total_amount  Int?
+  paid_amount Int @default(0)
   status        String   @default("pending")
+  payment_status String @default("unpaid")
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

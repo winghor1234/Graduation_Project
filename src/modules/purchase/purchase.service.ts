@@ -84,9 +84,6 @@ export const purchaseService = {
                 throw new NotFoundError("Purchase not found")
             }
 
-            // if (existing.imports.length > 0) {
-            //     throw new BadRequestError("Cannot update purchase after import")
-            // }
 
             if (existing.status !== "pending") {
                 throw new BadRequestError("Only pending purchase can be updated")

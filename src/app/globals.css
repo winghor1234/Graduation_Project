@@ -6,6 +6,10 @@
 /* =========================
    DESIGN SYSTEM (SPORTWEAR)
 ========================= */
+
+body {
+  font-family: var(--font-noto-lao), sans-serif;
+}
 :root {
   --font-size: 16px;
 
