@@ -11,10 +11,10 @@ import { PropsTable } from "../../Type"
 
 export function PurchaseOrderToolbar({ table, onAdd }: PropsTable) {
 
-    const setSort = (sort: string, order: "asc" | "desc") => {
-        table.setSort(sort)
-        table.setOrder(order)
-    }
+    // const setSort = (sort: string, order: "asc" | "desc") => {
+    //     table.setSort(sort)
+    //     table.setOrder(order)
+    // }
 
     return (
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -54,51 +54,39 @@ export function PurchaseOrderToolbar({ table, onAdd }: PropsTable) {
                     <DropdownMenuContent>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("createdAt", "desc")}
+                            onClick={() => table.setSort("createdAt", "desc")}
                         >
                             ວັນທີ (ໃໝ່ສຸດ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("createdAt", "asc")}
+                            onClick={() => table.setSort("createdAt", "asc")}
                         >
                             ວັນທີ (ເກົ່າສຸດ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("purchase_id", "asc")}
+                            onClick={() => table.setSort("purchase_code", "asc")}
                         >
-                            ລະຫັດສັ່ງຊື້ (A → Z)
+                            ລະຫັດສັ່ງຊື້ (A → Z )
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("purchase_id", "desc")}
+                            onClick={() => table.setSort("purchase_code", "desc")}
                         >
                             ລະຫັດສັ່ງຊື້ (Z → A)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("total_amount", "asc")}
+                            onClick={() => table.setSort("total_amount", "asc")}
                         >
                             ຈຳນວນເງິນ (ຕ່ຳ → ສູງ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("total_amount", "desc")}
+                            onClick={() => table.setSort("total_amount", "desc")}
                         >
                             ຈຳນວນເງິນ (ສູງ → ຕ່ຳ)
-                        </DropdownMenuItem>
-
-                        <DropdownMenuItem
-                            onClick={() => setSort("status", "asc")}
-                        >
-                            ສະຖານະ (A → Z)
-                        </DropdownMenuItem>
-
-                        <DropdownMenuItem
-                            onClick={() => setSort("status", "desc")}
-                        >
-                            ສະຖານະ (Z → A)
                         </DropdownMenuItem>
 
                     </DropdownMenuContent>

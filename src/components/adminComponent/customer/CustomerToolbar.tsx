@@ -2,30 +2,24 @@
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu,  DropdownMenuContent,  DropdownMenuItem,  DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ArrowUpDown, Plus } from "lucide-react"
 import { PropsTable } from "@/components/Type"
+import { SearchInput } from "@/components/SearchInput"
 
 
 /* ----------------------------- Component ----------------------------- */
 
 export function CustomerToolbar({ table, onAdd }: PropsTable) {
-
-    const setSort = (sort: string, order: "asc" | "desc") => {
-        table.setSort(sort)
-        table.setOrder(order)
-    }
-
     return (
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
             {/* 🔍 Search + Sort */}
             <div className="flex gap-2">
-                <Input
-                    placeholder="ຄົ້ນຫາລູກຄ້າ..."
+                <SearchInput
                     value={table.search}
-                    onChange={(e) => table.setSearch(e.target.value)}
-                    className="w-[250px]"
+                    onChange={table.setSearch}
+                    placeholder="ຄົ້ນຫາລູກຄ້າ: ຊື່ , ອີເມວ , ເບີໂທ..."
                 />
 
                 <DropdownMenu>
@@ -38,31 +32,31 @@ export function CustomerToolbar({ table, onAdd }: PropsTable) {
 
                     <DropdownMenuContent>
                         <DropdownMenuItem
-                            onClick={() => setSort("created_at", "desc")}
+                            onClick={() => table.setSort("created_at", "desc")}
                         >
                             ວັນທີ (ໃໝ່ສຸດ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("customer_name", "asc")}
+                            onClick={() => table.setSort("customer_name", "asc")}
                         >
                             ຊື່ (A → Z)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("customer_name", "desc")}
+                            onClick={() => table.setSort("customer_name", "desc")}
                         >
                             # ຊື່ (Z → A)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("email", "asc")}
+                            onClick={() => table.setSort("email", "asc")}
                         >
                             ອີເມວ (A → Z)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                            onClick={() => setSort("email", "desc")}
+                            onClick={() => table.setSort("email", "desc")}
                         >
                             ອີເມວ (Z → A)
                         </DropdownMenuItem>

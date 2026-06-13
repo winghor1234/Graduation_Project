@@ -30,25 +30,25 @@ export default function CustomerPage() {
         updateStatus.mutate(id)
     }
 
-    const exportCSV = () => {
-        if (!customers.length) return
-        const rows = customers.map(c => ({
-            Name: c.customer_name,
-            Email: c.email,
-            Phone: c.phone,
-            Points: c.points?.map((p) => p.point_amount).reduce((a, b) => a + b, 0)
-        }))
-        const csv = [
-            Object.keys(rows[0]).join(","),
-            ...rows.map(r => Object.values(r).join(","))
-        ].join("\n")
-        const blob = new Blob([csv], { type: "text/csv" })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = "customers.csv"
-        a.click()
-    }
+    // const exportCSV = () => {
+    //     if (!customers.length) return
+    //     const rows = customers.map(c => ({
+    //         Name: c.customer_name,
+    //         Email: c.email,
+    //         Phone: c.phone,
+    //         Points: c.points?.map((p) => p.point_amount).reduce((a, b) => a + b, 0)
+    //     }))
+    //     const csv = [
+    //         Object.keys(rows[0]).join(","),
+    //         ...rows.map(r => Object.values(r).join(","))
+    //     ].join("\n")
+    //     const blob = new Blob([csv], { type: "text/csv" })
+    //     const url = URL.createObjectURL(blob)
+    //     const a = document.createElement("a")
+    //     a.href = url
+    //     a.download = "customers.csv"
+    //     a.click()
+    // }
 
     return (
         <div className="space-y-4">

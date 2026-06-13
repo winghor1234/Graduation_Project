@@ -4,23 +4,37 @@ import { CreateSaleInput } from "./sale.type"
 import { BadRequestError, NotFoundError } from "@/utils/response"
 
 export const saleService = {
-    async getSales(options?: Prisma.SaleFindManyArgs) {
+    async getSales(options: Prisma.SaleFindManyArgs = {}) {
+        const {
+            where,
+            skip = 0,
+            take = 10,
+            orderBy,
+        } = options
 
         return prisma.sale.findMany({
-            ...options,
+            where,
+            skip,
+            take,
+
+            orderBy:
+                (orderBy as Prisma.SaleOrderByWithRelationInput) ?? {
+                    createdAt: "desc",
+                },
+
             include: {
                 employee: true,
+
                 customer: true,
+
                 sale_details: {
                     include: {
-                        product: true
-                    }
-                }
-            }
+                        product: true,
+                    },
+                },
+            },
         })
-
     },
-
     async getSale(id: string) {
 
         const sale = await prisma.sale.findUnique({

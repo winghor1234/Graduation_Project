@@ -12,41 +12,47 @@ type OrderDetail = {
 
 export const orderService = {
 
-    async getOrders(options?: Prisma.OrderFindManyArgs) {
-        const orders = await prisma.order.findMany({
-            ...options,
-            // include: {
-            //     customer: true,
-            //     order_details: {
-            //         include: {
-            //             product: true
-            //         }
-            //     },
-            //     payment: true,
-            //     delivery: true
-            // }
-            include: {
-                customer: true,
-                payment: {
-                    include: {
-                        order: true
-                    }
+async getOrders(options: Prisma.OrderFindManyArgs = {}) {
+    const {
+        where,
+        skip = 0,
+        take = 10,
+        orderBy,
+    } = options
+
+    return prisma.order.findMany({
+        where,
+        skip,
+        take,
+
+        orderBy:
+            (orderBy as Prisma.OrderOrderByWithRelationInput) ?? {
+                createdAt: "desc",
+            },
+
+        include: {
+            customer: true,
+
+            payment: {
+                include: {
+                    order: true,
                 },
-                delivery: {
-                    include: {
-                        address: {
-                            include: {
-                                province: true,
-                                district: true,
-                                branch: true
-                            }
-                        }
-                    }
-                }
-            }
-        })
-        return orders
-    },
+            },
+
+            delivery: {
+                include: {
+                    address: {
+                        include: {
+                            province: true,
+                            district: true,
+                            branch: true,
+                        },
+                    },
+                },
+            },
+        },
+    })
+},
 
     async gerAllOrders() {
         const orders = await prisma.order.findMany({

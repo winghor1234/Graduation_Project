@@ -7,32 +7,47 @@ import { generateImportCode } from "@/utils/generateCode"
 
 export const importService = {
 
-    async getImports(options?: Prisma.ImportFindManyArgs) {
+async getImports(options: Prisma.ImportFindManyArgs = {}) {
+    const {
+        where,
+        skip = 0,
+        take = 10,
+        orderBy,
+    } = options
 
-        const imports = await prisma.import.findMany({
-            ...options,
-            include: {
-                employee: true,
-                purchase: {
-                    include: {
-                        supplier: true,
-                        purchase_details: {
-                            include: {
-                                product: true
-                            }
-                        }
-                    }
+    return prisma.import.findMany({
+        where,
+        skip,
+        take,
+
+        orderBy:
+            (orderBy as Prisma.ImportOrderByWithRelationInput) ?? {
+                createdAt: "desc",
+            },
+
+        include: {
+            employee: true,
+
+            purchase: {
+                include: {
+                    supplier: true,
+
+                    purchase_details: {
+                        include: {
+                            product: true,
+                        },
+                    },
                 },
-                import_details: {
-                    include: {
-                        product: true
-                    }
-                }
-            }
-        })
-        return imports
+            },
 
-    },
+            import_details: {
+                include: {
+                    product: true,
+                },
+            },
+        },
+    })
+},
 
     async getImport(id: string) {
         const record = await prisma.import.findUnique({

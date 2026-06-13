@@ -4,20 +4,13 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Table } from "../../Type"
-
-type Props = {
-    table: Table
-}
+import { PropsTable } from "../../Type"
 
 
 
-export function OrderToolbar({ table }: Props) {
 
-    const setSort = (field: string, order: "asc" | "desc") => {
-        table.setSort(field)
-        table.setOrder(order)
-    }
+
+export function OrderToolbar({ table }: PropsTable) {
 
     return (
         <div className="flex justify-between gap-4">
@@ -36,7 +29,7 @@ export function OrderToolbar({ table }: Props) {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => setSort("createdAt", "desc")}>
+                        <DropdownMenuItem onClick={() => table.setSort("createdAt", "desc")}>
                             ໃໝ່ສຸດ
                         </DropdownMenuItem>
                     </DropdownMenuContent>

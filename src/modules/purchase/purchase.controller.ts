@@ -16,6 +16,10 @@ export const purchaseController = {
             const { page, limit, skip } = getPaginationParams(req)
             const search = getSearchParam(req)
             const orderBy = getSortingParams(req)
+
+            // -------------------------
+            // WHERE (same pattern as category)
+            // -------------------------
             const where: Prisma.PurchaseOrderWhereInput = search
                 ? {
                     OR: [
@@ -36,22 +40,40 @@ export const purchaseController = {
                     ],
                 }
                 : {}
+
+            // -------------------------
+            // QUERY
+            // -------------------------
             const [purchases, total] = await Promise.all([
                 purchaseService.getPurchases({
                     where,
                     skip,
                     take: limit,
-                    orderBy
+                    orderBy,
                 }),
-                prisma.purchaseOrder.count({ where })
+
+                prisma.purchaseOrder.count({ where }),
             ])
+
             const meta = getPaginationMeta(total, page, limit)
-            return successResponse({ data: purchases, meta }, "Get purchases successfully", 200)
+
+            return successResponse(
+                { data: purchases, meta },
+                "Get purchases successfully",
+                200
+            )
         } catch (error) {
             console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
+
+            if (
+                error instanceof BadRequestError ||
+                error instanceof NotFoundError ||
+                error instanceof ForbiddenError ||
+                error instanceof UnauthorizedError
+            ) {
+                return errorResponse(error.message, error.statusCode)
             }
+
             return errorResponse("Internal Server Error", 500)
         }
     },

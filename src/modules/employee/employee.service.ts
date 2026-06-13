@@ -5,18 +5,30 @@ import { BadRequestError, NotFoundError } from "@/utils/response"
 
 export const employeeService = {
 
-    async getEmployees(options?: Prisma.EmployeeFindManyArgs) {
+    async getEmployees(options: Prisma.EmployeeFindManyArgs = {}) {
+        const {
+            where,
+            skip = 0,
+            take = 10,
+            orderBy,
+        } = options
 
-        const employees = await prisma.employee.findMany({
-            ...options,
+        return prisma.employee.findMany({
+            where,
+            skip,
+            take,
+
+            orderBy:
+                (orderBy as Prisma.EmployeeOrderByWithRelationInput) ?? {
+                    createdAt: "desc",
+                },
+
             include: {
                 purchases: true,
                 imports: true,
-                sales: true
-            }
+                sales: true,
+            },
         })
-        return employees
-
     },
 
     async getEmployee(id: string) {

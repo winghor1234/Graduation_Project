@@ -7,15 +7,29 @@ import { OrderStatus, PaymentMethod, PaymentStatus, Prisma } from "@prisma/clien
 import { convertFileToBase64, uploadMultipleImages } from "@/utils/cloudinary"
 
 export const paymentService = {
-    async getPayments(options?: Prisma.PaymentFindManyArgs) {
-        const payment = await prisma.payment.findMany({
-            ...options,
-            include: {
-                order: true
-            }
-        })
-        return payment
-    },
+async getPayments(options: Prisma.PaymentFindManyArgs = {}) {
+    const {
+        where,
+        skip = 0,
+        take = 10,
+        orderBy,
+    } = options
+
+    return prisma.payment.findMany({
+        where,
+        skip,
+        take,
+
+        orderBy:
+            (orderBy as Prisma.PaymentOrderByWithRelationInput) ?? {
+                createdAt: "desc",
+            },
+
+        include: {
+            order: true,
+        },
+    })
+},
 
     async getPayment(id: string) {
         const payment = await prisma.payment.findUnique({

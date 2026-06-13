@@ -5,18 +5,34 @@ import { CreateCustomerInput, UpdateCustomerInput } from "./customer.type"
 import { BadRequestError, NotFoundError } from "@/utils/response"
 import { hashPassword } from "@/utils/password"
 import { generateAccessToken, generateRefreshToken } from "@/utils/cookie"
+type GetCustomersOptions = Prisma.CustomerFindManyArgs
+
 
 export const customerService = {
 
-    async getCustomers(options?: Prisma.CustomerFindManyArgs) {
-        const customers = await prisma.customer.findMany({
-            ...options,
+    async getCustomers(options: GetCustomersOptions = {}) {
+        const {
+            where,
+            skip = 0,
+            take = 10,
+            orderBy,
+        } = options
+
+        return prisma.customer.findMany({
+            where,
+            skip,
+            take,
+
+            orderBy:
+                (orderBy as Prisma.CustomerOrderByWithRelationInput) ?? {
+                    createdAt: "desc",
+                },
+
             include: {
                 orders: true,
-                sales: true
-            }
+                sales: true,
+            },
         })
-        return customers
     },
 
     async getCustomer(id: string) {
@@ -35,12 +51,6 @@ export const customerService = {
 
     },
 
-    // async createCustomer(data: CreateCustomerInput) {
-    //     const customer = await prisma.customer.create({
-    //         data
-    //     })
-    //     return customer
-    // },
 
     async createCustomer(data: CreateCustomerInput) {
         const existingUser = await prisma.customer.findFirst({

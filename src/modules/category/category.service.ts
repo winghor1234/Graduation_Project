@@ -1,15 +1,36 @@
 import { prisma } from "@/lib/prisma"
 import { BadRequestError, NotFoundError } from "@/utils/response";
 import { Prisma } from "@prisma/client"
+type GetCategoriesOptions = Prisma.CategoryFindManyArgs
 
 export const categoryService = {
 
-  async getCategories(options?: Prisma.CategoryFindManyArgs) {
-    const categories = await prisma.category.findMany(options);
-    return categories;
 
+  // async getCategories(options?: Prisma.CategoryFindManyArgs) {
+  //   const categories = await prisma.category.findMany(options);
+  //   return categories;
+
+  // },
+
+
+  async getCategories(options: GetCategoriesOptions = {}) {
+    const {
+      where,
+      skip = 0,
+      take = 10,
+      orderBy,
+    } = options
+
+    return prisma.category.findMany({
+      where,
+      skip,
+      take,
+      orderBy:
+        (orderBy as Prisma.CategoryOrderByWithRelationInput) ?? {
+          createdAt: "desc",
+        },
+    })
   },
-
   async getCategory(id: string) {
     const category = await prisma.category.findUnique({
       where: { category_id: id }

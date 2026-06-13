@@ -6,21 +6,40 @@ import { BadRequestError, NotFoundError } from "@/utils/response"
 import { CreatePurchaseOrderInput, UpdatePurchaseOrderInput } from "./purchase.type"
 import { generatePurchaseCode } from "@/utils/generateCode"
 
+
 export const purchaseService = {
-    async getPurchases(options?: Prisma.PurchaseOrderFindManyArgs) {
-        const purchases = await prisma.purchaseOrder.findMany({
-            ...options,
+    async getPurchases(options: Prisma.PurchaseOrderFindManyArgs = {}) {
+        const {
+            where,
+            skip = 0,
+            take = 10,
+            orderBy,
+            include,
+        } = options
+
+        return prisma.purchaseOrder.findMany({
+            where,
+            skip,
+            take,
+
+            orderBy:
+                (orderBy as Prisma.PurchaseOrderOrderByWithRelationInput) ?? {
+                    createdAt: "desc",
+                },
+
             include: {
                 supplier: true,
                 employee: true,
                 purchase_details: {
                     include: {
-                        product: true
-                    }
-                }
-            }
+                        product: true,
+                    },
+                },
+
+                // allow override if needed
+                ...(include ?? {}),
+            },
         })
-        return purchases
     },
 
     async getPurchase(id: string) {

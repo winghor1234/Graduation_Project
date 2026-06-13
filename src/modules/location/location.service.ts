@@ -3,20 +3,35 @@ import { Prisma } from "@prisma/client"
 import { CreateBranchInput, CreateDistrictInput, CreateProvinceInput } from "./location.type"
 export const locationService = {
 
-  async getProvinces(options?: Prisma.ProvinceFindManyArgs) {
-    const provinces = await prisma.province.findMany({
-      ...options,
-      include: {
-        districts: {
-          include: {
-            branches: true
-          }
+async getProvinces(options: Prisma.ProvinceFindManyArgs = {}) {
+    const {
+        where,
+        skip = 0,
+        take = 10,
+        orderBy,
+    } = options
+
+    return prisma.province.findMany({
+        where,
+        skip,
+        take,
+
+        orderBy:
+            (orderBy as Prisma.ProvinceOrderByWithRelationInput) ?? {
+                province_name: "asc",
+            },
+
+        include: {
+            districts: {
+                include: {
+                    branches: true,
+                },
+            },
+
+            addressBranches: true,
         },
-        addressBranches: true
-      }
     })
-    return provinces
-  },
+},
 
   async getAllProvinces() {
     return prisma.province.findMany({
@@ -32,31 +47,58 @@ export const locationService = {
   },
 
 
-  async getDistricts(options?: Prisma.DistrictFindManyArgs) {
-    const districts = await prisma.district.findMany({
-      ...options,
-      include: {
-        province: true,
-        branches: true,
-        addressBranches: true
-      }
+async getDistricts(options: Prisma.DistrictFindManyArgs = {}) {
+    const {
+        where,
+        skip = 0,
+        take = 10,
+        orderBy,
+    } = options
+
+    return prisma.district.findMany({
+        where,
+        skip,
+        take,
+
+        orderBy:
+            (orderBy as Prisma.DistrictOrderByWithRelationInput) ?? {
+                district_name: "asc",
+            },
+
+        include: {
+            province: true,
+            branches: true,
+            addressBranches: true,
+        },
     })
-    return districts
-  },
+},
 
 
 
-  async getBranches(options?: Prisma.BranchFindManyArgs) {
-    const branches = await prisma.branch.findMany({
-      ...options,
-      include: {
-        district: true,
-        addressBranches: true
-      }
+async getBranches(options: Prisma.BranchFindManyArgs = {}) {
+    const {
+        where,
+        skip = 0,
+        take = 10,
+        orderBy,
+    } = options
+
+    return prisma.branch.findMany({
+        where,
+        skip,
+        take,
+
+        orderBy:
+            (orderBy as Prisma.BranchOrderByWithRelationInput) ?? {
+                branch_name: "asc",
+            },
+
+        include: {
+            district: true,
+            addressBranches: true,
+        },
     })
-    return branches
-  },
-
+},
 
   // GET DISTRICT BY PROVINCE
   // async getDistrictByProvince(province_id: string) {

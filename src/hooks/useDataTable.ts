@@ -1,83 +1,125 @@
 
+
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { useMemo, useState } from "react"
 
 type Order = "asc" | "desc"
+type Filters = Record<string, string>
+
+type SortState = {
+  field: string
+  order: Order
+}
 
 export function useDataTable() {
-
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  // -------------------------
+  // URL STATE
+  // -------------------------
   const page = Number(searchParams.get("page") ?? 1)
   const limit = Number(searchParams.get("limit") ?? 10)
   const search = searchParams.get("search") ?? ""
-  const sort = searchParams.get("sort") ?? ""
-  const order = (searchParams.get("order") as Order) ?? "asc"
+  const sortField = searchParams.get("sort") ?? ""
+  const sortOrder = (searchParams.get("order") as Order) ?? "asc"
 
-  const updateParams = (key: string, value: string | number) => {
+  // -------------------------
+  // BASE UPDATE FUNCTION
+  // -------------------------
+  const updateParams = (updates: Record<string, string | number>) => {
     const params = new URLSearchParams(searchParams.toString())
-    params.set(key, String(value))
+
+    Object.entries(updates).forEach(([key, value]) => {
+      params.set(key, String(value))
+    })
+
     router.push(`?${params.toString()}`)
   }
 
-  const setPage = (page: number) => updateParams("page", page)
-  const setLimit = (limit: number) => updateParams("limit", limit)
+  // -------------------------
+  // PAGINATION
+  // -------------------------
+  const setPage = (value: number) => {
+    updateParams({ page: value })
+  }
 
+  const setLimit = (value: number) => {
+    updateParams({ limit: value, page: 1 })
+  }
+
+  // -------------------------
+  // SEARCH
+  // -------------------------
   const setSearch = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("search", value)
-    params.set("page", "1")
-    router.push(`?${params.toString()}`)
+    updateParams({
+      search: value,
+      page: 1,
+    })
   }
 
-  const setSort = (field: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    const currentSort = params.get("sort")
-    const currentOrder = params.get("order")
-
-    if (currentSort === field && currentOrder === "asc") {
-      params.set("order", "desc")
-    } else {
-      params.set("sort", field)
-      params.set("order", "asc")
-    }
-
-    router.push(`?${params.toString()}`)
+  // -------------------------
+  // SORT (FIXED - ONLY ONE)
+  // -------------------------
+  const setSort = (field: string, order: Order = "asc") => {
+    updateParams({
+      sort: field,
+      order,
+      page: 1,
+    })
   }
 
-  const setOrder = (order: Order) => {
-    updateParams("order", order)
+  const sort: SortState = {
+    field: sortField,
+    order: sortOrder,
   }
 
-  const params = useMemo(() => {
-    return { page, limit, search, sort, order }
-  }, [page, limit, search, sort, order])
+  // -------------------------
+  // FILTERS
+  // -------------------------
+  const [filters, setFilters] = useState<Filters>({})
 
-
-  const [filters, setFilters] = useState<Record<string, string>>({})
   const setFilter = (key: string, value: string) => {
     setFilters((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }))
   }
 
+  // -------------------------
+  // API PARAMS
+  // -------------------------
+  const params = useMemo(() => {
+    return {
+      page,
+      limit,
+      search,
+      sort: sort.field,
+      order: sort.order,
+      filters,
+    }
+  }, [page, limit, search, sortField, sortOrder, filters])
+
   return {
+    // state
     page,
     limit,
     search,
     sort,
-    order,
+
+    // actions
     setPage,
     setLimit,
     setSearch,
     setSort,
-    setOrder,
+
+    // filters
     filters,
     setFilter,
+
+    // API
     params,
-    ...filters
   }
 }

@@ -1,3 +1,5 @@
+
+
 "use client"
 
 import { Input } from "@/components/ui/input"
@@ -12,16 +14,14 @@ import {
 import { ArrowUpDown, Plus } from "lucide-react"
 import { PropsTable } from "../../Type"
 
-export function CategoryToolbar({ table, onAdd }: PropsTable) {
-    const setSort = (sort: string, order: "asc" | "desc") => {
-        table.setSort(sort)
-        table.setOrder(order)
-    }
 
+export function CategoryToolbar({ table, onAdd }: PropsTable) {
     return (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
             {/* Left: Search + Sort */}
             <div className="flex items-center gap-2">
+
                 <Input
                     placeholder="ຄົ້ນຫາປະເພດສິນຄ້າ..."
                     value={table.search}
@@ -36,23 +36,39 @@ export function CategoryToolbar({ table, onAdd }: PropsTable) {
                             ລຽງລຳດັບ
                         </Button>
                     </DropdownMenuTrigger>
+
                     <DropdownMenuContent align="start" className="w-44">
-                        <DropdownMenuItem onClick={() => setSort("created_at", "desc")}>
+
+                        <DropdownMenuItem
+                            onClick={() => table.setSort("createdAt", "desc")}
+                        >
                             ວັນທີ (ໃໝ່ສຸດ)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSort("created_at", "asc")}>
+
+                        <DropdownMenuItem
+                            onClick={() => table.setSort("createdAt", "asc")}
+                        >
                             ວັນທີ (ເກົ່າສຸດ)
                         </DropdownMenuItem>
+
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => setSort("category_name", "asc")}>
+
+                        <DropdownMenuItem
+                            onClick={() => table.setSort("category_name", "asc")}
+                        >
                             ຊື່ສິນຄ້າ (ກ → ຮ)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSort("category_name", "desc")}>
+
+                        <DropdownMenuItem
+                            onClick={() => table.setSort("category_name", "desc")}
+                        >
                             ຊື່ສິນຄ້າ (ຮ → ກ)
                         </DropdownMenuItem>
+
                         <DropdownMenuSeparator />
                     </DropdownMenuContent>
                 </DropdownMenu>
+
             </div>
 
             {/* Right: Add button */}
@@ -60,6 +76,7 @@ export function CategoryToolbar({ table, onAdd }: PropsTable) {
                 <Plus className="h-4 w-4" />
                 ເພີ່ມປະເພດສິນຄ້າ
             </Button>
+
         </div>
     )
 }

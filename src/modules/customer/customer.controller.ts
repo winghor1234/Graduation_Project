@@ -5,17 +5,10 @@ import { getSearchParam } from "@/utils/search"
 import { getSortingParams } from "@/utils/sorting"
 import { Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
-import {  CreateCustomerInput, UpdateCustomerInput } from "./customer.type"
+import {  UpdateCustomerInput } from "./customer.type"
 import { BadRequestError, errorResponse, ForbiddenError, NotFoundError, successResponse, UnauthorizedError } from "@/utils/response"
 
 export const customerController = {
-
-
-    //     OR: [
-    //   { customer_name: { contains: search } },
-    //   { email: { contains: search } },
-    //   { phone: { contains: search } }
-    // ]
     async getCustomers(req: NextRequest) {
         try {
             const { page, limit, skip } = getPaginationParams(req)
@@ -24,6 +17,14 @@ export const customerController = {
             const where: Prisma.CustomerWhereInput = search
                 ? {
                     customer_name: {
+                        contains: search,
+                        mode: "insensitive"
+                    },
+                    email: {
+                        contains: search,
+                        mode: "insensitive"
+                    },
+                    phone: {
                         contains: search,
                         mode: "insensitive"
                     }

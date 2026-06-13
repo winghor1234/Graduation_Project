@@ -1,15 +1,13 @@
-export type Table = {
-    search: string
-    setSort: (field: string) => void
-    setOrder: (order: "asc" | "desc") => void
-    setSearch: (search: string) => void
-}
+type Order = "asc" | "desc"
 
 export type PropsTable = {
-    table: Table
-    onAdd: () => void
+  table: {
+    search: string
+    setSearch: (value: string) => void
+    setSort: (field: string, order: Order) => void 
+  }
+  onAdd: () => void
 }
-
 
 
 export type ViewMode = "W" | "M" | "Y"

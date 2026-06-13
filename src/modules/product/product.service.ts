@@ -7,18 +7,30 @@ import { generateProductCode } from "@/utils/generateCode";
 
 export const productService = {
 
-  async getProducts(options?: Prisma.ProductFindManyArgs) {
 
-    const products = await prisma.product.findMany({
-      ...options,
+  async getProducts(options: Prisma.ProductFindManyArgs = {}) {
+    const {
+      where,
+      skip = 0,
+      take = 10,
+      orderBy,
+    } = options
+
+    return prisma.product.findMany({
+      where,
+      skip,
+      take,
+
+      orderBy:
+        (orderBy as Prisma.ProductOrderByWithRelationInput) ?? {
+          createdAt: "desc",
+        },
+
       include: {
         category: true,
-        images: true
-      }
+        images: true,
+      },
     })
-    return products
-
-
   },
   async getAllProducts() {
     const products = await prisma.product.findMany({
@@ -91,7 +103,7 @@ export const productService = {
       throw new NotFoundError("Product not found");
     }
 
-   let images: ProductImageInput[] = [];
+    let images: ProductImageInput[] = [];
 
     /* 🔥 ถ้ามีรูปใหม่ */
     if (data.files?.length) {

@@ -96,27 +96,37 @@ export const RefundService = {
         })
     },
 
-    async getRefunds(options?: Prisma.RefundFindManyArgs) {
+async getRefunds(options: Prisma.RefundFindManyArgs = {}) {
+    const {
+        where,
+        skip = 0,
+        take = 10,
+        orderBy,
+    } = options
 
-        const refunds = await prisma.refund.findMany({
-            ...options,
-            include: {
-                refund_details: true,
-                sale: {
-                    select: {
-                        sale_id: true,
-                        customer_id: true,
-                        total_amount: true
-                    }
-                }
+    return prisma.refund.findMany({
+        where,
+        skip,
+        take,
+
+        orderBy:
+            (orderBy as Prisma.RefundOrderByWithRelationInput) ?? {
+                createdAt: "desc",
             },
-            orderBy: {
-                createdAt: "desc"
-            }
-        })
-        return refunds
 
-    },
+        include: {
+            refund_details: true,
+
+            sale: {
+                select: {
+                    sale_id: true,
+                    customer_id: true,
+                    total_amount: true,
+                },
+            },
+        },
+    })
+},
 
     async getRefund(id: string) {
         const refund = await prisma.refund.findUnique({

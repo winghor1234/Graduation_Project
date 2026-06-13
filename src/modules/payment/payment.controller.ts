@@ -17,12 +17,17 @@ export const paymentController = {
             const { page, limit, skip } = getPaginationParams(req)
             const search = getSearchParam(req)
             const orderBy = getSortingParams(req)
+            // const where: Prisma.PaymentWhereInput = search
+            //     ? {
+            //         amount: {
+            //             contains: search,
+            //             mode: "insensitive"
+            //         }
+            //     }
+            //     : {}
             const where: Prisma.PaymentWhereInput = search
                 ? {
-                    payment_id: {
-                        contains: search,
-                        mode: "insensitive"
-                    }
+                    amount: Number(search)
                 }
                 : {}
             const [payments, total] = await Promise.all([

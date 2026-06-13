@@ -5,9 +5,24 @@ import { BadRequestError, NotFoundError } from "@/utils/response"
 
 export const supplierService = {
 
-    async getSuppliers(options?: Prisma.SupplierFindManyArgs) {
-        const suppliers = await prisma.supplier.findMany(options)
-        return suppliers
+    async getSuppliers(options: Prisma.SupplierFindManyArgs = {}) {
+        const {
+            where,
+            skip = 0,
+            take = 10,
+            orderBy,
+        } = options
+
+        return prisma.supplier.findMany({
+            where,
+            skip,
+            take,
+
+            orderBy:
+                (orderBy as Prisma.SupplierOrderByWithRelationInput) ?? {
+                    supplier_name: "asc",
+                },
+        })
     },
 
     async getSupplier(id: string) {
