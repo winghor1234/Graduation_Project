@@ -149,11 +149,11 @@ export type CustomerLoginInput = z.infer<typeof customerLoginAuthSchema>
 
 // auth customer register schema
 export const customerCreateSchema = z.object({
-  customer_name: z.string(),
-  phone: z.string(),
-  password: z.string(),
-  email: z.string().email(),
-  gender: z.string().optional(),
+  customer_name: z.string().min(1, "ກະລຸນາປ້ອນຊື່"),
+  phone: z.string().min(8, "ກະລຸນາປ້ອນເບີໂທຢ່າງນ້ອຍ 8 ຕົວ"),
+  password: z.string().min(6, "ລະຫັດຜ່ານຕ້ອງຢ່າງນ້ອຍ 6 ຕົວ"),
+  email: z.string().email("ອີເມວບໍ່ຖືກຕ້ອງ"),
+  gender: z.string().min(1, "ກະລຸນາເລືອກເພດ"),
   address: z.string().optional(),
 })
 export type CustomerCreateFormValues = z.infer<typeof customerCreateSchema>

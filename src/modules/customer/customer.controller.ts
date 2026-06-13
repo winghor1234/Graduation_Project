@@ -5,7 +5,7 @@ import { getSearchParam } from "@/utils/search"
 import { getSortingParams } from "@/utils/sorting"
 import { Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
-import {  UpdateCustomerInput } from "./customer.type"
+import { UpdateCustomerInput } from "./customer.type"
 import { BadRequestError, errorResponse, ForbiddenError, NotFoundError, successResponse, UnauthorizedError } from "@/utils/response"
 
 export const customerController = {
@@ -16,18 +16,26 @@ export const customerController = {
             const orderBy = getSortingParams(req)
             const where: Prisma.CustomerWhereInput = search
                 ? {
-                    customer_name: {
-                        contains: search,
-                        mode: "insensitive"
-                    },
-                    email: {
-                        contains: search,
-                        mode: "insensitive"
-                    },
-                    phone: {
-                        contains: search,
-                        mode: "insensitive"
-                    }
+                    OR: [
+                        {
+                            customer_name: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                        },
+                        {
+                            email: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                        },
+                        {
+                            phone: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                        },
+                    ],
                 }
                 : {}
             const [customers, total] = await Promise.all([

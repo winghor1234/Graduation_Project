@@ -36,7 +36,6 @@ export type UpdateCustomerInput = {
     isActive?: boolean
 }
 
-export type CustomerStatus = "ACTIVE" | "INACTIVE";
 
 
 
@@ -79,7 +78,7 @@ export interface Customer {
   totalOrders: number;
   totalSpent: number;
   loyaltyPoints: number;
-  isActive: CustomerStatus;
+  isActive: boolean;
   points: Point[];
   orders: CustomerOrder[];
   pointsHistory: PointsTransaction[];

@@ -26,7 +26,6 @@ export default function CustomerPage() {
     }
 
     const handleChangeStatus = (id: string) => {
-        if (!confirm("Change status of customer?")) return
         updateStatus.mutate(id)
     }
 
@@ -59,7 +58,7 @@ export default function CustomerPage() {
                 customers={customers}
                 isLoading={isLoading}
                 onEdit={handleEdit}
-                onDelete={handleChangeStatus}
+                onChange={handleChangeStatus}
             />
 
             <AppPagination

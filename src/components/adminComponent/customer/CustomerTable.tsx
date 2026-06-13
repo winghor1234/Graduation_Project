@@ -1,19 +1,23 @@
 "use client"
-import { Edit, Trash2 } from "lucide-react"
+import { Edit } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Customer } from "@/modules/customer/customer.type"
+import { useState } from "react"
+import { StatusToggleButton } from "./CustomerStatusSwitch"
 
 type Props = {
     customers: Customer[]
     isLoading: boolean
     onEdit: (p: Customer) => void
-    onDelete: (id: string) => void
+    onChange: (id: string) => void
 }
 
-export function CustomerTable({ customers, isLoading, onEdit, onDelete }: Props) {
+export function CustomerTable({ customers, isLoading, onEdit, onChange }: Props) {
+    const [enabled, setEnabled] = useState(true)
+
     if (isLoading) {
         return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນລູກຄ້າ...</Card>
     }
@@ -63,13 +67,12 @@ export function CustomerTable({ customers, isLoading, onEdit, onDelete }: Props)
                                 >
                                     <Edit className="w-4 h-4" />
                                 </Button>
-                                <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    onClick={() => onDelete(customer.customer_id)}
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </Button>
+                                <StatusToggleButton
+                                    active={customer.isActive}
+                                    onToggle={() =>
+                                        onChange(customer.customer_id)
+                                    }
+                                />
                             </TableCell>
                         </TableRow>
                     ))}

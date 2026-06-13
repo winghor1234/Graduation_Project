@@ -34,7 +34,6 @@ export function CustomerFormDialog({ open, onOpenChange, customer, create, updat
             phone: "",
             email: "",
             gender: "",
-            // address: "",
             ...(isEdit ? {} : { password: "" }) // ✅ password เฉพาะ create
         }
     })

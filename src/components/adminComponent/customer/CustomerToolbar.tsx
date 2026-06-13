@@ -32,9 +32,14 @@ export function CustomerToolbar({ table, onAdd }: PropsTable) {
 
                     <DropdownMenuContent>
                         <DropdownMenuItem
-                            onClick={() => table.setSort("created_at", "desc")}
+                            onClick={() => table.setSort("createdAt", "desc")}
                         >
                             ວັນທີ (ໃໝ່ສຸດ)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => table.setSort("createdAt", "asc")}
+                        >
+                            ວັນທີ (ເກົ່າສຸດ)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
@@ -46,7 +51,7 @@ export function CustomerToolbar({ table, onAdd }: PropsTable) {
                         <DropdownMenuItem
                             onClick={() => table.setSort("customer_name", "desc")}
                         >
-                            # ຊື່ (Z → A)
+                             ຊື່ (Z → A)
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
