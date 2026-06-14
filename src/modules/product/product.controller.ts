@@ -7,8 +7,6 @@ import { getSortingParams } from "@/utils/sorting"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { formDataParser } from "@/utils/cloudinary"
-import { CreateProductInput } from "./product.types"
-import { useGetAllProducts } from "@/app/features/hooks/Product"
 
 export const productController = {
     async getProducts(req: NextRequest) {
@@ -18,12 +16,29 @@ export const productController = {
             const orderBy = getSortingParams(req)
             const where: Prisma.ProductWhereInput = search
                 ? {
-                    product_name: {
-                        contains: search,
-                        mode: "insensitive"
-                    }
-                }
-                : {}
+                    OR: [
+                        {
+                            product_name: {
+                                contains: search,
+                                mode: "insensitive"
+                            }
+                        },
+                        {
+                            product_code: {
+                                contains: search,
+                                mode: "insensitive"
+                            }
+                        },
+                        {
+                            category: {
+                                category_name: {
+                                    contains: search,
+                                    mode: "insensitive"
+                                }
+                            }
+                        }
+                    ]
+                } : {}
             const [products, total] = await Promise.all([
                 productService.getProducts({
                     where,
@@ -59,7 +74,7 @@ export const productController = {
     },
 
     async getProduct(req: NextRequest, id: string) {
-        console.log("id from frontend : ",id)
+        // console.log("id from frontend : ",id)
         try {
             const product = await productService.getProduct(id)
             return successResponse(product, "Get product successfully", 200)
@@ -75,7 +90,7 @@ export const productController = {
     async createProduct(req: NextRequest) {
         try {
             const fd = await req.formData()
-            const body: CreateProductInput = {
+            const body = {
                 product_name: fd.get("product_name") as string,
                 purchase_price: Number(fd.get("purchase_price")),
                 sale_price: Number(fd.get("sale_price")),
@@ -84,6 +99,7 @@ export const productController = {
                 category_id: fd.get("category_id") as string,
                 files: fd.getAll("images") as File[],
             }
+            console.log(body)
             const product = await productService.createProduct(body)
             return successResponse(product, "Product created successfully", 201)
         } catch (error) {
@@ -105,13 +121,14 @@ export const productController = {
     async updateProduct(req: NextRequest, id: string) {
         try {
             const formData = await req.formData();
+            // console.log(formData)
             const product = await productService.updateProduct(id, {
-                product_name: formDataParser.string(formData, "name"),
+                product_name: formDataParser.string(formData, "product_name"),
                 purchase_price: formDataParser.number(formData, "purchase_price"),
                 sale_price: formDataParser.number(formData, "sale_price"),
-                stock_qty: formDataParser.number(formData, "stock"),
+                stock_qty: formDataParser.number(formData, "stock_qty"),
                 description: formDataParser.string(formData, "description"),
-                category_id: formDataParser.string(formData, "categoryId"),
+                category_id: formDataParser.string(formData, "category_id"),
                 files: formData.getAll("images") as File[]
             });
             return successResponse(product, "Product updated successfully", 201);

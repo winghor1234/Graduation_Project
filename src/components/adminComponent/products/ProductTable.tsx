@@ -5,8 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Product } from "@/modules/product/product.types"
 import { formatCurrency } from "@/utils/FormatCurrency"
+import { Product } from "./ProductType"
 
 type Props = {
     products: Product[]
@@ -31,10 +31,11 @@ export function ProductTable({ products, isLoading, onEdit, onDelete }: Props) {
                     <TableHeader>
                         <TableRow className="bg-gray-50">
                             <TableHead>ລຳດັບ</TableHead>
-                            <TableHead>ສິນຄ້າ</TableHead>
+                            <TableHead>ຊື່ສິນຄ້າ</TableHead>
                             <TableHead className="hidden md:table-cell">ລະຫັດສິນຄ້າ</TableHead>
-                            <TableHead className="text-right">ລາຄາຕົ້ນທຶນ</TableHead>
-                            <TableHead className="text-right">ລາຄາຂາຍ</TableHead>
+                            <TableHead className="text-center">ປະເພດສິນຄ້າ</TableHead>
+                            <TableHead className="text-center">ລາຄາຊື້</TableHead>
+                            <TableHead className="text-center">ລາຄາຂາຍ</TableHead>
                             <TableHead className="text-center">ຈຳນວນໃນສາງ</TableHead>
                             <TableHead className="text-center">ການຈັດການ</TableHead>
                         </TableRow>
@@ -71,11 +72,14 @@ export function ProductTable({ products, isLoading, onEdit, onDelete }: Props) {
                                     {product.product_code}
                                 </TableCell>
 
-                                <TableCell className="text-right">
+                                <TableCell className="text-center">
+                                    {product.category?.category_name}
+                                </TableCell>
+                                <TableCell className="text-center">
                                     {formatCurrency(product.purchase_price)}
                                 </TableCell>
 
-                                <TableCell className="text-right">
+                                <TableCell className="text-center">
                                     {formatCurrency(product.sale_price)}
                                 </TableCell>
 

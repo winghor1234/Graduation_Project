@@ -51,4 +51,8 @@ export const productApi = {
     delete: async (id: string): Promise<void> => {
         await axiosInstance.delete(`/product/${id}`)
     },
+
+    deleteImage: async (id: string): Promise<void> => {
+        await axiosInstance.delete(`/product/image/${id}`)
+    },
 }

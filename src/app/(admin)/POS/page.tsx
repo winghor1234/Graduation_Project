@@ -13,13 +13,16 @@ import { useRouter } from "next/navigation"
 import { useGetAllProducts } from "@/app/features/hooks/Product"
 import { useGetCustomers } from "@/app/features/hooks/Customer"
 import CartPanel from "@/components/adminComponent/POS/CartPanel"
+import { useDataTable } from "@/hooks/useDataTable"
+import { Input } from "@/components/ui/input"
 
 
 export default function POSPage() {
+  const table = useDataTable()
   const router = useRouter()
   const { data: products = [] } = useGetAllProducts()
   const product = products || []
-  const { data: customers = [] } = useGetCustomers()
+  const { data: customers = [] } = useGetCustomers(table.params)
   const customer = customers?.data || []
   const createSale = useCreateSale()
 
@@ -56,39 +59,51 @@ export default function POSPage() {
   // console.log("receipt : ",receipt)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 h-screen">
+    <div className="h-[calc(100vh-64px)] overflow-hidden">
 
-      {/* LEFT - PRODUCTS */}
-      <div className="md:col-span-8 p-4 overflow-auto">
-        <ProductGrid
-          products={product || []}
-          onAdd={add}
-        />
-      </div>
+      <div className="grid h-full grid-cols-1 lg:grid-cols-[1fr_380px]">
 
-      {/* RIGHT - CART */}
-      <div className="md:col-span-4 border-l flex flex-col h-screen">
-
-        <div className="p-3 border-b">
-          <CustomerSelect
-            customers={customer || []}
-            selected={selectedCustomer}
-            onSelect={setSelectedCustomer || undefined}
+        {/* PRODUCTS */}
+        <div className="overflow-y-auto p-4">
+          <ProductGrid
+            products={product}
+            onAdd={add}
           />
         </div>
 
-        <CartPanel
-          cart={cart}
-          update={update}
-          remove={remove}
-          subtotal={subtotal}
-          tax={tax}
-          total={total}
-          onCheckout={() => setShowConfirm(true)}
-        />
+        {/* CART */}
+        <div
+          className=" border-t lg:border-t-0 lg:border-l bg-white flex flex-col h-full "
+        >
+          <div className="p-3 border-b shrink-0">
+            <Input
+              placeholder="ຄົ້ນຫາປະເພດສິນຄ້າ..."
+              value={table.search}
+              onChange={(e) => table.setSearch(e.target.value)}
+              className="w-60"
+            />
+            {/* <CustomerSelect
+              customers={customer}
+              selected={selectedCustomer}
+              onSelect={setSelectedCustomer}
+            /> */}
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <CartPanel
+              cart={cart}
+              update={update}
+              remove={remove}
+              subtotal={subtotal}
+              tax={tax}
+              total={total}
+              onCheckout={() => setShowConfirm(true)}
+            />
+          </div>
+        </div>
+
       </div>
 
-      {/* MODALS */}
       {showConfirm && (
         <ConfirmModal
           cart={cart}
@@ -97,13 +112,6 @@ export default function POSPage() {
           onClose={() => setShowConfirm(false)}
         />
       )}
-
-      {/* {receipt && (
-        <ReceiptModal
-          data={receipt}
-          onClose={() => setReceipt(null)}
-        />
-      )} */}
     </div>
   )
 }

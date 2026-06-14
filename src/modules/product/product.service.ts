@@ -46,9 +46,9 @@ export const productService = {
     const product = await prisma.product.findUnique({
       where: { product_id: id },
       include: {
+        images: true,
         category: true,
-        images: true
-      }
+      },
     })
 
     return product

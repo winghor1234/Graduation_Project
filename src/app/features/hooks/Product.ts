@@ -59,3 +59,16 @@ export const useDeleteProduct = () => {
         },
     })
 }
+
+
+
+export const useDeleteImage = () => {
+    const qc = useQueryClient()
+
+    return useMutation({
+        mutationFn: productApi.deleteImage,
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["image"] })
+        },
+    })
+}

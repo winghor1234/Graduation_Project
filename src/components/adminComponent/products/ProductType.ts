@@ -1,5 +1,4 @@
 import { Category } from '@/modules/category/category.type';
-import { categoryApi } from '../../../app/features/api/Category';
 
 
 export type CreateProductInput = {

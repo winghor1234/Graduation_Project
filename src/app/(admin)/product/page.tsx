@@ -13,10 +13,10 @@ import { useGetCategories } from "@/app/features/hooks/Category"
 export default function ProductsPage() {
     const table = useDataTable()
 
-    const { data, isLoading } = useGetProducts(table.params)
+    const { data: products, isLoading } = useGetProducts(table.params)
     const { data: categories } = useGetCategories()
     const category = categories?.data 
-    console.log(data)
+    console.log(products)
 
     const createProduct = useCreateProduct()
     const updateProduct = useUpdateProduct()
@@ -51,7 +51,7 @@ export default function ProductsPage() {
             />
 
             <ProductTable
-                products={data?.data ?? []}
+                products={products?.data ?? []}
                 isLoading={isLoading}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
@@ -59,7 +59,7 @@ export default function ProductsPage() {
 
             <AppPagination
                 page={table.page}
-                totalPages={data?.meta.totalPages ?? 1}
+                totalPages={products?.meta.totalPages ?? 1}
                 onPageChange={table.setPage}
             />
 

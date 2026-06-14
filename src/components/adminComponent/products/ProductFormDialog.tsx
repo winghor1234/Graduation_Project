@@ -6,21 +6,18 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import ImageUpload from "../../ImageUpload"
-
-import { Product } from "@/modules/product/product.types"
-import { Category } from "@/modules/category/category.type"
-import { UseMutationResult } from "@tanstack/react-query"
-import { Textarea } from "../../ui/textarea"
-import { productSchema } from "@/schemas/schema"
 import { NumericFormat } from "react-number-format"
 import { z } from "zod"
 
-/* ----------------------------- TYPE SAFE ----------------------------- */
+import { Product } from "@/modules/product/product.types"
+import { Category } from "@/modules/category/category.type"
+import { productSchema } from "@/schemas/schema"
+import { UseMutationResult } from "@tanstack/react-query"
+import { useDeleteImage } from "@/app/features/hooks/Product"
 
 type ProductFormValues = z.infer<typeof productSchema>
-
-/* ----------------------------- Props ----------------------------- */
 
 type ProductFormDialogProps = {
   open: boolean
@@ -31,7 +28,10 @@ type ProductFormDialogProps = {
   categories: Category[]
 }
 
-/* ----------------------------- Component ----------------------------- */
+type ExistingImage = {
+  image_id: string
+  image_url: string
+}
 
 export function ProductFormDialog({
   open,
@@ -41,14 +41,18 @@ export function ProductFormDialog({
   update,
   categories
 }: ProductFormDialogProps) {
+
   const [files, setFiles] = useState<File[]>([])
+  const [existingImages, setExistingImages] = useState<ExistingImage[]>([])
+
+  const deleteImage = useDeleteImage()
 
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors },
-    reset
+    reset,
+    formState: { errors }
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -61,7 +65,7 @@ export function ProductFormDialog({
     }
   })
 
-  /* ----------------------------- RESET ----------------------------- */
+  /* ---------------- RESET ---------------- */
 
   useEffect(() => {
     if (!open) return
@@ -75,10 +79,35 @@ export function ProductFormDialog({
         category_id: product.category_id,
         description: product.description || ""
       })
+
+      setExistingImages(
+        product.images?.map(img => ({
+          image_id: img.image_id,
+          image_url: img.image_url
+        })) || []
+      )
+    } else {
+      reset()
+      setFiles([])
+      setExistingImages([])
     }
   }, [open, product, reset])
 
-  /* ----------------------------- FORM DATA ----------------------------- */
+  /* ---------------- DELETE IMAGE ---------------- */
+
+  const handleDeleteImage = async (id: string) => {
+    try {
+      await deleteImage.mutateAsync(id)
+
+      setExistingImages(prev =>
+        prev.filter(img => img.image_id !== id)
+      )
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  /* ---------------- FORM DATA ---------------- */
 
   const toFormData = (values: ProductFormValues) => {
     const fd = new FormData()
@@ -93,43 +122,44 @@ export function ProductFormDialog({
       fd.append("description", values.description)
     }
 
-    files.forEach((file) => {
+    files.forEach(file => {
       fd.append("images", file)
     })
+
+    fd.append(
+      "existingImages",
+      JSON.stringify(existingImages.map(i => i.image_id))
+    )
 
     return fd
   }
 
+  /* ---------------- SUBMIT ---------------- */
 
   const onSubmit: SubmitHandler<ProductFormValues> = async (values) => {
-    try {
-      const fd = toFormData(values)
+    const fd = toFormData(values)
 
-      if (product) {
-        await update.mutateAsync({
-          id: product.product_id,
-          data: fd
-        })
-      } else {
-        await create.mutateAsync(fd)
-      }
-
-      onOpenChange(false)
-      reset()
-      setFiles([])
-    } catch (err) {
-      console.error(err)
+    if (product) {
+      await update.mutateAsync({
+        id: product.product_id,
+        data: fd
+      })
+    } else {
+      await create.mutateAsync(fd)
     }
-  }
 
-  /* ----------------------------- UI ----------------------------- */
+    onOpenChange(false)
+    reset()
+    setFiles([])
+    setExistingImages([])
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
 
-        <DialogHeader className="mb-2">
-          <DialogTitle className="text-lg font-semibold">
+        <DialogHeader>
+          <DialogTitle>
             {product ? "ແກ້ໄຂສິນຄ້າ" : "ເພີ່ມສິນຄ້າ"}
           </DialogTitle>
         </DialogHeader>
@@ -138,133 +168,77 @@ export function ProductFormDialog({
 
           {/* NAME + CATEGORY */}
           <div className="grid grid-cols-2 gap-4">
+            <Input {...register("product_name")} placeholder="ຊື່ສິນຄ້າ" />
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium">ຊື່ສິນຄ້າ</label>
-              <Input {...register("product_name")} />
-              <p className="text-xs text-red-500 h-4">
-                {errors.product_name?.message}
-              </p>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-sm font-medium">ໝວດໝູ່</label>
-              <select
-                {...register("category_id")}
-                className="w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">ເລືອກໝວດໝູ່</option>
-                {categories.map((c) => (
-                  <option key={c.category_id} value={c.category_id}>
-                    {c.category_name}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-red-500 h-4">
-                {errors.category_id?.message}
-              </p>
-            </div>
-
+            <select {...register("category_id")} className="border rounded px-3 py-2">
+              <option value="">ເລືອກໝວດ</option>
+              {categories.map(c => (
+                <option key={c.category_id} value={c.category_id}>
+                  {c.category_name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* PRICE */}
           <div className="grid grid-cols-2 gap-4">
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium">ລາຄາຕົ້ນທຶນ</label>
-              <Controller
-                name="purchase_price"
-                control={control}
-                render={({ field }) => (
-                  <NumericFormat
-                    value={field.value === 0 ? "" : field.value}
-                    customInput={Input}
-                    thousandSeparator=","
-                    decimalScale={0}
-                    onValueChange={(v) =>
-                      field.onChange(v.value === "" ? 0 : Number(v.value))
-                    }
-                  />
-                )}
-              />
-              <p className="text-xs text-red-500 h-4">
-                {errors.purchase_price?.message}
-              </p>
-            </div>
+            <Controller
+              name="purchase_price"
+              control={control}
+              render={({ field }) => (
+                <NumericFormat
+                  customInput={Input}
+                  value={field.value}
+                  onValueChange={(v) => field.onChange(Number(v.value))}
+                  placeholder="ລາຄາຕົ້ນທຶນ"
+                />
+              )}
+            />
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium">ລາຄາຂາຍ</label>
-              <Controller
-                name="sale_price"
-                control={control}
-                render={({ field }) => (
-                  <NumericFormat
-                    value={field.value === 0 ? "" : field.value}
-                    customInput={Input}
-                    thousandSeparator=","
-                    decimalScale={0}
-                    onValueChange={(v) =>
-                      field.onChange(v.value === "" ? 0 : Number(v.value))
-                    }
-                  />
-                )}
-              />
-              <p className="text-xs text-red-500 h-4">
-                {errors.sale_price?.message}
-              </p>
-            </div>
+            <Controller
+              name="sale_price"
+              control={control}
+              render={({ field }) => (
+                <NumericFormat
+                  customInput={Input}
+                  value={field.value}
+                  onValueChange={(v) => field.onChange(Number(v.value))}
+                  placeholder="ລາຄາຂາຍ"
+                />
+              )}
+            />
 
           </div>
 
-          {/* STOCK + DESCRIPTION */}
-          <div className="grid grid-cols-2 gap-4">
-
-            <div className="space-y-1">
-              <label className="text-sm font-medium">ຈຳນວນໃນສາງ (Stock)</label>
-              <Controller
-                name="stock_qty"
-                control={control}
-                render={({ field }) => (
-                  <NumericFormat
-                    value={field.value === 0 ? "" : field.value}
-                    customInput={Input}
-                    thousandSeparator=","
-                    decimalScale={0}
-                    onValueChange={(v) =>
-                      field.onChange(v.value === "" ? 0 : Number(v.value))
-                    }
-                  />
-                )}
+          {/* STOCK */}
+          <Controller
+            name="stock_qty"
+            control={control}
+            render={({ field }) => (
+              <NumericFormat
+                customInput={Input}
+                value={field.value}
+                onValueChange={(v) => field.onChange(Number(v.value))}
+                placeholder="Stock"
               />
-              <p className="text-xs text-red-500 h-4">
-                {errors.stock_qty?.message}
-              </p>
-            </div>
+            )}
+          />
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium">ລາຍລະອຽດ</label>
-              <Textarea
-                {...register("description")}
-                className="h-[42px] resize-none"
-              />
-            </div>
+          {/* DESCRIPTION */}
+          <Textarea {...register("description")} placeholder="ລາຍລະອຽດ" />
 
-          </div>
-
-          {/* IMAGE */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium">ຮູບພາບສິນຄ້າ</label>
-            <div className="border rounded-md p-2">
-              <ImageUpload files={files} setFiles={setFiles} />
-            </div>
-          </div>
+          {/* IMAGES */}
+          <ImageUpload
+            files={files}
+            setFiles={setFiles}
+            existingImages={existingImages}
+            onDeleteExisting={handleDeleteImage}
+            max={10}
+          />
 
           {/* BUTTON */}
-          <Button
-            type="submit"
-            className="w-full h-10"
-            disabled={create.isPending || update.isPending}
-          >
+          <Button type="submit" className="w-full">
             {product ? "ອັບເດດ" : "ບັນທຶກ"}
           </Button>
 

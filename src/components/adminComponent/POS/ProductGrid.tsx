@@ -1,5 +1,5 @@
-'use client'
-import { Product } from "@/modules/product/product.types"
+"use client"
+
 import Image from "next/image"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { CartItemType } from "./type"
@@ -9,53 +9,125 @@ type Props = {
     onAdd: (product: CartItemType) => void
 }
 
-export default function ProductGrid({ products, onAdd }: Props) {
-    return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+export default function ProductGrid({
+    products,
+    onAdd,
+}: Props) {
+    if (!products.length) {
+        return (
+            <div className="flex items-center justify-center h-64 rounded-xl border border-dashed bg-white">
+                <p className="text-sm text-muted-foreground">
+                    ບໍ່ພົບສິນຄ້າ
+                </p>
+            </div>
+        )
+    }
 
+    return (
+        <div
+            className="
+                grid
+                grid-cols-2
+                sm:grid-cols-3
+                md:grid-cols-4
+                lg:grid-cols-5
+                xl:grid-cols-6
+                2xl:grid-cols-7
+                gap-3
+            "
+        >
             {products.map((p) => (
-                <div
+                <button
                     key={p.product_id}
+                    type="button"
                     onClick={() => onAdd(p)}
-                    className=" bg-white border rounded-xl p-2 cursor-pointer hover:shadow-md active:scale-95 transition"
+                    className="
+                        group
+                        overflow-hidden
+                        rounded-xl
+                        border
+                        border-gray-200
+                        bg-white
+                        text-left
+                        transition-all
+                        duration-200
+                        hover:border-primary/30
+                        hover:shadow-md
+                        active:scale-[0.98]
+                    "
                 >
-                    {/* IMAGE */}
-                    <div className="w-full h-24 bg-gray-100 rounded-md overflow-hidden">
+                    {/* Product Image */}
+                    <div className="relative aspect-square overflow-hidden bg-gray-100">
                         {p.images?.[0]?.image_url ? (
                             <Image
                                 src={p.images[0].image_url}
                                 alt={p.product_name}
-                                width={200}
-                                height={200}
-                                className="w-full h-full object-cover"
+                                fill
+                                sizes="(max-width: 768px) 50vw,
+                                       (max-width: 1280px) 25vw,
+                                       200px"
+                                className="
+                                    object-cover
+                                    transition-transform
+                                    duration-300
+                                    group-hover:scale-105
+                                "
                             />
                         ) : (
-                            <div className="flex items-center justify-center h-full text-gray-400 text-xs">
-                                ບໍ່ມີຮູບພາບ
+                            <div className="flex h-full items-center justify-center text-xs text-gray-400">
+                                ບໍ່ມີຮູບ
                             </div>
                         )}
                     </div>
 
-                    {/* INFO */}
-                    <div className="mt-2 space-y-1">
-                        <p className="text-sm font-medium truncate">
+                    {/* Product Info */}
+                    <div className="p-3">
+                        <h3
+                            className="
+                                text-sm
+                                font-medium
+                                text-gray-900
+                                line-clamp-2
+                                min-h-[40px]
+                            "
+                        >
                             {p.product_name}
-                        </p>
+                        </h3>
 
-                        <p className="text-blue-500 font-semibold text-sm">
-                            {formatCurrency(p.sale_price)}
-                        </p>
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                            <span
+                                className="
+                                    text-sm
+                                    font-bold
+                                    text-primary
+                                    truncate
+                                "
+                            >
+                                {formatCurrency(p.sale_price)}
+                            </span>
+
+                            <span
+                                className="
+                                    shrink-0
+                                    rounded-full
+                                    bg-primary/10
+                                    px-2
+                                    py-1
+                                    text-[11px]
+                                    font-medium
+                                    text-primary
+                                    ring-1
+                                    ring-inset
+                                    ring-primary/10
+                                    hover:bg-blue-500 hover:text-white
+                                "
+                            >
+                                + ເພີ່ມ
+                            </span>
+                        </div>
                     </div>
-                </div>
+                </button>
             ))}
-
-            {/* EMPTY STATE */}
-            {!products.length && (
-                <div className="col-span-full text-center text-gray-400 py-10">
-                    ບໍ່ພົບສິນຄ້າ
-                </div>
-            )}
-
         </div>
     )
 }

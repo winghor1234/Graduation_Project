@@ -24,6 +24,8 @@ export function CustomerTable({ customers, isLoading, onEdit, onChange }: Props)
     if (!customers?.length) {
         return <Card className="p-6 text-center">ບໍ່ພົບຂໍ້ມູນລູກຄ້າ</Card>
     }
+
+    console.log(customers)
     return (
         <Card>
             <Table>

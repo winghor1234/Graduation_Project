@@ -17,3 +17,4 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const { id } = await params
     return productController.deleteProduct(req, id)
 }
+
