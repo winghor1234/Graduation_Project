@@ -32,10 +32,18 @@ async getOrders(options: Prisma.OrderFindManyArgs = {}) {
 
         include: {
             customer: true,
-
             payment: {
                 include: {
-                    order: true,
+                    order: {
+                        include: {
+                            order_details: {
+                                include: {
+                                    product: true
+                                }
+                            },
+                            customer: true
+                        }
+                    },
                 },
             },
 

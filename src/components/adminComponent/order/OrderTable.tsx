@@ -10,6 +10,7 @@ import { DeliveryUpdateDialog } from "./DeliveryUpdateDialog"
 import { Delivery } from "@/modules/delivery/delivery.type"
 import { useVerifyPayment } from "@/app/features/hooks/Payment"
 import { useUpdateDelivery } from "@/app/features/hooks/Delivery"
+import { BadgeComponent } from "../StatusComponent"
 
 type Props = {
     data: Order[]
@@ -29,14 +30,14 @@ export function OrderTable({ data, isLoading, onView }: Props) {
     const [openDeliveryDialog, setOpenDeliveryDialog] = useState(false)
     const [selectedPayment, setSelectedPayment] = useState<Payment | undefined>()
     const [selectedDelivery, setSelectedDelivery] = useState<Delivery | undefined>()
-    
+
     if (isLoading) return <div>ກຳລັງໂຫຼດຂໍ້ມູນ...</div>
 
     const handleVerify = (payment: Payment) => {
         setSelectedPayment(payment)
         setOpenDialog(true)
     }
-    
+
     const handleSubmitVerify = (status: "VERIFIED" | "REJECTED") => {
         if (!selectedPayment) return
         verifyPayment.mutate(
@@ -102,6 +103,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
 
                 <TableBody>
                     {data.map((o, index) => (
+                        console.log(o),
                         <TableRow key={o.order_id}>
                             {/* ORDER */}
                             <TableCell>{index + 1}</TableCell>
@@ -110,8 +112,9 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                             <TableCell>{o.total_amount}</TableCell>
 
                             {/* PAYMENT */}
-                            <TableCell>{o.payment?.status}</TableCell>
-
+                            <TableCell>
+                                <BadgeComponent status={o.payment?.status} />
+                            </TableCell>
                             <TableCell>
                                 {o.payment?.slip_url && (
                                     <Image
@@ -125,7 +128,9 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                             </TableCell>
 
                             {/* DELIVERY */}
-                            <TableCell>{o.delivery?.status}</TableCell>
+                            <TableCell>
+                                <BadgeComponent status={o.delivery?.status} />
+                            </TableCell>
                             <TableCell>{o.delivery?.tracking_number || "-"}</TableCell>
 
                             {/* ACTION */}
@@ -161,7 +166,9 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                     onClick={() => o.delivery && handleUpdateDeliveryDialog(o.delivery)}
                                     disabled={!o.delivery}
                                 >
-                                    {o.delivery?.status || "ບໍ່ມີຂໍ້ມູນ"}
+                                    {/* {o.delivery?.status || "ບໍ່ມີຂໍ້ມູນ"} */}
+                                    <BadgeComponent status={o.delivery?.status} />
+
                                 </Button>
 
                             </TableCell>

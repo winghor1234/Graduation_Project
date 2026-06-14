@@ -5,7 +5,6 @@
 import { useState } from "react"
 import { useCreateSale } from "@/app/features/hooks/Sale"
 import ProductGrid from "@/components/adminComponent/POS/ProductGrid"
-import CustomerSelect from "@/components/adminComponent/POS/CustomerSelect"
 import ConfirmModal from "@/components/adminComponent/POS/ConfirmModal"
 import { useCart } from "@/components/adminComponent/POS/useCart"
 import { Customer } from "@/modules/customer/customer.type"
@@ -14,7 +13,8 @@ import { useGetAllProducts } from "@/app/features/hooks/Product"
 import { useGetCustomers } from "@/app/features/hooks/Customer"
 import CartPanel from "@/components/adminComponent/POS/CartPanel"
 import { useDataTable } from "@/hooks/useDataTable"
-import { Input } from "@/components/ui/input"
+import { CartItemType } from "@/components/adminComponent/POS/type"
+import { CustomerSelect } from "@/components/adminComponent/POS/CustomerSelect"
 
 
 export default function POSPage() {
@@ -43,19 +43,19 @@ export default function POSPage() {
       }))
     })
 
-    // setReceipt({
-    //   items: cart,
-    //   total,
-    //   customer: selectedCustomer?.customer_name || "Walk-in",
-    //   date: new Date().toLocaleString()
-    // })
+    setReceipt({
+      items: cart,
+      total,
+      customer: selectedCustomer?.customer_name || "Walk-in",
+      date: new Date().toLocaleString()
+    })
 
     clear()
     setShowConfirm(false)
     router.push(`/POS/receipt/${res.sale_id}`)
 
   }
-  console.log("product : ",products)
+  console.log("product : ", products)
 
   return (
     <div className="h-[calc(100vh-64px)] overflow-hidden">
@@ -65,7 +65,7 @@ export default function POSPage() {
         {/* PRODUCTS */}
         <div className="overflow-y-auto p-4">
           <ProductGrid
-            products={products || []}
+            products={products?.map(product => ({ ...product, quantity: 0 })) as CartItemType[] || []}
             onAdd={add}
           />
         </div>
@@ -75,17 +75,17 @@ export default function POSPage() {
           className=" border-t lg:border-t-0 lg:border-l bg-white flex flex-col h-full "
         >
           <div className="p-3 border-b shrink-0">
-            <Input
+            {/* <Input
               placeholder="ຄົ້ນຫາປະເພດສິນຄ້າ..."
               value={table.search}
               onChange={(e) => table.setSearch(e.target.value)}
               className="w-60"
-            />
-            {/* <CustomerSelect
-              customers={customer}
-              selected={selectedCustomer}
-              onSelect={setSelectedCustomer}
             /> */}
+            <CustomerSelect
+              customers={customer}
+              selected={selectedCustomer as Customer | null}
+              onSelect={(customer: Customer | null) => setSelectedCustomer(customer as Customer | undefined)}
+            />
           </div>
 
           <div className="flex-1 min-h-0 overflow-hidden">

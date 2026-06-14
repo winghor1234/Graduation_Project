@@ -194,7 +194,7 @@ model Customer {
   village       String?
   role          Role @default(CUSTOMER)
   isActive      Boolean       @default(true)
-  point         Int      @default(0)
+  point         Float      @default(0)
   lastLogin     DateTime?
 
   failedLoginAttempts Int @default(0)

@@ -1,8 +1,8 @@
 'use client'
 import { Button } from "@/components/ui/button"
-import { CartItemType } from "./type"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import CartItems from "./CartItems"
+import { CartItemType } from "./type"
 
 
 type Props = {

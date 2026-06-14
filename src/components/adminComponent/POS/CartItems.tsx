@@ -3,18 +3,11 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Minus, Plus, Trash2 } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { Product } from "../products/ProductType"
+import { CartItemType } from "./type"
 
-// type CartItem = {
-//     product_id: string
-//     name: string
-//     price: number
-//     quantity: number
-//     image?: string
-// }
 
 type Props = {
-    item: Product
+    item: CartItemType
     onUpdate: (product_id: string, quantity: number) => void
     onRemove: (product_id: string) => void
 }
@@ -48,7 +41,7 @@ export default function CartItems({ item, onUpdate, onRemove }: Props) {
                 <Button size="icon" onClick={() => onUpdate(item.product_id, -1)}>
                     <Minus />
                 </Button>
-                {/* <span>{item.quantity}</span> */}
+                <span>{item.quantity}</span>
                 <Button size="icon" onClick={() => onUpdate(item.product_id, 1)}>
                     <Plus />
                 </Button>

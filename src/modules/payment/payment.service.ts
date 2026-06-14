@@ -35,7 +35,16 @@ async getPayments(options: Prisma.PaymentFindManyArgs = {}) {
         const payment = await prisma.payment.findUnique({
             where: { payment_id: id },
             include: {
-                order: true
+                order: {
+                    include: {
+                        customer: true,
+                        order_details: {
+                            include: {
+                                product: true
+                            }
+                        }
+                    }
+                }
             }
         })
 
