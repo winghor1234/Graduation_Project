@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import { Upload, X, ImageIcon } from "lucide-react"
 
@@ -14,7 +14,8 @@ type Props = {
     setFiles: React.Dispatch<React.SetStateAction<File[]>>
 
     existingImages: ExistingImage[]
-    setExistingImages: React.Dispatch<React.SetStateAction<ExistingImage[]>>
+
+    onDeleteExisting?: (id: string) => void
 
     max?: number
 }
@@ -23,41 +24,62 @@ export default function ImageUpload({
     files,
     setFiles,
     existingImages,
-    setExistingImages,
+    onDeleteExisting,
     max = 10,
 }: Props) {
     const inputRef = useRef<HTMLInputElement>(null)
     const [dragging, setDragging] = useState(false)
-
-    const safeExistingImages = existingImages.filter(
-        (img) => img?.image_url && img.image_url.trim() !== ""
+    const safeExistingImages = useMemo(
+        () =>
+            existingImages.filter(
+                (img) =>
+                    img?.image_url &&
+                    img.image_url.trim() !== ""
+            ),
+        [existingImages]
     )
 
-    const total = safeExistingImages.length + files.length
+    const totalImages =  safeExistingImages.length + files.length
 
     /* ---------------- FILE HANDLER ---------------- */
 
-    const handleFiles = (fileList: FileList | null) => {
+    const handleFiles = (
+        fileList: FileList | null
+    ) => {
         if (!fileList) return
 
-        const arr = Array.from(fileList).filter((f) =>
-            f.type.startsWith("image/")
-        )
+        const imageFiles = Array.from(fileList)
+            .filter((file) =>
+                file.type.startsWith("image/")
+            )
+            .filter(
+                (file) =>
+                    file.size <= 5 * 1024 * 1024
+            ) // 5MB
 
-        const remaining = max - total
-        if (remaining <= 0) return
+        const remainingSlots =
+            max - totalImages
 
-        setFiles((prev) => [...prev, ...arr.slice(0, remaining)])
+        if (remainingSlots <= 0) return
+
+        setFiles((prev) => [
+            ...prev,
+            ...imageFiles.slice(0, remainingSlots),
+        ])
+
+        if (inputRef.current) {
+            inputRef.current.value = ""
+        }
     }
 
-    const removeNewImage = (index: number) => {
-        setFiles((prev) => prev.filter((_, i) => i !== index))
+    const removeNewImage = (index: number ) => {
+        setFiles((prev) =>
+            prev.filter((_, i) => i !== index)
+        )
     }
 
     const removeExistingImage = (id: string) => {
-        setExistingImages((prev) =>
-            prev.filter((img) => img.image_id !== id)
-        )
+        onDeleteExisting?.(id)
     }
 
     /* ---------------- UI ---------------- */
@@ -65,9 +87,10 @@ export default function ImageUpload({
     return (
         <div className="space-y-4">
 
-            {/* UPLOAD ZONE */}
+            {/* Upload Zone */}
+
             <div
-                onClick={() => inputRef.current?.click()}
+                onClick={() =>inputRef.current?.click() }
                 onDragOver={(e) => {
                     e.preventDefault()
                     setDragging(true)
@@ -76,103 +99,247 @@ export default function ImageUpload({
                 onDrop={(e) => {
                     e.preventDefault()
                     setDragging(false)
-                    handleFiles(e.dataTransfer.files)
+                    handleFiles(  e.dataTransfer.files  )
                 }}
                 className={`
-          border-2 border-dashed rounded-xl p-6 text-center cursor-pointer
-          transition
-          ${dragging ? "border-blue-500 bg-blue-50" : "border-gray-300"}
-        `}
+                    border-2 border-dashed rounded-xl
+                    p-6 text-center cursor-pointer
+                    transition-all
+                    hover:border-primary
+                    hover:bg-muted/30
+                    ${dragging
+                        ? "border-primary bg-primary/5"
+                        : "border-muted-foreground/25"
+                    }
+                `}
             >
                 <input
                     ref={inputRef}
                     type="file"
-                    multiple
                     accept="image/*"
+                    multiple
                     hidden
-                    onChange={(e) => handleFiles(e.target.files)}
+                    onChange={(e) =>
+                        handleFiles(
+                            e.target.files
+                        )
+                    }
                 />
 
-                <Upload className="mx-auto mb-2 text-gray-500" />
+                <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
 
-                <p className="text-sm font-medium">
-                    Upload images or drag & drop
+                <p className="mt-2 text-sm font-medium">
+                    ລາກຮູບພາບມາວາງ ຫຼື
+                    ຄລິກເພື່ອເລືອກ
                 </p>
 
-                <p className="text-xs text-gray-400">
-                    {total}/{max} images
+                <p className="mt-1 text-xs text-muted-foreground">
+                    JPG, PNG, WEBP •
+                    ສູງສຸດ {max} ຮູບ
                 </p>
+
+                <div className="mt-2 text-xs font-medium">
+                    {totalImages}/{max}
+                </div>
             </div>
 
-            {/* EMPTY STATE */}
-            {total === 0 && (
-                <div className="flex flex-col items-center justify-center border rounded-lg py-8 bg-gray-50">
-                    <ImageIcon className="text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-500">No images yet</p>
+            {/* Empty */}
+
+            {totalImages === 0 && (
+                <div
+                    className="
+                    flex flex-col items-center
+                    justify-center
+                    rounded-xl border
+                    bg-muted/20 py-10
+                "
+                >
+                    <ImageIcon className="h-10 w-10 text-muted-foreground" />
+
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        ຍັງບໍ່ມີຮູບພາບ
+                    </p>
                 </div>
             )}
 
-            {/* GRID */}
-            {total > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {/* Preview Grid */}
 
-                    {/* EXISTING IMAGES */}
-                    {safeExistingImages.map((img) => (
-                        <div
-                            key={img.image_id}
-                            className="relative aspect-square rounded-xl overflow-hidden border group"
-                        >
-                            {/* SAFE GUARD */}
-                            {img.image_url && (
+            {totalImages > 0 && (
+                <div
+                    className="
+                    grid
+                    grid-cols-2
+                    sm:grid-cols-3
+                    md:grid-cols-4
+                    lg:grid-cols-5
+                    xl:grid-cols-6
+                    gap-3
+                "
+                >
+                    {/* Existing Images */}
+
+                    {safeExistingImages.map(
+                        (img) => (
+                            <div
+                                key={
+                                    img.image_id
+                                }
+                                className="
+                                relative
+                                aspect-square
+                                overflow-hidden
+                                rounded-xl
+                                border
+                                bg-muted
+                                group
+                            "
+                            >
                                 <Image
-                                    src={img.image_url}
-                                    alt="existing"
+                                    src={
+                                        img.image_url!
+                                    }
+                                    alt="Product"
                                     fill
+                                    sizes="200px"
                                     className="object-cover"
                                 />
-                            )}
 
-                            {/* DELETE */}
-                            <button
-                                type="button"
-                                onClick={() => removeExistingImage(img.image_id)}
-                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                            >
-                                <X size={14} />
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        removeExistingImage(
+                                            img.image_id
+                                        )
+                                    }
+                                    className="
+                                    absolute
+                                    top-2
+                                    right-2
+                                    z-10
+                                    flex
+                                    h-8
+                                    w-8
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    bg-red-500
+                                    text-white
+                                    shadow
+                                    opacity-100
+                                    md:opacity-0
+                                    md:group-hover:opacity-100
+                                    transition
+                                "
+                                >
+                                    <X size={16} />
+                                </button>
 
-                            <div className="absolute bottom-2 left-2 text-[10px] bg-blue-600 text-white px-2 py-1 rounded">
-                                Current
+                                <span
+                                    className="
+                                    absolute
+                                    bottom-2
+                                    left-2
+                                    rounded-md
+                                    bg-blue-600
+                                    px-2
+                                    py-1
+                                    text-[10px]
+                                    text-white
+                                "
+                                >
+                                    Current
+                                </span>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    )}
 
-                    {/* NEW IMAGES */}
-                    {files.map((file, index) => (
-                        <div
-                            key={index}
-                            className="relative aspect-square rounded-xl overflow-hidden border group"
-                        >
-                            <Image
-                                src={URL.createObjectURL(file)}
-                                alt={file.name}
-                                fill
-                                className="object-cover"
-                            />
+                    {/* New Images */}
 
-                            <button
-                                type="button"
-                                onClick={() => removeNewImage(index)}
-                                className="absolute top-2 right-2 bg-black text-white p-1 rounded-full opacity-0 group-hover:opacity-100"
-                            >
-                                <X size={14} />
-                            </button>
+                    {files.map(
+                        (file, index) => {
+                            const preview =
+                                URL.createObjectURL(
+                                    file
+                                )
 
-                            <div className="absolute bottom-2 left-2 text-[10px] bg-green-600 text-white px-2 py-1 rounded">
-                                New
-                            </div>
-                        </div>
-                    ))}
+                            return (
+                                <div
+                                    key={`${file.name}-${file.lastModified}`}
+                                    className="
+                                    relative
+                                    aspect-square
+                                    overflow-hidden
+                                    rounded-xl
+                                    border
+                                    group
+                                "
+                                >
+                                    <Image
+                                        src={
+                                            preview
+                                        }
+                                        alt={
+                                            file.name
+                                        }
+                                        fill
+                                        sizes="200px"
+                                        className="object-cover"
+                                        unoptimized
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            removeNewImage(
+                                                index
+                                            )
+                                        }
+                                        className="
+                                        absolute
+                                        top-2
+                                        right-2
+                                        z-10
+                                        flex
+                                        h-8
+                                        w-8
+                                        items-center
+                                        justify-center
+                                        rounded-full
+                                        bg-red-500
+                                        text-white
+                                        shadow
+                                        opacity-100
+                                        md:opacity-0
+                                        md:group-hover:opacity-100
+                                        transition
+                                    "
+                                    >
+                                        <X
+                                            size={
+                                                16
+                                            }
+                                        />
+                                    </button>
+
+                                    <span
+                                        className="
+                                        absolute
+                                        bottom-2
+                                        left-2
+                                        rounded-md
+                                        bg-green-600
+                                        px-2
+                                        py-1
+                                        text-[10px]
+                                        text-white
+                                    "
+                                    >
+                                        New
+                                    </span>
+                                </div>
+                            )
+                        }
+                    )}
                 </div>
             )}
         </div>

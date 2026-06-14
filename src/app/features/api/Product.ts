@@ -21,7 +21,7 @@ export const productApi = {
 
     getAlls: async (): Promise<Product[]> => {
         const res = await axiosInstance.get("/product")
-        return res.data.data
+        return res?.data?.data
     },
 
 

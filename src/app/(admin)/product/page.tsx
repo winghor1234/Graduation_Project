@@ -16,7 +16,6 @@ export default function ProductsPage() {
     const { data: products, isLoading } = useGetProducts(table.params)
     const { data: categories } = useGetCategories()
     const category = categories?.data 
-    console.log(products)
 
     const createProduct = useCreateProduct()
     const updateProduct = useUpdateProduct()

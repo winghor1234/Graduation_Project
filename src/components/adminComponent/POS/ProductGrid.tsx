@@ -9,10 +9,7 @@ type Props = {
     onAdd: (product: CartItemType) => void
 }
 
-export default function ProductGrid({
-    products,
-    onAdd,
-}: Props) {
+export default function ProductGrid({  products,  onAdd,}: Props) {
     if (!products.length) {
         return (
             <div className="flex items-center justify-center h-64 rounded-xl border border-dashed bg-white">
@@ -24,38 +21,13 @@ export default function ProductGrid({
     }
 
     return (
-        <div
-            className="
-                grid
-                grid-cols-2
-                sm:grid-cols-3
-                md:grid-cols-4
-                lg:grid-cols-5
-                xl:grid-cols-6
-                2xl:grid-cols-7
-                gap-3
-            "
-        >
+        <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 "  >
             {products.map((p) => (
                 <button
                     key={p.product_id}
                     type="button"
                     onClick={() => onAdd(p)}
-                    className="
-                        group
-                        overflow-hidden
-                        rounded-xl
-                        border
-                        border-gray-200
-                        bg-white
-                        text-left
-                        transition-all
-                        duration-200
-                        hover:border-primary/30
-                        hover:shadow-md
-                        active:scale-[0.98]
-                    "
-                >
+                    className=" group overflow-hidden rounded-xl border border-gray-200  bg-white text-left transition-all duration-200 hover:border-primary/30 hover:shadow-md active:scale-[0.98]  " >
                     {/* Product Image */}
                     <div className="relative aspect-square overflow-hidden bg-gray-100">
                         {p.images?.[0]?.image_url ? (
@@ -63,15 +35,8 @@ export default function ProductGrid({
                                 src={p.images[0].image_url}
                                 alt={p.product_name}
                                 fill
-                                sizes="(max-width: 768px) 50vw,
-                                       (max-width: 1280px) 25vw,
-                                       200px"
-                                className="
-                                    object-cover
-                                    transition-transform
-                                    duration-300
-                                    group-hover:scale-105
-                                "
+                                sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 200px"
+                                className="  object-cover transition-transform duration-300 group-hover:scale-105  "
                             />
                         ) : (
                             <div className="flex h-full items-center justify-center text-xs text-gray-400">

@@ -162,12 +162,13 @@ export const productService = {
 
   /* 🔥 DELETE IMAGE */
   async deleteImage(imageId: string) {
+    console.log("imageId : ", imageId)
 
     const image = await prisma.productImage.findUnique({
       where: { image_id: imageId }
     });
     if (!image) throw new NotFoundError("Image not found");
-    await deleteImages([image.public_id]);
+     await deleteImages([image.public_id]);    
     await prisma.productImage.delete({
       where: { image_id: imageId }
     });

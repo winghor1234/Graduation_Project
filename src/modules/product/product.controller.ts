@@ -142,6 +142,7 @@ export const productController = {
     },
     async deleteImage(req: NextRequest, id: string) {
         try {
+            console.log("id : ", id)
             const image = await productService.deleteImage(id);
             return successResponse(image, "Image deleted successfully", 200);
         } catch (error) {

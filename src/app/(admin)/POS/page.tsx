@@ -20,8 +20,7 @@ import { Input } from "@/components/ui/input"
 export default function POSPage() {
   const table = useDataTable()
   const router = useRouter()
-  const { data: products = [] } = useGetAllProducts()
-  const product = products || []
+  const { data: products } = useGetAllProducts()
   const { data: customers = [] } = useGetCustomers(table.params)
   const customer = customers?.data || []
   const createSale = useCreateSale()
@@ -56,7 +55,7 @@ export default function POSPage() {
     router.push(`/POS/receipt/${res.sale_id}`)
 
   }
-  // console.log("receipt : ",receipt)
+  console.log("product : ",products)
 
   return (
     <div className="h-[calc(100vh-64px)] overflow-hidden">
@@ -66,7 +65,7 @@ export default function POSPage() {
         {/* PRODUCTS */}
         <div className="overflow-y-auto p-4">
           <ProductGrid
-            products={product}
+            products={products || []}
             onAdd={add}
           />
         </div>
