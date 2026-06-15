@@ -15,8 +15,8 @@ interface ExportReportProps {
 }
 
 const companyInfo = {
-    companyName: "ຮ້ານ ເສື້ອຜ້າກິລາ ສະປອດແວຣ໌ (Sport Wear Systems)",
-    address: "ນະຄອນຫຼວງວຽງຈັນ, ປະເທດລາວ",
+    companyName: "Sport Wear Systems",
+    address: "Vientiane, Laos",
     phone: "02098924536",
     email: "SportWearSystems@gmail.com",
 };
@@ -33,3 +33,4 @@ export const handleExcelExport = ({ fileName, sheetName, columns, data, }: Expor
     if (!data?.length) return;
     exportExcel({ fileName, sheetName, columns, data, });
 };
+
