@@ -41,6 +41,10 @@ export const purchaseApi = {
         const res = await axiosInstance.put(`/purchase/${id}`, data)
         return res.data.data.data
     },
+    createPayment: async (    id: string, ): Promise<PurchaseOrder> => {
+        const res = await axiosInstance.put(`/purchase/payment/${id}`)
+        return res.data.data.data
+    },
 
     delete: async (id: string): Promise<void> => {
         await axiosInstance.delete(`/purchase/${id}`)

@@ -15,8 +15,8 @@ interface ExportReportProps {
 }
 
 const companyInfo = {
-    companyName: "Sport Wear Systems",
-    address: "Vientiane, Laos",
+    companyName: "ຮ້ານຂາຍເຄື່ອງກິລາ ວັນໄຊ",
+    address: "ບ້ານ ວຽງຄຳ, ເມືອງ ສີໂຄດຕະບອງ, ນະຄອນຫຼວງວຽງຈັນ",
     phone: "02098924536",
     email: "SportWearSystems@gmail.com",
 };

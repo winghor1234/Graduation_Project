@@ -1,11 +1,21 @@
 
 
 import { prisma } from "@/lib/prisma"
-import { Prisma } from "@prisma/client"
+import { Prisma, PurchaseOrderStatus } from "@prisma/client"
 import { BadRequestError, NotFoundError } from "@/utils/response"
-import { CreatePurchaseOrderInput, UpdatePurchaseOrderInput } from "./purchase.type"
+import { CreatePurchaseOrderInput, PurchasePaymentSummary, UpdatePurchaseOrderInput } from "./purchase.type"
 import { generatePurchaseCode } from "@/utils/generateCode"
-
+function calcActualTotal(
+    details: { quantity: number; received_qty: number; price: number }[]
+): { ordered_total: number; actual_total: number } {
+    return details.reduce(
+        (acc, d) => ({
+            ordered_total: acc.ordered_total + d.quantity * d.price,
+            actual_total: acc.actual_total + d.received_qty * d.price,
+        }),
+        { ordered_total: 0, actual_total: 0 }
+    );
+}
 
 export const purchaseService = {
     async getPurchases(options: Prisma.PurchaseOrderFindManyArgs = {}) {
@@ -118,9 +128,9 @@ export const purchaseService = {
 
                     // 🔥 payment ยังไม่เกิด
                     paid_amount: 0,
-                    payment_status: "unpaid",
+                    payment_status: PurchaseOrderStatus.UNPAID,
 
-                    status: "pending",
+                    status: PurchaseOrderStatus.PENDING,
 
                     purchase_details: {
                         create: data.purchase_details
@@ -227,9 +237,7 @@ export const purchaseService = {
                 throw new NotFoundError("Purchase not found");
             }
 
-
-
-            if (existing.status !== "pending") {
+            if (existing.status !== PurchaseOrderStatus.PENDING) {
                 throw new BadRequestError(
                     "Only pending purchase can be updated"
                 );
@@ -278,14 +286,9 @@ export const purchaseService = {
                 where: { purchase_id: id },
                 data: {
                     supplier_id: data.supplier_id,
-
-                    // keep original creator
                     employee_id: existing.employee_id,
-
                     total_amount: total,
-
-                    status: "pending",
-
+                    status: PurchaseOrderStatus.PENDING,
                     purchase_details: {
                         create: data.purchase_details
                     }
@@ -304,6 +307,157 @@ export const purchaseService = {
             return purchase;
         });
     },
+
+    async createPurchasePayment(id: string) {
+        return prisma.$transaction(async (tx) => {
+
+            const purchase = await tx.purchaseOrder.findUnique({
+                where: { purchase_id: id },
+                include: {
+                    purchase_details: true,
+                    import: true,
+                },
+            });
+
+            if (!purchase) {
+                throw new NotFoundError("Purchase not found");
+            }
+
+            if (purchase.status === PurchaseOrderStatus.PENDING) {
+                throw new BadRequestError(
+                    "Cannot pay — goods have not been received yet (status: PENDING)"
+                );
+            }
+
+            if (purchase.payment_status === PurchaseOrderStatus.PAID) {
+                throw new BadRequestError("This purchase is already fully paid");
+            }
+
+            if (!purchase.import) {
+                throw new BadRequestError(
+                    "No import record found for this purchase"
+                );
+            }
+
+            const { ordered_total, actual_total } = calcActualTotal(
+                purchase.purchase_details
+            );
+
+            const alreadyPaid = purchase.paid_amount ?? 0;
+            const remaining = actual_total - alreadyPaid;
+
+            if (remaining <= 0) {
+                throw new BadRequestError("No remaining balance to pay");
+            }
+
+            // ✅ จ่ายครบตามรับจริงทั้งหมด
+            const newPaidAmount = actual_total;
+            const newPaymentStatus = PurchaseOrderStatus.PAID;
+
+            const updated = await tx.purchaseOrder.update({
+                where: { purchase_id: id },
+                data: {
+                    paid_amount: newPaidAmount,
+                    payment_status: newPaymentStatus,
+                },
+                include: {
+                    supplier: true,
+                    employee: true,
+                    purchase_details: true,
+                    import: true,
+                },
+            });
+
+            const summary: PurchasePaymentSummary = {
+                purchase_id: updated.purchase_id,
+                purchase_code: updated.purchase_code,
+                ordered_total,
+                actual_total,
+                paid_amount: updated.paid_amount,
+                remaining: 0,  // ✅ จ่ายครบแล้วเสมอ
+                payment_status: updated.payment_status,
+                items: purchase.purchase_details.map((d) => ({
+                    product_id: d.product_id,
+                    ordered_qty: d.quantity,
+                    received_qty: d.received_qty,
+                    price: d.price,
+                    ordered_cost: d.quantity * d.price,
+                    received_cost: d.received_qty * d.price,
+                })),
+            };
+
+            return { purchase: updated, summary };
+        });
+    },
+
+    // ================= GET PAYMENT SUMMARY =================
+
+    async getPurchasePaymentSummary(
+        purchaseId: string
+    ): Promise<PurchasePaymentSummary> {
+
+        const purchase = await prisma.purchaseOrder.findUnique({
+            where: { purchase_id: purchaseId },
+            include: { purchase_details: true, import: true },
+        });
+
+        if (!purchase) throw new NotFoundError("Purchase not found");
+
+        const { ordered_total, actual_total } = calcActualTotal(
+            purchase.purchase_details
+        );
+
+        const paid = purchase.paid_amount ?? 0;
+        const remaining = actual_total - paid;
+
+        return {
+            purchase_id: purchase.purchase_id,
+            purchase_code: purchase.purchase_code,
+            ordered_total,
+            actual_total,
+            paid_amount: paid,
+            remaining,
+            payment_status: purchase.payment_status,
+            items: purchase.purchase_details.map((d) => ({
+                product_id: d.product_id,
+                ordered_qty: d.quantity,
+                received_qty: d.received_qty,
+                price: d.price,
+                ordered_cost: d.quantity * d.price,
+                received_cost: d.received_qty * d.price,
+            })),
+        };
+    },
+
+    // ================= RESET PAYMENT (Admin) =================
+
+    async resetPurchasePayment(purchaseId: string) {
+        return prisma.$transaction(async (tx) => {
+
+            const purchase = await tx.purchaseOrder.findUnique({
+                where: { purchase_id: purchaseId },
+            });
+
+            if (!purchase) throw new NotFoundError("Purchase not found");
+
+            if (
+                purchase.payment_status === PurchaseOrderStatus.UNPAID &&
+                purchase.paid_amount === 0
+            ) {
+                throw new BadRequestError("Payment is already at zero");
+            }
+
+            return tx.purchaseOrder.update({
+                where: { purchase_id: purchaseId },
+                data: {
+                    paid_amount: 0,
+                    payment_status: PurchaseOrderStatus.UNPAID,
+                },
+            });
+        });
+    },
+
+    // async paymentPurchase()
 
     async deletePurchase(id: string) {
         await prisma.$transaction(async (tx) => {
@@ -326,7 +480,7 @@ export const purchaseService = {
             // }
 
             // ❌ 3. optional: check status
-            if (existing.status !== "pending") {
+            if (existing.status !== PurchaseOrderStatus.PENDING) {
                 throw new BadRequestError("Only pending purchase can be deleted")
             }
 

@@ -50,6 +50,16 @@ export const useUpdatePurchaseOrder = () => {
         }
     })
 }
+export const useCreatePaymentPurchaseOrder = () => {
+    const qc = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ id, }: { id: string }) => purchaseApi.createPayment(id),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["purchase"] })
+        }
+    })
+}
 
 export const useDeletePurchaseOrder = () => {
     const qc = useQueryClient()

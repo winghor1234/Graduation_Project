@@ -98,9 +98,9 @@ export default function ReportPage() {
                                 {item.title}
                             </h2>
 
-                            <p className="text-sm text-gray-500 mt-2">
-                                ສ້າງ ແລະ ສົ່ງອອກລາຍງານ
-                            </p>
+                            {/* <p className="text-sm text-gray-500 mt-2">
+                                ລາຍງານ
+                            </p> */}
                         </Link>
                     ))}
 

@@ -1,53 +1,53 @@
 
 import { prisma } from "@/lib/prisma"
-import { Prisma } from "@prisma/client"
+import { Prisma, PurchaseOrderStatus } from "@prisma/client"
 import { CreateImportInput } from "./import.type"
 import { BadRequestError, NotFoundError } from "@/utils/response"
 import { generateImportCode } from "@/utils/generateCode"
 
 export const importService = {
 
-async getImports(options: Prisma.ImportFindManyArgs = {}) {
-    const {
-        where,
-        skip = 0,
-        take = 10,
-        orderBy,
-    } = options
+    async getImports(options: Prisma.ImportFindManyArgs = {}) {
+        const {
+            where,
+            skip = 0,
+            take = 10,
+            orderBy,
+        } = options
 
-    return prisma.import.findMany({
-        where,
-        skip,
-        take,
+        return prisma.import.findMany({
+            where,
+            skip,
+            take,
 
-        orderBy:
-            (orderBy as Prisma.ImportOrderByWithRelationInput) ?? {
-                createdAt: "desc",
-            },
+            orderBy:
+                (orderBy as Prisma.ImportOrderByWithRelationInput) ?? {
+                    createdAt: "desc",
+                },
 
-        include: {
-            employee: true,
+            include: {
+                employee: true,
 
-            purchase: {
-                include: {
-                    supplier: true,
+                purchase: {
+                    include: {
+                        supplier: true,
 
-                    purchase_details: {
-                        include: {
-                            product: true,
+                        purchase_details: {
+                            include: {
+                                product: true,
+                            },
                         },
                     },
                 },
-            },
 
-            import_details: {
-                include: {
-                    product: true,
+                import_details: {
+                    include: {
+                        product: true,
+                    },
                 },
             },
-        },
-    })
-},
+        })
+    },
 
     async getImport(id: string) {
         const record = await prisma.import.findUnique({
@@ -197,7 +197,7 @@ async getImports(options: Prisma.ImportFindManyArgs = {}) {
                 );
             }
 
-            if (purchase.status !== "pending") {
+            if (purchase.status !== PurchaseOrderStatus.PENDING) {
                 throw new BadRequestError(
                     "Only pending purchase can be imported"
                 );
@@ -213,8 +213,7 @@ async getImports(options: Prisma.ImportFindManyArgs = {}) {
             // ✅ validate (ALLOW ANY QUANTITY <= or flexible)
             for (const item of data.import_details) {
 
-                const purchaseDetail =
-                    detailMap.get(item.product_id);
+                const purchaseDetail = detailMap.get(item.product_id);
 
                 if (!purchaseDetail) {
                     throw new NotFoundError(
@@ -277,7 +276,7 @@ async getImports(options: Prisma.ImportFindManyArgs = {}) {
                     purchase_id: data.purchase_id
                 },
                 data: {
-                    status: "completed"
+                    status: PurchaseOrderStatus.COMPLETED
                 }
             });
 
@@ -302,7 +301,7 @@ async getImports(options: Prisma.ImportFindManyArgs = {}) {
             }
 
             // ❗ optional: ห้ามลบถ้า purchase completed แล้ว
-            if (existing.purchase.status === "completed") {
+            if (existing.purchase.status === PurchaseOrderStatus.COMPLETED) {
                 throw new BadRequestError("Cannot delete import from completed purchase")
             }
 
@@ -341,7 +340,7 @@ async getImports(options: Prisma.ImportFindManyArgs = {}) {
             // 🔄 4. update purchase status กลับเป็น pending
             await tx.purchaseOrder.update({
                 where: { purchase_id: existing.purchase_id },
-                data: { status: "pending" }
+                data: { status: PurchaseOrderStatus.PENDING }
             })
 
             return { message: "Import deleted successfully" }

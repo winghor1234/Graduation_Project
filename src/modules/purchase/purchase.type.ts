@@ -1,4 +1,5 @@
 
+import { PurchaseOrderStatus } from "@prisma/client"
 import { Employee } from "../employee/employee.type"
 import { Product } from "../product/product.types"
 import { Supplier } from "../supplier/supplier.type"
@@ -57,3 +58,27 @@ export type UpdatePurchaseOrderInput = {
   purchase_date?: Date
   purchase_details?: CreatePurchaseDetailInput[]
 }
+
+
+export type CreatePurchasePaymentInput = {
+    amount: number;   // จำนวนเงินที่จ่าย
+    note?: string;
+};
+ 
+export type PurchasePaymentSummary = {
+    purchase_id:     string;
+    purchase_code:   string;
+    ordered_total:   number;   // ราคาตามที่สั่ง  (quantity * price)
+    actual_total:    number;   // ราคาตามรับจริง (received_qty * price)
+    paid_amount:     number;
+    remaining:       number;
+    payment_status:  PurchaseOrderStatus;
+    items: {
+        product_id:    string;
+        ordered_qty:   number;
+        received_qty:  number;
+        price:         number;
+        ordered_cost:  number;
+        received_cost: number;
+    }[];
+};
