@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { useForm, useFieldArray, Controller, SubmitHandler } from "react-hook-form"
-import { CreatePurchaseOrderInput, PurchaseOrder, UpdatePurchaseOrderInput } from "@/modules/purchase/purchase.type"
+import { CreatePurchaseOrderInput, UpdatePurchaseOrderInput } from "@/modules/purchase/purchase.type"
 import { Supplier } from "@/modules/supplier/supplier.type"
 import { Product } from "@/modules/product/product.types"
 import { UseMutationResult } from "@tanstack/react-query"
@@ -18,6 +18,7 @@ import { ProductFormDialog } from "../products/ProductFormDialog"
 import { Category } from "@/modules/category/category.type"
 import { NumericFormat } from "react-number-format"
 import SearchSelect from "@/components/SearchSelectOption"
+import { PurchaseOrder } from "./PurchaseType"
 
 type Props = {
     open: boolean

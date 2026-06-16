@@ -11,10 +11,10 @@ import {
     useCreatePurchaseOrder,
     useUpdatePurchaseOrder,
     useDeletePurchaseOrder,
+    useGetAllPurchaseOrders,
 } from "@/app/features/hooks/Purchase"
 
 import { AppPagination } from "@/components/AppPagination"
-import { PurchaseOrder } from "@/modules/purchase/purchase.type"
 import { PurchaseOrderFormDialog } from "@/components/adminComponent/purchase/PurchaseOrderFormDialog"
 import { PurchaseOrderTable } from "@/components/adminComponent/purchase/PurchaseTable"
 import { PurchaseOrderToolbar } from "@/components/adminComponent/purchase/PurchaseOrderToolbar"
@@ -23,11 +23,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useGetAllProducts } from "@/app/features/hooks/Product"
 import { useGetSuppliers } from "@/app/features/hooks/Supplier"
 import { useGetCategories } from "@/app/features/hooks/Category"
+import { PurchaseOrder } from "@/components/adminComponent/purchase/PurchaseType"
 
 export default function PurchaseOrderPage() {
     const table = useDataTable()
 
     const { data, isLoading } = useGetPurchaseOrders(table.params)
+    const { data: purchases } = useGetAllPurchaseOrders()
+    console.log("purchases : ",purchases);
+
     const createPurchase = useCreatePurchaseOrder()
     const updatePurchase = useUpdatePurchaseOrder()
     const deletePurchase = useDeletePurchaseOrder()
@@ -81,7 +85,7 @@ export default function PurchaseOrderPage() {
             />
 
             <PurchaseOrderTable
-                purchases={data?.data ?? []}
+                purchases={purchases ?? []}
                 isLoading={isLoading}
                 onEdit={handleEdit}
                 onDelete={handleDelete}

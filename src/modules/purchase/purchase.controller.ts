@@ -77,6 +77,18 @@ export const purchaseController = {
             return errorResponse("Internal Server Error", 500)
         }
     },
+    async getAllPurchases(req: NextRequest) {
+        try {
+            const purchases = await purchaseService.getAllPurchases()
+            return successResponse(purchases, "Get all purchases successfully", 200)
+        } catch (error) {
+            console.log(error)
+            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+                return errorResponse(error.message, error.statusCode);
+            }
+            return errorResponse("Internal Server Error", 500)
+        }
+    },
 
     async getPurchase(id: string) {
         try {

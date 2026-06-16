@@ -9,7 +9,7 @@ import { ImportToolbar } from "@/components/adminComponent/import/ImportToolbar"
 import { ImportTable } from "@/components/adminComponent/import/ImportTable"
 import { ImportFormDialog } from "@/components/adminComponent/import/ImportFormDialog"
 import { ImportDetail } from "@/components/adminComponent/import/ImportDetailDialog"
-import { useGetPurchaseOrders } from "@/app/features/hooks/Purchase"
+import { useGetAllPurchaseOrders } from "@/app/features/hooks/Purchase"
 
 
 
@@ -21,7 +21,8 @@ export default function ImportPage() {
     const table = useDataTable()
 
     const { data, isLoading } = useGetImports(table.params)
-    const { data: purchases } = useGetPurchaseOrders()
+    const { data: purchases } = useGetAllPurchaseOrders()
+    console.log("purchases : ",purchases)
 
     const createImport = useCreateImport()
     const deleteImport = useDeleteImport()
@@ -60,7 +61,7 @@ export default function ImportPage() {
                 open={openForm}
                 onOpenChange={setOpenForm}
                 create={createImport}
-                purchases={purchases?.data ?? []}
+                purchases={purchases ?? []}
             />
 
             <ImportDetail

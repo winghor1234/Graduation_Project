@@ -1,8 +1,7 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Plus, ArrowUpDown, Search, X } from "lucide-react"
+import { Plus, ArrowUpDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { PropsTable } from "../../Type"
 import { SearchInput } from "@/components/SearchInput"

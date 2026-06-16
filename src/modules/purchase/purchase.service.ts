@@ -52,6 +52,21 @@ export const purchaseService = {
         })
     },
 
+    async getAllPurchases() {
+        return prisma.purchaseOrder.findMany({
+            include: {
+                supplier: true,
+                employee: true,
+                purchase_details: {
+                    include: {
+                        product: true,
+                    },
+                },
+                import: true
+            },
+        })
+    },
+
     async getPurchase(id: string) {
         const purchase = await prisma.purchaseOrder.findUnique({
             where: { purchase_id: id },

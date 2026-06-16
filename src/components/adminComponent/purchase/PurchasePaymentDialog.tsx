@@ -1,31 +1,13 @@
 "use client"
 
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    DialogDescription,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogDescription, } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { PurchaseOrder } from "@/modules/purchase/purchase.type"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { formatDate } from "@/utils/FormatDate"
-import {
-    AlertTriangle,
-    BadgeCheck,
-    Banknote,
-    Loader2,
-    PackageCheck,
-} from "lucide-react"
+import { AlertTriangle, BadgeCheck, Banknote, Loader2, PackageCheck, } from "lucide-react"
 import { useCreatePaymentPurchaseOrder } from "@/app/features/hooks/Purchase"
+import { PurchaseOrder } from "./PurchaseType"
 
 /* ----------------------------- Props ----------------------------- */
 
@@ -38,6 +20,7 @@ type Props = {
 /* ----------------------------- Component ----------------------------- */
 
 export function PurchasePaymentDialog({ open, onOpenChange, purchase }: Props) {
+    console.log("purchase im payment : ", purchase)
 
     const { mutate: confirmPayment, isPending } = useCreatePaymentPurchaseOrder()
 
@@ -61,14 +44,11 @@ export function PurchasePaymentDialog({ open, onOpenChange, purchase }: Props) {
     const remaining = actualTotal - alreadyPaid
 
     // canPay guard
-    const canPay =
-        purchase.status === "COMPLETED" &&
-        purchase.payment_status === "UNPAID" &&
-        !!purchase.import
+    const canPay = purchase.status === "COMPLETED" && purchase.payment_status === "UNPAID"
 
     const handleConfirm = () => {
         if (!purchase.purchase_id) return
-        confirmPayment(purchase.purchase_id, {
+        confirmPayment({ id: purchase.purchase_id }, {
             onSuccess: () => onOpenChange(false),
         })
     }
@@ -150,7 +130,7 @@ export function PurchasePaymentDialog({ open, onOpenChange, purchase }: Props) {
                         <div className="flex justify-between">
                             <span className="text-gray-400">ຜູ້ຮັບ:</span>
                             <span className="text-gray-700">
-                                {purchase.import?.employee?.employee_name ?? "-"}
+                                {purchase?.employee?.employee_name ?? "-"}
                             </span>
                         </div>
                     </div>

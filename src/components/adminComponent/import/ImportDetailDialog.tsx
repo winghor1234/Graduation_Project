@@ -8,7 +8,7 @@ import { Import } from "@/modules/import/import.type"
 import { formatDate } from "@/utils/FormatDate"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { CheckCircle2, HelpCircle, XCircle } from "lucide-react"
+import { CheckCircle2, Clock, HelpCircle, XCircle } from "lucide-react"
 
 type Props = {
     open: boolean,
@@ -43,15 +43,15 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
 
                     {/* Modern Status Badge linked to purchase.status */}
                     <div>
-                        {data?.purchase?.status === "completed" ? (
+                        {data?.purchase?.status === "COMPLETED" ? (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 ສຳເລັດ
                             </span>
                         ) : data?.purchase?.status ? (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                <XCircle className="w-3.5 h-3.5" />
-                                ບໍ່ສຳເລັດ
+                                <Clock className="w-3.5 h-3.5" />
+                                ກຳລັງດຳເນີນການ
                             </span>
                         ) : (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200">

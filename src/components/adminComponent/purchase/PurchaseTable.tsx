@@ -102,14 +102,14 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { PurchaseOrder } from "@/modules/purchase/purchase.type"
 import { Card } from "../../ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table"
 import { Banknote, BadgeCheck, Edit, Eye, Trash2 } from "lucide-react"
 import { formatDate } from "@/utils/FormatDate"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { getStatusBadge } from "./StatusBadge"
 import { PurchasePaymentDialog } from "./PurchasePaymentDialog"
+import { PurchaseOrder } from "./PurchaseType"
+import { BadgeComponent } from "../StatusComponent"
 
 type Props = {
     purchases: PurchaseOrder[]
@@ -153,10 +153,8 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                         {purchases.map((item, index) => {
 
                             // ✅ canPay condition
-                            const canPay =
-                                item.status === "COMPLETED" &&
-                                item.payment_status === "UNPAID" &&
-                                !!item.import
+                            const canPay = item.status === "COMPLETED" && item.payment_status === "UNPAID"
+                            const canEdit = item.status === "PENDING" && item.payment_status === "UNPAID"
 
                             return (
                                 <TableRow key={item.purchase_id}>
@@ -177,7 +175,7 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                                     </TableCell>
 
                                     <TableCell>
-                                        {getStatusBadge(item.status)}
+                                        {BadgeComponent({ status: item.status })}
                                     </TableCell>
 
                                     {/* ✅ Payment status column */}
@@ -213,6 +211,7 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                                                 variant="ghost"
                                                 className="hover:bg-amber-50"
                                                 onClick={() => onEdit(item)}
+                                                disabled={!canEdit}
                                             >
                                                 <Edit className="w-4 h-4 text-gray-600 hover:text-amber-600" />
                                             </Button>
@@ -234,16 +233,16 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                                                 onClick={() => handleOpenPayment(item)}
                                                 disabled={!canPay}
                                                 title={
-                                                    !item.import
+                                                    !canPay
                                                         ? "ຕ້ອງມີໃບນຳເຂົ້າກ່ອນ"
                                                         : item.status !== "COMPLETED"
-                                                        ? "ຍັງບໍ່ຮັບສິນຄ້າ"
-                                                        : item.payment_status === "PAID"
-                                                        ? "ຊຳລະແລ້ວ"
-                                                        : "ຊຳລະເງິນ"
+                                                            ? "ຍັງບໍ່ຮັບສິນຄ້າ"
+                                                            : item.payment_status === "PAID"
+                                                                ? "ຊຳລະແລ້ວ"
+                                                                : "ຊຳລະເງິນ"
                                                 }
                                             >
-                                                <Banknote className={`w-4 h-4 ${canPay ? "text-green-600" : "text-gray-300"}`} />
+                                                <Banknote className={`w-4 h-4 ${canPay ? "text-green-600" : "text-gray-500 cursor-not-allowed"}`} />
                                             </Button>
                                         </div>
                                     </TableCell>

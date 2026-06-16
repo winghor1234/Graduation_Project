@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
 
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
 
     return importController.createImport(req)
 

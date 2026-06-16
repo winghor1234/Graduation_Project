@@ -1,6 +1,7 @@
-import { Employee } from "../customer/EmployeeType"
+import { Employee } from "@/modules/employee/employee.type"
 import { Product } from "../products/ProductType"
 import { Supplier } from "../supplier/SuppilerType"
+import { Import } from "@/modules/import/import.type"
 
 export type PurchaseDetail = {
     purchase_detail_id: string
@@ -21,6 +22,9 @@ export type PurchaseOrder = {
     purchase_date: string
     total_amount?: number
     status: string
+    import?: Import
+    paid_amount: number
+    payment_status: string
 
     supplier_id: string
     employee_id: string

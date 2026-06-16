@@ -95,8 +95,7 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
     }
 
     /* 🔥 only pending purchase */
-    const pendingPurchases = purchases.filter(p => p.status === "pending")
-    console.log("purchase : ", pendingPurchases)
+    const pendingPurchases = purchases.filter(p => p.status === "PENDING")
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

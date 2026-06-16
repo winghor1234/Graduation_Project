@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PurchaseOrder } from "@/modules/purchase/purchase.type"
 import { formatDate } from "@/utils/FormatDate"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2, Clock, XCircle } from "lucide-react"
 
 /* ----------------------------- Props ----------------------------- */
 
@@ -47,15 +47,15 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
 
                 {/* Modern Status Badge */}
                 <div>
-                    {purchase.status === "completed" ? (
+                    {purchase.status === "COMPLETED" ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             ສຳເລັດ
                         </span>
                     ) : (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                            <XCircle className="w-3.5 h-3.5" />
-                            ບໍ່ສຳເລັດ
+                            <Clock className="w-3.5 h-3.5" />
+                            ກຳລັງດຳເນີນການ
                         </span>
                     )}
                 </div>

@@ -12,6 +12,14 @@ export const useGetPurchaseOrders = (params?: UseGetParams) => {
     })
 }
 
+export const useGetAllPurchaseOrders = () => {
+    return useQuery({
+        queryKey: ["purchase"],
+        queryFn: purchaseApi.getAlls,
+        placeholderData: keepPreviousData,
+    })
+}
+
 export const useGetPurchaseOrder = (id: string) => {
     return useQuery({
         queryKey: ["purchase", id],

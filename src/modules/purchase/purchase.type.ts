@@ -23,6 +23,7 @@ export type PurchaseOrder = {
   status: string
   payment_status: string
   paid_amount: number
+  import?: string
 
 
   supplier_id: string

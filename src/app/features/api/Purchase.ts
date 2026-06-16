@@ -4,10 +4,7 @@ import axiosInstance from "@/lib/axiosInstance"
 
 export const purchaseApi = {
 
-    // getAlls: async (): Promise<PurchaseOrder[]> => {
-    //   const res = await axiosInstance.get("/purchase-orders")
-    //   return res.data.data.data
-    // },
+
 
     getAll: async (params?: UseGetParams): Promise<{
         data: PurchaseOrder[]
@@ -21,6 +18,10 @@ export const purchaseApi = {
         const res = await axiosInstance.get("/purchase", {
             params
         })
+        return res.data.data
+    },
+    getAlls: async (): Promise<PurchaseOrder[]> => {
+        const res = await axiosInstance.get("/purchase")
         return res.data.data
     },
 
@@ -41,7 +42,7 @@ export const purchaseApi = {
         const res = await axiosInstance.put(`/purchase/${id}`, data)
         return res.data.data.data
     },
-    createPayment: async (    id: string, ): Promise<PurchaseOrder> => {
+    createPayment: async (id: string,): Promise<PurchaseOrder> => {
         const res = await axiosInstance.put(`/purchase/payment/${id}`)
         return res.data.data.data
     },
