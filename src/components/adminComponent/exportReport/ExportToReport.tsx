@@ -5,6 +5,8 @@ import { handleExcelExport, handlePDFExport } from "../../ExportToReport";
 import { Product } from "../products/ProductType";
 import { PurchaseOrder } from "../purchase/PurchaseType";
 import { Import } from "../import/ImportType";
+import { formatDate } from "@/utils/FormatDate";
+import { Sale } from "@/app/(admin)/report/saleQuantity/page";
 
 // product start
 
@@ -272,3 +274,63 @@ export const handleImportExcelExport = (imports: Import[]) => {
 };
 
 // Import end
+
+
+// sale quantity start
+
+export const handleSalePDFExport = (sales: Sale[]) => {
+    handlePDFExport({
+        title:    "ລາຍງານຈຳນວນການຂາຍ",
+        fileName: "sale-quantity-report",
+        columns: [
+            { header: "ລຳດັບ",          key: "__index"    },
+            { header: "ລູກຄ້າ",          key: "customer"   },
+            { header: "ພະນັກງານຂາຍ",     key: "employee"   },
+            { header: "ລາຍການສິນຄ້າ",    key: "products"   },
+            { header: "ຈຳນວນລວມ (ຊິ້ນ)", key: "quantity"   },
+            { header: "ຍອດລວມ",          key: "amount"     },
+            { header: "ວັນທີ",            key: "date"       },
+        ],
+        data: sales.map((s, index) => ({
+            __index:  index + 1,
+            customer: s.customer?.customer_name ?? "-",
+            employee: s.employee?.employee_name ?? "-",
+            products: s.sale_details
+                ?.map((d) => `${d.product?.product_name ?? "-"} x${d.quantity}`)
+                .join(", ") ?? "-",
+            quantity: s.sale_details?.reduce((sum, d) => sum + d.quantity, 0) ?? 0,
+            amount:   formatCurrency(s.total_amount ?? 0),
+            date:     formatDate(s.sale_date),
+        })),
+    });
+};
+ 
+// ================= EXCEL =================
+ 
+export const handleSaleExcelExport = (sales: Sale[]) => {
+    handleExcelExport({
+        title:     "ລາຍງານຈຳນວນການຂາຍ",
+        fileName:  "sale-quantity-report",
+        sheetName: "Sales",
+        columns: [
+            { header: "ລຳດັບ",          key: "__index"    },
+            { header: "ລູກຄ້າ",          key: "customer"   },
+            { header: "ພະນັກງານຂາຍ",     key: "employee"   },
+            { header: "ລາຍການສິນຄ້າ",    key: "products"   },
+            { header: "ຈຳນວນລວມ (ຊິ້ນ)", key: "quantity"   },
+            { header: "ຍອດລວມ",          key: "amount"     },
+            { header: "ວັນທີ",            key: "date"       },
+        ],
+        data: sales.map((s, index) => ({
+            __index:  index + 1,
+            customer: s.customer?.customer_name ?? "-",
+            employee: s.employee?.employee_name ?? "-",
+            products: s.sale_details
+                ?.map((d) => `${d.product?.product_name ?? "-"} x${d.quantity}`)
+                .join(", ") ?? "-",
+            quantity: s.sale_details?.reduce((sum, d) => sum + d.quantity, 0) ?? 0,
+            amount:   s.total_amount ?? 0,
+            date:     formatDate(s.sale_date),
+        })),
+    });
+};
