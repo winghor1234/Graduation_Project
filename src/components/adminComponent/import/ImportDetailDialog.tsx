@@ -1,54 +1,152 @@
-
-
-
 "use client"
 
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogDescription
+} from "@/components/ui/dialog"
+
 import { Import } from "@/modules/import/import.type"
 import { formatDate } from "@/utils/FormatDate"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { CheckCircle2, Clock, HelpCircle, XCircle } from "lucide-react"
+
+import {
+    CheckCircle2,
+    Clock,
+    FileDown,
+    HelpCircle
+} from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { handlePDFExport } from "../../ExportToReport"
 
 type Props = {
-    open: boolean,
-    onOpenChange: (open: boolean) => void,
+    open: boolean
+    onOpenChange: (open: boolean) => void
     data?: Import
 }
 
-export function ImportDetail({ open, onOpenChange, data }: Props) {
-    // console.log("import : ", data)
+export function ImportDetail({
+    open,
+    onOpenChange,
+    data,
+}: Props) {
 
-    // Fallback calculation helper using your specific nested data structure
-    const purchaseDetails = data?.purchase?.purchase_details || [];
+    const purchase = data?.purchase
+
+    const purchaseDetails = purchase?.purchase_details || []
+
     const totalCalculatedAmount = purchaseDetails.reduce(
-        (sum, item) => sum + (item.received_qty || item.quantity || 0) * (item.price || 0),
+        (sum, item) =>
+            sum +
+            ((item.received_qty ?? item.quantity ?? 0) *
+                (item.price ?? 0)),
         0
-    );
+    )
+
+    const pdfColumns = [
+        {
+            header: "ລຳດັບ",
+            key: "__index",
+        },
+        {
+            header: "ລະຫັດສິນຄ້າ",
+            key: "product_code",
+        },
+        {
+            header: "ສິນຄ້າ",
+            key: "product_name",
+        },
+        {
+            header: "ຈຳນວນຮັບ",
+            key: "quantity",
+        },
+        {
+            header: "ລາຄາ",
+            key: "price",
+        },
+        {
+            header: "ລວມ",
+            key: "total",
+        },
+    ]
+
+    const pdfData =
+        purchase?.purchase_details?.map((item) => {
+            const qty =  item.received_qty ??  item.quantity ??  0
+            const price =  item.price ?? 0
+
+            return {
+                product_code:  item.product?.product_code ??  "-",
+                product_name:  item.product?.product_name ??  "-",
+                quantity: qty,
+                price,
+                total: qty * price,
+            }
+        }) ?? []
+
+    const handleExportPDF = () => {
+        if (!purchase) return
+
+        handlePDFExport({
+            title: `ໃບນຳເຂົ້າ ${data?.import_code ?? ""}`,
+            fileName:
+                data?.import_code ??
+                "import-report",
+            sheetName: "Import",
+            columns: pdfColumns,
+            data: pdfData,
+        })
+    }
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog
+            open={open}
+            onOpenChange={onOpenChange}
+        >
             <DialogContent className="max-w-2xl p-6 gap-6 rounded-xl border border-gray-100 shadow-lg bg-white">
 
-                {/* Header Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-4">
                     <div>
                         <DialogTitle className="text-lg font-bold text-gray-900 tracking-tight">
                             ລາຍລະອຽດການນຳເຂົ້າ
                         </DialogTitle>
+
                         <DialogDescription className="text-xs text-gray-500 mt-0.5">
-                            ລາຍລະອຽດຂໍ້ມູນ ແລະ ສິນຄ້າທີ່ນຳເຂົ້າຈາກໃບສັ່ງຊື້
+                            ລາຍລະອຽດຂໍ້ມູນ ແລະ
+                            ສິນຄ້າທີ່ນຳເຂົ້າຈາກໃບສັ່ງຊື້
                         </DialogDescription>
                     </div>
 
-                    {/* Modern Status Badge linked to purchase.status */}
-                    <div>
-                        {data?.purchase?.status === "COMPLETED" ? (
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!purchase}
+                            className="gap-2"
+                            onClick={handleExportPDF}
+                        >
+                            <FileDown className="w-4 h-4" />
+                            Export PDF
+                        </Button>
+
+                        {purchase?.status ===
+                            "COMPLETED" ? (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 ສຳເລັດ
                             </span>
-                        ) : data?.purchase?.status ? (
+                        ) : purchase?.status ? (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                 <Clock className="w-3.5 h-3.5" />
                                 ກຳລັງດຳເນີນການ
@@ -62,93 +160,147 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                     </div>
                 </div>
 
-                {/* Metadata Grid Info */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm bg-gray-50/50 p-4 rounded-lg border border-gray-100">
-                    <div className="flex justify-between sm:justify-start gap-4">
-                        <span className="text-gray-400 min-w-[100px]">ລະຫັດນຳເຂົ້າ:</span>
-                        <span className="font-mono font-medium text-gray-900">{data?.import_code || "-"}</span>
-                    </div>
-                    <div className="flex justify-between sm:justify-start gap-4">
-                        <span className="text-gray-400 min-w-[100px]">ລະຫັດສັ່ງຊື້:</span>
-                        <span className="font-mono font-medium text-gray-900">{data?.purchase?.purchase_code || "-"}</span>
-                    </div>
 
                     <div className="flex justify-between sm:justify-start gap-4">
-                        <span className="text-gray-400 min-w-[100px]">ວັນທີນຳເຂົ້າ:</span>
-                        <span className="font-medium text-gray-800">
-                            {data?.import_date ? formatDate(data.import_date) : "-"}
+                        <span className="text-gray-400 min-w-[100px]">
+                            ລະຫັດນຳເຂົ້າ:
                         </span>
-                    </div>
-                    <div className="flex justify-between sm:justify-start gap-4">
-                        <span className="text-gray-400 min-w-[100px]">ວັນທີສັ່ງຊື້:</span>
-                        <span className="font-medium text-gray-800">
-                            {data?.purchase?.purchase_date ? formatDate(data.purchase.purchase_date) : "-"}
+                        <span className="font-mono font-medium text-gray-900">
+                            {data?.import_code || "-"}
                         </span>
                     </div>
 
                     <div className="flex justify-between sm:justify-start gap-4">
-                        <span className="text-gray-400 min-w-[100px]">ຜູ້ນຳເຂົ້າ:</span>
-                        <span className="font-medium text-gray-800">{data?.employee?.employee_name || "-"}</span>
+                        <span className="text-gray-400 min-w-[100px]">
+                            ລະຫັດສັ່ງຊື້:
+                        </span>
+                        <span className="font-mono font-medium text-gray-900">
+                            {purchase?.purchase_code || "-"}
+                        </span>
                     </div>
+
                     <div className="flex justify-between sm:justify-start gap-4">
-                        <span className="text-gray-400 min-w-[100px]">ຜູ້ສະໜອງ:</span>
-                        <span className="font-medium text-gray-800">{data?.purchase?.supplier?.supplier_name || "-"}</span>
+                        <span className="text-gray-400 min-w-[100px]">
+                            ວັນທີນຳເຂົ້າ:
+                        </span>
+                        <span>
+                            {data?.import_date
+                                ? formatDate(
+                                    data.import_date
+                                )
+                                : "-"}
+                        </span>
+                    </div>
+
+                    <div className="flex justify-between sm:justify-start gap-4">
+                        <span className="text-gray-400 min-w-[100px]">
+                            ວັນທີສັ່ງຊື້:
+                        </span>
+                        <span>
+                            {purchase?.purchase_date
+                                ? formatDate(
+                                    purchase.purchase_date
+                                )
+                                : "-"}
+                        </span>
+                    </div>
+
+                    <div className="flex justify-between sm:justify-start gap-4">
+                        <span className="text-gray-400 min-w-[100px]">
+                            ຜູ້ນຳເຂົ້າ:
+                        </span>
+                        <span>
+                            {data?.employee
+                                ?.employee_name || "-"}
+                        </span>
+                    </div>
+
+                    <div className="flex justify-between sm:justify-start gap-4">
+                        <span className="text-gray-400 min-w-[100px]">
+                            ຜູ້ສະໜອງ:
+                        </span>
+                        <span>
+                            {purchase?.supplier
+                                ?.supplier_name || "-"}
+                        </span>
                     </div>
                 </div>
 
-                {/* Items Table showing purchase_details data layout */}
-                <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+                <div className="overflow-hidden rounded-xl border border-gray-200">
                     <Table>
-                        <TableHeader className="bg-gray-50/70">
+                        <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[60px] text-center font-semibold text-gray-600">#</TableHead>
-                                <TableHead className="font-semibold text-gray-600">ລະຫັດສິນຄ້າ</TableHead>
-                                <TableHead className="font-semibold text-gray-600">ຊື່ສິນຄ້າ</TableHead>
-                                <TableHead className="text-right font-semibold text-gray-600">ຈຳນວນສັ່ງຊື້</TableHead>
-                                <TableHead className="text-right font-semibold text-gray-600">ຈຳນວນທີ່ຮັບຕົວຈິງ</TableHead>
-                                <TableHead className="text-right font-semibold text-gray-600">ລາຄາ/ຈຳນວນ</TableHead>
-                                {/* <TableHead className="text-right font-semibold text-gray-600">ລວມ</TableHead> */}
+                                <TableHead>#</TableHead>
+                                <TableHead>
+                                    ລະຫັດສິນຄ້າ
+                                </TableHead>
+                                <TableHead>
+                                    ຊື່ສິນຄ້າ
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    ຈຳນວນສັ່ງ
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    ຈຳນວນຮັບ
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    ລາຄາ
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
 
                         <TableBody>
-                            {purchaseDetails.length ? (
-                                purchaseDetails.map((d, index) => (
-                                    <TableRow
-                                        key={d.purchase_detail_id || index}
-                                        className="hover:bg-gray-50/50 transition-colors duration-150"
-                                    >
-                                        <TableCell className="text-center text-gray-400 font-medium">
-                                            {index + 1}
-                                        </TableCell>
+                            {purchaseDetails.length > 0 ? (
+                                purchaseDetails.map(
+                                    (
+                                        item,
+                                        index
+                                    ) => (
+                                        <TableRow
+                                            key={
+                                                item.purchase_detail_id
+                                            }
+                                        >
+                                            <TableCell>
+                                                {index + 1}
+                                            </TableCell>
 
-                                        {/* Fallback to product_id if product name isn't nested directly here */}
-                                        <TableCell className="font-medium text-gray-900 font-mono text-xs">
-                                            {d.product?.product_code || "ບໍ່ມີຂໍ້ມູນ"}
-                                        </TableCell>
-                                        <TableCell className="font-medium text-gray-900 font-mono text-xs">
-                                            {d.product?.product_name || "ບໍ່ມີຂໍ້ມູນ"}
-                                        </TableCell>
+                                            <TableCell>
+                                                {item.product
+                                                    ?.product_code ||
+                                                    "-"}
+                                            </TableCell>
 
-                                        <TableCell className="text-right font-medium text-gray-400 tabular-nums">
-                                            {d.quantity}
-                                        </TableCell>
+                                            <TableCell>
+                                                {item.product
+                                                    ?.product_name ||
+                                                    "-"}
+                                            </TableCell>
 
-                                        <TableCell className="text-right font-semibold text-emerald-600 tabular-nums">
-                                            {d.received_qty}
-                                        </TableCell>
+                                            <TableCell className="text-right">
+                                                {item.quantity}
+                                            </TableCell>
 
-                                        <TableCell className="text-right text-gray-600 tabular-nums">
-                                            {formatCurrency(d.price)}
-                                        </TableCell>
+                                            <TableCell className="text-right">
+                                                {item.received_qty}
+                                            </TableCell>
 
-                                   
-                                    </TableRow>
-                                ))
+                                            <TableCell className="text-right">
+                                                {formatCurrency(
+                                                    item.price
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                )
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-8 text-gray-400 font-medium">
-                                        ບໍ່ມີຂໍ້ມູນສິນຄ້າ
+                                    <TableCell
+                                        colSpan={6}
+                                        className="text-center py-6"
+                                    >
+                                        ບໍ່ມີຂໍ້ມູນ
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -156,27 +308,38 @@ export function ImportDetail({ open, onOpenChange, data }: Props) {
                     </Table>
                 </div>
 
-                {/* Total Summary Section */}
-                <div className="flex justify-end pt-2">
-                    <div className="w-full sm:w-[340px] rounded-xl border border-gray-200 bg-gray-50/30 p-4 space-y-3 shadow-sm">
-                        <div className="flex justify-between text-sm text-gray-500">
-                            <span>ຍອດລວມທັງໝົດ (ຕາມໃບສັ່ງຊື້)</span>
-                            <span className="font-medium text-gray-800 tabular-nums">
-                                {data?.purchase?.total_amount
-                                    ? `${formatCurrency(data.purchase.total_amount)} ກີບ`
-                                    : `${formatCurrency(totalCalculatedAmount)} ກີບ`}
+                <div className="flex justify-end">
+                    <div className="w-full sm:w-[340px] rounded-xl border p-4">
+
+                        <div className="flex justify-between">
+                            <span>
+                                ຍອດສັ່ງຊື້
+                            </span>
+
+                            <span>
+                                {formatCurrency(
+                                    purchase?.total_amount ??
+                                    0
+                                )}{" "}
+                                ກີບ
                             </span>
                         </div>
 
-                        <div className="border-t border-dashed my-2" />
+                        <div className="border-t my-3" />
 
-                        <div className="flex justify-between items-baseline">
-                            <span className="text-sm font-bold text-gray-900">ລວມທັງໝົດຕາມໃບນຳເຂົ້າ</span>
-                            <span className="text-xl font-extrabold text-green-600 tabular-nums">
-                                {formatCurrency(totalCalculatedAmount)}
-                                <span className="text-lg font-semibold text-gray-500 ml-0.5">ກີບ</span>
+                        <div className="flex justify-between">
+                            <span className="font-bold">
+                                ຍອດນຳເຂົ້າຕົວຈິງ
+                            </span>
+
+                            <span className="font-bold text-green-600">
+                                {formatCurrency(
+                                    totalCalculatedAmount
+                                )}{" "}
+                                ກີບ
                             </span>
                         </div>
+
                     </div>
                 </div>
 

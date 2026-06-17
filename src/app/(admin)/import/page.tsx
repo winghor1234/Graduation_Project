@@ -33,7 +33,6 @@ export default function ImportPage() {
 
     const handleDelete = (id: string) => {
         if (!confirm("Delete?")) return
-
         deleteImport.mutate(id, {
             onSuccess: () => toast.success("Deleted")
         })

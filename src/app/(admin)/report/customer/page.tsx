@@ -8,7 +8,7 @@ import { PurchaseOrder } from "@/components/adminComponent/purchase/PurchaseType
 import { handlePurchaseExcelExport, handlePurchasePDFExport } from "@/components/adminComponent/exportReport/ExportToReport";
 import { BadgeComponent } from "@/components/adminComponent/StatusComponent";
 
-export default function PurchaseReportPage() {
+export default function CustomerReportPage() {
 
     const report = useReport<PurchaseOrder>({
         reportType: "PURCHASE",

@@ -1,15 +1,12 @@
-// import { Customers } from "@/modules/customer/customer.type";
-// import { exportExcel } from "@/utils/exportExcel";
-// import { exportPDF } from "@/utils/exportPdf";
-
 
 import { formatCurrency } from "@/utils/FormatCurrency";
 import { Customers } from "../customer/CustomerType";
 import { handleExcelExport, handlePDFExport } from "../../ExportToReport";
 import { Product } from "../products/ProductType";
 import { PurchaseOrder } from "../purchase/PurchaseType";
+import { Import } from "../import/ImportType";
 
-
+// product start
 
 export const handleProductPDFExport = (products: Product[]) => {
     handlePDFExport({
@@ -77,6 +74,12 @@ export const handleProductExcelExport = (products: Product[]) => {
 
 }
 
+
+// Product end
+
+
+// Customer start
+
 export const handleCustomerPDFExport = (customers: Customers[]) => {
     handlePDFExport({
         title: "ລາຍງານຂໍ້ມູນລູກຄ້າ",
@@ -122,6 +125,11 @@ export const handleCustomerExcelExport = (customers: Customers[]) => {
     });
 };
 
+// Customer end
+
+
+
+// Purchase start
 
 export const handlePurchasePDFExport = (purchases: PurchaseOrder[]) => {
     handlePDFExport({
@@ -155,3 +163,112 @@ export const handlePurchasePDFExport = (purchases: PurchaseOrder[]) => {
         })),
     });
 };
+
+export const handlePurchaseExcelExport = (purchases: PurchaseOrder[]) => {
+    handleExcelExport({
+        title: "ລາຍງານການຈັດຊື້",
+        fileName: "purchase-report",
+        sheetName: "Purchases",
+        columns: [
+            {
+                header: "ລຳດັບ",
+                key: "__index",
+            },
+            {
+                header: "ລະຫັດການຈັດຊື້",
+                key: "purchase_code",
+            },
+            {
+                header: "ຜູ້ສະໜອງ (Supplier)",
+                key: "supplier_name",
+            },
+            {
+                header: "ຍອດລວມ",
+                key: "amount",
+            },
+        ],
+
+        data: purchases.map((c, index) => ({
+            __index: index + 1,
+            purchase_code: c.purchase_code,
+            supplier_name: c.supplier?.supplier_name,
+            amount: c.total_amount,
+
+        })),
+    });
+};
+
+// Purchase end
+
+
+// Import start
+
+export const handleImportPDFExport = (imports: Import[]) => {
+    handlePDFExport({
+        title: "ລາຍງານການນຳເຂົ້າ",
+        fileName: "import-report",
+        columns: [
+            {
+                header: "ລຳດັບ",
+                key: "__index",
+            },
+            {
+                header: "ລະຫັດການນຳເຂົ້າ",
+                key: "import_code",
+            },
+            {
+                header: "ຜູ້ສະໜອງ",
+                key: "supplier_name",
+            },
+            {
+                header: "ຍອດລວມ",
+                key: "amount",
+            },
+        ],
+
+        data: imports.map((c, index) => ({
+            __index: index + 1,
+            import_code: c.import_code,
+            supplier_name: c.purchase?.supplier?.supplier_name,
+            amount: c.import_details?.reduce((a, b) => a + b.cost_price * b.quantity, 0),
+
+        })),
+    });
+};
+
+
+export const handleImportExcelExport = (imports: Import[]) => {
+    handleExcelExport({
+        title: "ລາຍງານການນຳເຂົ້າ",
+        fileName: "import-report",
+        sheetName: "Imports",
+        columns: [
+            {
+                header: "ລຳດັບ",
+                key: "__index",
+            },
+            {
+                header: "ລະຫັດການນຳເຂົ້າ",
+                key: "import_code",
+            },
+            {
+                header: "ຜູ້ສະໜອງ",
+                key: "supplier_name",
+            },
+            {
+                header: "ຍອດລວມ",
+                key: "amount",
+            },
+        ],
+
+        data: imports.map((c, index) => ({
+            __index: index + 1,
+            import_code: c.import_code,
+            supplier_name: c.purchase?.supplier?.supplier_name,
+            amount: c.import_details?.reduce((a, b) => a + b.cost_price * b.quantity, 0),
+
+        })),
+    });
+};
+
+// Import end
