@@ -104,7 +104,6 @@ import { formatDate } from "@/utils/FormatDate";
 import { useReport } from "@/components/adminComponent/exportReport/useExportReport";
 import DataTable, { Column } from "@/components/adminComponent/exportReport/DataTable";
 import ReportLayout from "@/components/adminComponent/exportReport/ExportReportLayout";
-import { handlePDFExport } from "@/components/ExportToReport";
 import { Employee } from "@/modules/employee/employee.type";
 import { Customer } from "@/modules/customer/customer.type";
 import { Product } from "@/components/adminComponent/products/ProductType";
@@ -126,7 +125,7 @@ export type SaleDetail = {
 export type Sale = {
     sale_id: string
     sale_date: string
-    total_amount?: number
+    total_amount: number
     employee?: Employee
     customer?: Customer
     sale_details?: SaleDetail[]
@@ -144,6 +143,7 @@ export default function SaleReportPage() {
             (item.customer?.customer_name?.toLowerCase().includes(keyword) ?? false) ||
             (item.employee?.employee_name?.toLowerCase().includes(keyword) ?? false),
     });
+    console.log("report : ",report);
 
     // ✅ columns ຕາມ Sale type
     const columns: Column<Sale>[] = [
@@ -209,7 +209,7 @@ export default function SaleReportPage() {
         amount: formatCurrency(row.total_amount ?? 0),
         date: formatDate(row.sale_date),
     }));
-
+// console.log("pdfData : ",pdfData);
     return (
         <ReportLayout
             title="ລາຍງານການຂາຍ"

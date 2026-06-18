@@ -20,7 +20,7 @@ export type PurchaseOrder = {
     purchase_id: string
     purchase_code: string
     purchase_date: string
-    total_amount?: number
+    total_amount: number
     status: string
     import?: Import
     paid_amount: number

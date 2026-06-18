@@ -1,6 +1,9 @@
+
+
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import dayjs from "dayjs";
+import { formatCurrency } from "./FormatCurrency";
 
 // ================= TYPES =================
 
@@ -23,6 +26,89 @@ export type ExportPDFParams<T extends Record<string, unknown>> = {
         phone?: string;
         email?: string;
     };
+};
+
+// ================= BUILD SUMMARY =================
+
+const buildSummary = <T extends Record<string, unknown>>(
+    columns: Column<T>[],
+    data: T[]
+): string => {
+    const totalRows = data.length;
+
+    // ຄົ້ນຫາ column ທີ່ມີຄ່າເປັນຕົວເລກ (ຍົກເວັ້ນ __index)
+    const numericColumns = columns.filter((col) => {
+        if (col.key === "__index") return false;
+        return data.some((row) => {
+            const val = row[col.key as keyof T];
+            return val !== null && val !== undefined && val !== "" && !isNaN(Number(val));
+        });
+    });
+
+    const numericCards = numericColumns
+        .map((col) => {
+            const total = data.reduce((sum, row) => {
+                const val = Number(row[col.key as keyof T]);
+                return sum + (isNaN(val) ? 0 : val);
+            }, 0);
+
+            return `
+            <div style="
+                background: #eaf4fb;
+                border-left: 4px solid #3498db;
+                padding: 10px 18px;
+                border-radius: 4px;
+                min-width: 140px;
+            ">
+                <div style="font-size: 11px; color: #555; margin-bottom: 4px; font-family: 'NotoSansLao', sans-serif;">
+                    ລວມ ${col.header}
+                </div>
+                <div style="font-size: 18px; font-weight: bold; color: #2c3e50; font-family: 'NotoSansLao', sans-serif;">
+                    ${formatCurrency(total)}
+                </div>
+            </div>`;
+        })
+        .join("");
+
+    return `
+        <div style="
+            margin-top: 16px;
+            border-top: 1.5px solid #3498db;
+            padding-top: 12px;
+            font-family: 'NotoSansLao', sans-serif;
+        ">
+            <div style="
+                font-size: 14px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                color: #2c3e50;
+                font-family: 'NotoSansLao', sans-serif;
+            ">ສະຫຼຸບລວມ</div>
+
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start;">
+
+                <!-- ຈຳນວນລາຍການທັງໝົດ -->
+                <div style="
+                    background: #eaf4fb;
+                    border-left: 4px solid #2980b9;
+                    padding: 10px 18px;
+                    border-radius: 4px;
+                    min-width: 140px;
+                ">
+                    <div style="font-size: 11px; color: #555; margin-bottom: 4px; font-family: 'NotoSansLao', sans-serif;">
+                        ຈຳນວນລາຍການທັງໝົດ
+                    </div>
+                    <div style="font-size: 18px; font-weight: bold; color: #2c3e50; font-family: 'NotoSansLao', sans-serif;">
+                        ${formatCurrency(totalRows)} ລາຍການ
+                    </div>
+                </div>
+
+                <!-- Numeric columns ທີ່ຄົ້ນພົບ -->
+                ${numericCards}
+
+            </div>
+        </div>
+    `;
 };
 
 // ================= BUILD HTML =================
@@ -49,8 +135,7 @@ const buildHTML = <T extends Record<string, unknown>>(
         .map((row, index) => {
             const cells = columns
                 .map((col) => {
-                    const value =
-                        col.key === "__index" ? index + 1 : row[col.key];
+                    const value =  col.key === "__index" ? index + 1 : row[col.key as keyof T];
                     return `
                     <td style="
                         padding: 7px 12px;
@@ -65,6 +150,9 @@ const buildHTML = <T extends Record<string, unknown>>(
             return `<tr style="${bg}">${cells}</tr>`;
         })
         .join("");
+
+    // ສ້າງ summary block
+    const summaryBlock = buildSummary(columns, data);
 
     return `
         <div style="
@@ -123,6 +211,9 @@ const buildHTML = <T extends Record<string, unknown>>(
                 </tbody>
             </table>
 
+            <!-- SUMMARY -->
+            ${summaryBlock}
+
             <!-- FOOTER -->
             <div style="
                 margin-top: 20px;
@@ -144,7 +235,7 @@ export const exportPDF = async <T extends Record<string, unknown>>(
 ) => {
     const { type, fileName } = params;
 
-    // 1. สร้าง container ซ่อนนอกหน้าจอ
+    // 1. ສ້າງ container ຊ່ອນນອກໜ້າຈໍ
     const container = document.createElement("div");
     container.style.position = "fixed";
     container.style.top = "-9999px";
@@ -152,8 +243,7 @@ export const exportPDF = async <T extends Record<string, unknown>>(
     container.style.zIndex = "-1";
     container.innerHTML = buildHTML(params);
 
-    // 2. ✅ เพิ่ม @font-face ใน container เพื่อให้ html2canvas โหลดฟอนต์ลาวได้
-    //    ฟอนต์ต้องอยู่ที่ public/fonts/NotoSansLao-Regular.ttf
+    // 2. ເພີ່ມ @font-face ສຳລັບ NotoSansLao
     const style = document.createElement("style");
     style.textContent = `
         @font-face {
@@ -171,11 +261,11 @@ export const exportPDF = async <T extends Record<string, unknown>>(
 
     document.body.appendChild(container);
 
-    // 3. ✅ รอให้ฟอนต์โหลดเสร็จก่อน — สำคัญมาก!
+    // 3. ລໍຖ້າ font ໂຫຼດກ່ອນ
     await document.fonts.ready;
 
     try {
-        // 4. Capture ด้วย html2canvas (browser render ลาวถูกต้อง 100%)
+        // 4. Capture ດ້ວຍ html2canvas
         const canvas = await html2canvas(container, {
             scale: 2,
             useCORS: true,
@@ -185,7 +275,7 @@ export const exportPDF = async <T extends Record<string, unknown>>(
 
         const imgData = canvas.toDataURL("image/png");
 
-        // 5. ใส่รูปใน jsPDF
+        // 5. ໃສ່ຮູບໃນ jsPDF
         const pdf = new jsPDF({
             orientation: "portrait",
             unit: "mm",
@@ -198,7 +288,7 @@ export const exportPDF = async <T extends Record<string, unknown>>(
         const imgWidth = pdfWidth;
         const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-        // 6. แบ่งหน้าอัตโนมัติถ้าเนื้อหายาวเกิน 1 หน้า
+        // 6. ແບ່ງໜ້າອັດຕະໂນມັດຖ້າເນື້ອຫາຍາວເກີນ 1 ໜ້າ
         let heightLeft = imgHeight;
         let position = 0;
 
@@ -212,12 +302,12 @@ export const exportPDF = async <T extends Record<string, unknown>>(
             heightLeft -= pdfHeight;
         }
 
-        // 7. บันทึกไฟล์
+        // 7. ບັນທຶກໄຟລ໌
         const name = fileName ?? `${type}-${dayjs().format("YYYYMMDD-HHmm")}`;
         pdf.save(`${name}.pdf`);
 
     } finally {
-        // 8. ลบ container ออกเสมอ ไม่ว่าจะ error หรือไม่
+        // 8. ລຶບ container ອອກ
         document.body.removeChild(container);
     }
 };

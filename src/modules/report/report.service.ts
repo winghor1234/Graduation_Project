@@ -426,7 +426,9 @@ export class ReportService {
                         : undefined,
                     include: {
                         employee: true,
-                        purchase: true,
+                        purchase: {
+                            include: { supplier: true },
+                        },
                         import_details: {
                             include: { product: true },
                         },

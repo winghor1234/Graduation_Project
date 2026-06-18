@@ -4,52 +4,81 @@ import { formatDate } from "@/utils/FormatDate";
 import { useReport } from "@/components/adminComponent/exportReport/useExportReport";
 import DataTable, { Column } from "@/components/adminComponent/exportReport/DataTable";
 import ReportLayout from "@/components/adminComponent/exportReport/ExportReportLayout";
-import { PurchaseOrder } from "@/components/adminComponent/purchase/PurchaseType";
-import { handlePurchaseExcelExport, handlePurchasePDFExport } from "@/components/adminComponent/exportReport/ExportToReport";
-import { BadgeComponent } from "@/components/adminComponent/StatusComponent";
+import { handleCustomerExcelExport, handleCustomerPDFExport } from "@/components/adminComponent/exportReport/ExportToReport";
+import { Customer } from "@/components/adminComponent/customer/CustomerType";
 
 export default function CustomerReportPage() {
-
-    const report = useReport<PurchaseOrder>({
-        reportType: "PURCHASE",
+    const report = useReport<Customer>({
+        reportType: "CUSTOMER",
         searchFn: (item, keyword) =>
-            (item.purchase_code?.toLowerCase().includes(keyword) ?? false) ||
-            (item.supplier?.supplier_name?.toLowerCase().includes(keyword) ?? false),
+            (item.customer_name?.toLowerCase().includes(keyword) ?? false) ||
+            (item.phone?.toLowerCase().includes(keyword) ?? false) ||
+            (item.email?.toLowerCase().includes(keyword) ?? false),
     });
 
-    const columns: Column<PurchaseOrder>[] = [
+    const columns: Column<Customer>[] = [
         {
-            key: "code",
-            title: "ລະຫັດການຊື້",
-            render: (row) => row.purchase_code,
+            key: "customer_name",
+            title: "ຊື່ລູກຄ້າ",
+            render: (row) => row.customer_name,
         },
         {
-            key: "supplier",
-            title: "ຜູ້ສະໜອງ",
-            render: (row) => row.supplier?.supplier_name,
+            key: "phone",
+            title: "ເບີໂທ",
+            render: (row) => row.phone,
         },
         {
-            key: "amount",
-            title: "ຈຳນວນເງິນ",
-            render: (row) => formatCurrency(row.total_amount ?? 0),
+            key: "email",
+            title: "ອີເມລ",
+            render: (row) => row.email,
         },
         {
-            key: "status",
-            title: "ສະຖານະ",
-            render: (row) => BadgeComponent({ status: row.status }),
+            key: "province",
+            title: "ແຂວງ",
+            render: (row) => row.province ?? "-",
         },
         {
-            key: "date",
-            title: "ວັນທີ",
-            render: (row) => formatDate(row.purchase_date),
+            key: "point",
+            title: "ແຕ້ມສະສົມ",
+            render: (row) => formatCurrency(row.point),
+        },
+        {
+            key: "orders",
+            title: "ຈຳນວນອໍເດີ",
+            render: (row) => formatCurrency(row.orders?.length ?? 0),
+        },
+        {
+            key: "totalOrderAmount",
+            title: "ຍອດຊື້ອອນລາຍ",
+            render: (row) =>
+                formatCurrency(
+                    row.orders?.reduce((sum, o) => sum + (o.total_amount ?? 0), 0) ?? 0
+                ),
+        },
+        {
+            key: "sales",
+            title: "ຈຳນວນການຊື້ໜ້າຮ້ານ",
+            render: (row) => formatCurrency(row.sales?.length ?? 0),
+        },
+        {
+            key: "totalSaleAmount",
+            title: "ຍອດຊື້ໜ້າຮ້ານ",
+            render: (row) =>
+                formatCurrency(
+                    row.sales?.reduce((sum, s) => sum + (s.total_amount ?? 0), 0) ?? 0
+                ),
+        },
+        {
+            key: "createdAt",
+            title: "ວັນທີສະໝັກ",
+            render: (row) => formatDate(row.createdAt),
         },
     ];
 
-
     return (
         <ReportLayout
-            title="ລາຍງານການຊື້"
-            description="ລາຍງານການຊື້"
+            title="ລາຍງານລູກຄ້າ"
+            description="ລາຍງານຂໍ້ມູນລູກຄ້າທັງໝົດ"
             total={report.data.length}
             loading={report.isLoading}
             search={report.search}
@@ -60,8 +89,8 @@ export default function CustomerReportPage() {
             endDate={report.endDate}
             setStartDate={report.setStartDate}
             setEndDate={report.setEndDate}
-            onPdf={() => handlePurchasePDFExport(report.data)}
-            onExcel={() => { handlePurchaseExcelExport(report.data) }}
+            onPdf={() => handleCustomerPDFExport(report.data)}
+            onExcel={() => handleCustomerExcelExport(report.data)}
         >
             <DataTable
                 data={report.data}
