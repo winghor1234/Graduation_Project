@@ -1,9 +1,9 @@
 import React from "react";
 
 export type Column<T> = {
-    key: string;
+    key: keyof T | string;
     title: string;
-    render: (row: T) => React.ReactNode;
+    render?: (row: T, index: number) => React.ReactNode;
 };
 
 type Props<T> = {
@@ -31,12 +31,11 @@ export default function DataTable<T>({
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full">
-
                     <thead className="bg-gray-100">
                         <tr>
                             {columns.map((column) => (
                                 <th
-                                    key={column.key}
+                                    key={String(column.key)}
                                     className="text-left px-4 py-3"
                                 >
                                     {column.title}
@@ -54,10 +53,12 @@ export default function DataTable<T>({
                                 >
                                     {columns.map((column) => (
                                         <td
-                                            key={column.key}
+                                            key={String(column.key)}
                                             className="px-4 py-3"
                                         >
-                                            {column.render(row)}
+                                            {column.render
+                                                ? column.render(row, index)
+                                                : String(row[column.key as keyof T] ?? "")}
                                         </td>
                                     ))}
                                 </tr>
@@ -73,7 +74,6 @@ export default function DataTable<T>({
                             </tr>
                         )}
                     </tbody>
-
                 </table>
             </div>
         </div>

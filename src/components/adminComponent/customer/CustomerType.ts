@@ -1,15 +1,16 @@
-export type Customers = {
-    customer_id: string
-    customer_name: string
-    email: string
-    phone: string
-    gender?: string
-    address?: string
-    role: "CUSTOMER"
-    isActive: boolean
-    point: number
-    lastLogin?: string
+// CustomerType.ts
+import { Order, Sale } from "@prisma/client";
 
-    createdAt: string
-    updatedAt: string
-}
+export type Customer = {
+    customer_id: string;
+    customer_name: string;
+    phone: string;
+    email: string;
+    gender?: string | null;
+    province?: string | null;
+    point: number;
+    isActive: boolean;
+    createdAt: Date | string;
+    orders: Order[];
+    sales: Sale[];
+};

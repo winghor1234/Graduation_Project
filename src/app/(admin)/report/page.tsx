@@ -38,7 +38,7 @@ export default function ReportPage() {
         },
         {
             title: "ລາຍງານການຂາຍ",
-            href: "/report/sale",
+            href: "/report/saleQuantity",
         },
         {
             title: "ລາຍງານລາຍຮັບ",
