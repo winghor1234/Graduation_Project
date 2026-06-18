@@ -17,7 +17,7 @@ export const dashboardService = {
             costResult,
             monthlyRaw,
             topProductsRaw,
-            lowStock,
+            // lowStock,
             customerCount,
             order,
             currentMonthOrder,
@@ -49,14 +49,14 @@ export const dashboardService = {
                 take: 5
             }),
 
-            prisma.product.findMany({
-                where: { stock_qty: { lt: 10 } },
-                select: {
-                    product_id: true,
-                    product_name: true,
-                    stock_qty: true
-                }
-            }),
+            // prisma.product.findMany({
+            //     where: { variants.stock_qty: { lt: 10 } },
+            //     select: {
+            //         product_id: true,
+            //         product_name: true,
+            //         stock_qty: true
+            //     }
+            // }),
 
             prisma.customer.count(),
 
@@ -114,13 +114,10 @@ export const dashboardService = {
 
         const products = await prisma.product.findMany({
             where: { product_id: { in: productIds } },
-            select: { product_id: true, product_name: true, product_code: true, sale_price: true }
+            select: { product_id: true, product_name: true, product_code: true, variants: { select: { sale_price: true } } }
         })
 
-        const productMap = new Map(
-            products.map(p => [p.product_id, p])
-        )
-
+        const productMap = new Map(products.map(p => [p.product_id, p]))
         const topProducts = topProductsRaw.map(p => {
             const product = productMap.get(p.product_id)
 
@@ -128,12 +125,12 @@ export const dashboardService = {
                 productId: p.product_id,
                 productName: product?.product_name || "Unknown",
                 productCode: product?.product_code || "-",
-                price: Number(product?.sale_price ?? 0),
+                price: Number(product?.variants?.[0]?.sale_price ?? 0),
                 sold: Number(p._sum.quantity ?? 0)
             }
         })
 
-         const percent = calculateGrowthPercent(currentMonthOrder, lastMonthOrder)
+        const percent = calculateGrowthPercent(currentMonthOrder, lastMonthOrder)
 
 
         return {
@@ -144,7 +141,7 @@ export const dashboardService = {
             },
             monthly,
             topProducts,
-            lowStock,
+            // lowStock,
             customers: customerCount,
             orders: order,
             currentMonthOrder,

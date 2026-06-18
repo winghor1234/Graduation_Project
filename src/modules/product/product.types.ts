@@ -4,8 +4,14 @@ export type CreateProductInput = {
   product_name: string;
   product_code?: string;
   purchase_price?: number;
-  sale_price: number;
-  stock_qty: number;
+  variants?: {
+    sku: string;
+    color: string;
+    size: string;
+    purchase_price: number;
+    sale_price: number;
+    stock_qty?: number;
+  }[];
   category_id: string;
   description?: string;
   files?: File[];
