@@ -100,8 +100,6 @@ model Product {
   product_code  String      @unique
   product_name  String
   purchase_price  Int?
-  sale_price    Int
-  stock_qty     Int
   description   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -116,6 +114,7 @@ model Product {
   sale_details     SaleDetail[]
   refund_details   RefundDetail[]
   promotion_products PromotionProduct[]
+  variants      ProductVariant[]
 
   @@index([category_id])
 }
@@ -134,6 +133,33 @@ model ProductImage {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+}
+
+
+model ProductVariant {
+  variant_id   String @id @default(uuid())
+
+  product_id   String
+  product      Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+
+  sku          String @unique
+
+  color        String
+  size         String
+
+  purchase_price Int
+  sale_price     Int
+
+  stock_qty    Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  purchase_details PurchaseDetail[]
+  import_details   ImportDetail[]
+  sale_details     SaleDetail[]
+
+  @@index([product_id])
 }
 
 
@@ -235,7 +261,7 @@ model PurchaseOrder {
   total_amount  Int?
   paid_amount Int @default(0)
   status        PurchaseOrderStatus   @default(PENDING)
-  payment_status PurchaseOrderStatus @default(UNPAID)
+  payment_status PurchasePaymentStatus @default(UNPAID)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -255,7 +281,12 @@ model PurchaseOrder {
 
 enum PurchaseOrderStatus {
   PENDING
+  ORDERED
   COMPLETED
+  CANCELLED
+}
+
+enum PurchasePaymentStatus {
   UNPAID
   PAID
 }
@@ -273,9 +304,12 @@ model PurchaseDetail {
 
   purchase_id String
   product_id  String
+  variant_id  String
 
   purchase PurchaseOrder @relation(fields: [purchase_id], references: [purchase_id], onDelete: Cascade)
   product  Product       @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+  variant       ProductVariant @relation(fields: [variant_id], references: [variant_id])
+
 
   @@index([purchase_id])
   @@index([product_id])
@@ -285,6 +319,7 @@ model PurchaseDetail {
 model Import {
   import_id   String      @id @default(uuid())
   import_code String      @unique
+  status      ImportStatus @default(PENDING)
   import_date DateTime @default(now())
   purchase_id String      @unique
   employee_id String
@@ -297,17 +332,28 @@ model Import {
   import_details ImportDetail[]
 }
 
+enum ImportStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
 model ImportDetail {
   import_detail_id String @id @default(uuid())
   quantity         Int
   cost_price       Int
+
   import_id String
   product_id String
+  variant_id String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   import  Import  @relation(fields: [import_id], references: [import_id], onDelete: Cascade)
   product Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+  variant       ProductVariant @relation(fields: [variant_id], references: [variant_id])
+
 
   @@index([import_id])
   @@index([product_id])
@@ -383,9 +429,12 @@ model SaleDetail {
 
   sale_id  String
   product_id String
+  variant_id   String
 
   sale    Sale    @relation(fields: [sale_id], references: [sale_id], onDelete: Cascade)
   product Product @relation(fields: [product_id], references: [product_id])
+  variant      ProductVariant @relation(fields: [variant_id], references: [variant_id])
+
 }
 
 
