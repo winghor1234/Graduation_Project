@@ -1,3 +1,157 @@
+// import { purchaseService } from "./purchase.service"
+// import { prisma } from "@/lib/prisma"
+// import { getPaginationParams, getPaginationMeta } from "@/utils/pagination"
+// import { getSearchParam } from "@/utils/search"
+// import { getSortingParams } from "@/utils/sorting"
+// import { Prisma } from "@prisma/client"
+// import { NextRequest } from "next/server"
+// import { BadRequestError, errorResponse, ForbiddenError, NotFoundError, successResponse, UnauthorizedError } from "@/utils/response"
+// import { getUserFromToken } from "@/utils/cookie"
+// import { CreatePurchaseOrderInput, UpdatePurchaseOrderInput } from "./purchase.type"
+
+
+// export const purchaseController = {
+//     async getPurchases(req: NextRequest) {
+//         try {
+//             const { page, limit, skip } = getPaginationParams(req)
+//             const search = getSearchParam(req)
+//             const orderBy = getSortingParams(req)
+
+//             // -------------------------
+//             // WHERE (same pattern as category)
+//             // -------------------------
+//             const where: Prisma.PurchaseOrderWhereInput = search
+//                 ? {
+//                     OR: [
+//                         {
+//                             supplier: {
+//                                 supplier_name: {
+//                                     contains: search,
+//                                     mode: "insensitive",
+//                                 },
+//                             },
+//                         },
+//                         {
+//                             purchase_code: {
+//                                 contains: search,
+//                                 mode: "insensitive",
+//                             },
+//                         },
+//                     ],
+//                 }
+//                 : {}
+
+//             // -------------------------
+//             // QUERY
+//             // -------------------------
+//             const [purchases, total] = await Promise.all([
+//                 purchaseService.getPurchases({
+//                     where,
+//                     skip,
+//                     take: limit,
+//                     orderBy,
+//                 }),
+
+//                 prisma.purchaseOrder.count({ where }),
+//             ])
+
+//             const meta = getPaginationMeta(total, page, limit)
+
+//             return successResponse(
+//                 { data: purchases, meta },
+//                 "Get purchases successfully",
+//                 200
+//             )
+//         } catch (error) {
+//             console.log(error)
+
+//             if (
+//                 error instanceof BadRequestError ||
+//                 error instanceof NotFoundError ||
+//                 error instanceof ForbiddenError ||
+//                 error instanceof UnauthorizedError
+//             ) {
+//                 return errorResponse(error.message, error.statusCode)
+//             }
+
+//             return errorResponse("Internal Server Error", 500)
+//         }
+//     },
+//     async getAllPurchases(req: NextRequest) {
+//         try {
+//             const purchases = await purchaseService.getAllPurchases()
+//             return successResponse(purchases, "Get all purchases successfully", 200)
+//         } catch (error) {
+//             console.log(error)
+//             if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+//                 return errorResponse(error.message, error.statusCode);
+//             }
+//             return errorResponse("Internal Server Error", 500)
+//         }
+//     },
+
+//     async getPurchase(id: string) {
+//         try {
+//             const purchase = await purchaseService.getPurchase(id)
+//             return successResponse(purchase, "Get purchase successfully", 200)
+//         } catch (error) {
+//             console.log(error)
+//             if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+//                 return errorResponse(error.message, error.statusCode);
+//             }
+//             return errorResponse("Internal Server Error", 500)
+//         }
+//     },
+
+//     async createPurchase(req: NextRequest) {
+//         const body: CreatePurchaseOrderInput = await req.json()
+//         const payload = getUserFromToken(req)
+//         const userId = (await payload).id
+//         const purchase = await purchaseService.createPurchase(body, userId)
+//         return successResponse(purchase, "Create purchase successfully", 201)
+//     },
+
+//     async updatePurchase(req: NextRequest, id: string) {
+//         try {
+//             const body: UpdatePurchaseOrderInput = await req.json()
+//             const purchase = await purchaseService.updatePurchase(id, body)
+//             return successResponse(purchase, "Update purchase successfully", 200)
+//         } catch (error) {
+//             console.log(error)
+//             if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+//                 return errorResponse(error.message, error.statusCode);
+//             }
+//             return errorResponse("Internal Server Error", 500)
+//         }
+//     },
+//     async paymentPurchase(id: string) {
+//         try {
+//             const purchase = await purchaseService.createPurchasePayment(id)
+//             return successResponse(purchase, "Payment purchase successfully", 200)
+//         } catch (error) {
+//             console.log(error)
+//             if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+//                 return errorResponse(error.message, error.statusCode);
+//             }
+//             return errorResponse("Internal Server Error", 500)
+//         }
+//     },
+
+//     async deletePurchase(id: string) {
+//         try {
+//             await purchaseService.deletePurchase(id)
+//             return successResponse(null, "Delete purchase successfully", 200)
+//         } catch (error) {
+//             console.log(error)
+//             if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+//                 return errorResponse(error.message, error.statusCode);
+//             }
+//             return errorResponse("Internal Server Error", 500)
+//         }
+//     }
+// }
+
+
 import { purchaseService } from "./purchase.service"
 import { prisma } from "@/lib/prisma"
 import { getPaginationParams, getPaginationMeta } from "@/utils/pagination"
@@ -5,88 +159,65 @@ import { getSearchParam } from "@/utils/search"
 import { getSortingParams } from "@/utils/sorting"
 import { Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
-import { BadRequestError, errorResponse, ForbiddenError, NotFoundError, successResponse, UnauthorizedError } from "@/utils/response"
+import {
+    BadRequestError,
+    errorResponse,
+    ForbiddenError,
+    NotFoundError,
+    successResponse,
+    UnauthorizedError,
+} from "@/utils/response"
 import { getUserFromToken } from "@/utils/cookie"
 import { CreatePurchaseOrderInput, UpdatePurchaseOrderInput } from "./purchase.type"
 
+const handleError = (error: unknown) => {
+    if (
+        error instanceof BadRequestError ||
+        error instanceof NotFoundError ||
+        error instanceof ForbiddenError ||
+        error instanceof UnauthorizedError
+    ) {
+        return errorResponse(error.message, error.statusCode)
+    }
+    console.error(error)
+    return errorResponse("Internal Server Error", 500)
+}
 
 export const purchaseController = {
+
     async getPurchases(req: NextRequest) {
         try {
             const { page, limit, skip } = getPaginationParams(req)
             const search = getSearchParam(req)
             const orderBy = getSortingParams(req)
 
-            // -------------------------
-            // WHERE (same pattern as category)
-            // -------------------------
             const where: Prisma.PurchaseOrderWhereInput = search
                 ? {
                     OR: [
-                        {
-                            supplier: {
-                                supplier_name: {
-                                    contains: search,
-                                    mode: "insensitive",
-                                },
-                            },
-                        },
-                        {
-                            purchase_code: {
-                                contains: search,
-                                mode: "insensitive",
-                            },
-                        },
+                        { supplier: { supplier_name: { contains: search, mode: "insensitive" } } },
+                        { purchase_code: { contains: search, mode: "insensitive" } },
                     ],
                 }
                 : {}
 
-            // -------------------------
-            // QUERY
-            // -------------------------
             const [purchases, total] = await Promise.all([
-                purchaseService.getPurchases({
-                    where,
-                    skip,
-                    take: limit,
-                    orderBy,
-                }),
-
+                purchaseService.getPurchases({ where, skip, take: limit, orderBy }),
                 prisma.purchaseOrder.count({ where }),
             ])
 
             const meta = getPaginationMeta(total, page, limit)
-
-            return successResponse(
-                { data: purchases, meta },
-                "Get purchases successfully",
-                200
-            )
+            return successResponse({ data: purchases, meta }, "Get purchases successfully", 200)
         } catch (error) {
-            console.log(error)
-
-            if (
-                error instanceof BadRequestError ||
-                error instanceof NotFoundError ||
-                error instanceof ForbiddenError ||
-                error instanceof UnauthorizedError
-            ) {
-                return errorResponse(error.message, error.statusCode)
-            }
-
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     },
-    async getAllPurchases(req: NextRequest) {
+
+    async getAllPurchases() {
         try {
             const purchases = await purchaseService.getAllPurchases()
             return successResponse(purchases, "Get all purchases successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     },
 
@@ -95,20 +226,19 @@ export const purchaseController = {
             const purchase = await purchaseService.getPurchase(id)
             return successResponse(purchase, "Get purchase successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     },
 
     async createPurchase(req: NextRequest) {
-        const body: CreatePurchaseOrderInput = await req.json()
-        const payload = getUserFromToken(req)
-        const userId = (await payload).id
-        const purchase = await purchaseService.createPurchase(body, userId)
-        return successResponse(purchase, "Create purchase successfully", 201)
+        try {
+            const body: CreatePurchaseOrderInput = await req.json()
+            const payload = await getUserFromToken(req)
+            const purchase = await purchaseService.createPurchase(body, payload.id)
+            return successResponse(purchase, "Create purchase successfully", 201)
+        } catch (error) {
+            return handleError(error)
+        }
     },
 
     async updatePurchase(req: NextRequest, id: string) {
@@ -117,23 +247,16 @@ export const purchaseController = {
             const purchase = await purchaseService.updatePurchase(id, body)
             return successResponse(purchase, "Update purchase successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     },
+
     async paymentPurchase(id: string) {
         try {
-            const purchase = await purchaseService.createPurchasePayment(id)
-            return successResponse(purchase, "Payment purchase successfully", 200)
+            const result = await purchaseService.createPurchasePayment(id)
+            return successResponse(result, "Payment purchase successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     },
 
@@ -142,11 +265,7 @@ export const purchaseController = {
             await purchaseService.deletePurchase(id)
             return successResponse(null, "Delete purchase successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
-    }
+    },
 }

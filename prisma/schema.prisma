@@ -99,7 +99,6 @@ model Product {
   product_id    String      @id @default(uuid())
   product_code  String      @unique
   product_name  String
-  purchase_price  Int?
   description   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

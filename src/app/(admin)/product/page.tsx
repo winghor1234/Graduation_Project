@@ -7,8 +7,8 @@ import { ProductTable } from "@/components/adminComponent/products/ProductTable"
 import { useDataTable } from "@/hooks/useDataTable"
 import { useState } from "react"
 import { toast } from "sonner"
-import { Product } from "@/modules/product/product.types"
 import { useGetCategories } from "@/app/features/hooks/Category"
+import { Product } from "@/components/adminComponent/products/ProductType"
 
 export default function ProductsPage() {
     const table = useDataTable()

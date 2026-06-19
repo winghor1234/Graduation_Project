@@ -129,7 +129,6 @@ export const productController = {
 
             const body: CreateProductInput = {
                 product_name: fd.get("product_name") as string,
-                purchase_price: fd.get("purchase_price") ? Number(fd.get("purchase_price")) : undefined,
                 description: fd.get("description") as string,
                 category_id: fd.get("category_id") as string,
                 folder: (fd.get("folder") as string) ?? "products",
@@ -163,7 +162,6 @@ export const productController = {
 
             const product = await productService.updateProduct(id, {
                 product_name: formDataParser.string(formData, "product_name"),
-                purchase_price: formDataParser.number(formData, "purchase_price"),
                 description: formDataParser.string(formData, "description"),
                 category_id: formDataParser.string(formData, "category_id"),
                 files: formData.getAll("images") as File[],

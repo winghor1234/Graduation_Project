@@ -6,12 +6,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 // import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { toast } from "sonner"
-import { PurchaseOrder } from "@/modules/purchase/purchase.type"
 import { UseMutationResult } from "@tanstack/react-query"
 import { CreateImportInput, Import } from "@/modules/import/import.type"
 import { ImportFormValue } from "@/schemas/schema"
 import { Button } from "@/components/ui/button"
 import SearchSelect from "@/components/SearchSelectOption"
+import { PurchaseOrder } from "../purchase/PurchaseType"
 
 type Props = {
     open: boolean
@@ -49,6 +49,7 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
         const items =
             purchase.purchase_details?.map(d => ({
                 product_id: d.product_id,
+                variant_id: d.variant_id,
                 product_name: d.product?.product_name,
                 quantity: d.quantity,
                 cost_price: d.price
@@ -176,6 +177,11 @@ export function ImportFormDialog({ open, onOpenChange, create, purchases }: Prop
                                     <input
                                         type="hidden"
                                         {...register(`import_details.${i}.product_id`)}
+                                    />
+                                    {/* hiden variant id */}
+                                    <input
+                                        type="hidden"
+                                        {...register(`import_details.${i}.variant_id`)}
                                     />
                                 </div>
                             ))}

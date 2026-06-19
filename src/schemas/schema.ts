@@ -92,6 +92,7 @@ export type PurchaseFormValues = z.infer<typeof purchaseSchema>
 // Import Schema
 export const importDetailSchema = z.object({
   product_id: z.string(),
+  variant_id: z.string(),
   product_name: z.string().optional(),
   quantity: z.number(),
   cost_price: z.number(),

@@ -176,6 +176,7 @@ export const importService = {
         data: CreateImportInput,
         employeeId: string
     ) {
+        console.log("data : ", data)
         return prisma.$transaction(async (tx) => {
 
             const purchase = await tx.purchaseOrder.findUnique({
@@ -234,8 +235,18 @@ export const importService = {
                     purchase_id: data.purchase_id,
                     employee_id: employeeId,
                     import_code: generateImportCode(),
+                    // import_details: {
+                    //     create: data.import_details
+                    // }
                     import_details: {
-                        create: data.import_details
+                        createMany: {
+                            data: data.import_details.map(d => ({
+                                product_id: d.product_id,
+                                variant_id: d.variant_id,
+                                quantity: d.quantity,
+                                cost_price: d.cost_price,
+                            }))
+                        }
                     }
                 },
                 include: {
@@ -256,16 +267,12 @@ export const importService = {
                     }
                 });
 
-                await tx.product.update({
-                    where: {
-                        product_id: item.product_id
-                    },
+                await tx.productVariant.update({
+                    where: { variant_id: item.variant_id },
                     data: {
-                        stock_qty: {
-                            increment: item.quantity
-                        }
+                        stock_qty: { increment: item.quantity }
                     }
-                });
+                })
             }
 
             // 🔥 IMPORTANT CHANGE HERE
@@ -322,8 +329,17 @@ export const importService = {
                 })
 
                 // ลด stock
-                await tx.product.update({
-                    where: { product_id: item.product_id },
+                // await tx.product.update({
+                //     where: { product_id: item.product_id },
+                //     data: {
+                //         stock_qty: {
+                //             decrement: item.quantity
+                //         }
+                //     }
+                // })
+
+                await tx.productVariant.update({
+                    where: { variant_id: item.variant_id },
                     data: {
                         stock_qty: {
                             decrement: item.quantity

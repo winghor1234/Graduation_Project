@@ -56,7 +56,6 @@ const mapVariantsToForm = (product?: Product): ProductFormValues["variants"] => 
 
 const getDefaultValues = (product?: Product): ProductFormValues => ({
   product_name: product?.product_name ?? "",
-  purchase_price: product?.purchase_price ?? 0,
   category_id: product?.category_id ?? "",
   description: product?.description ?? "",
   variants: mapVariantsToForm(product),
@@ -120,10 +119,6 @@ export function ProductFormDialog({
 
     fd.append("product_name", values.product_name)
     fd.append("category_id", values.category_id)
-
-    if (values.purchase_price !== undefined) {
-      fd.append("purchase_price", String(values.purchase_price))
-    }
     if (values.description) {
       fd.append("description", values.description)
     }
@@ -194,26 +189,6 @@ export function ProductFormDialog({
                 {errors.category_id?.message}
               </p>
             </div>
-          </div>
-
-          {/* Base Purchase Price */}
-          <div>
-            <label className="text-sm font-medium mb-1 block">
-              ລາຄາຕົ້ນທຶນ (ພາບລວມ)
-            </label>
-            <Controller
-              name="purchase_price"
-              control={control}
-              render={({ field }) => (
-                <NumericFormat
-                  customInput={Input}
-                  thousandSeparator
-                  value={field.value}
-                  placeholder="ລາຄາຕົ້ນທຶນ"
-                  onValueChange={(v) => field.onChange(Number(v.value))}
-                />
-              )}
-            />
           </div>
 
           {/* Description */}

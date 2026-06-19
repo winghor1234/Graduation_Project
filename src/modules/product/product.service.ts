@@ -115,7 +115,6 @@ export const productService = {
         product_name: data.product_name,
         product_code,
         description: data.description,
-        purchase_price: data.purchase_price,
         category_id: data.category_id,
 
         images: {
@@ -175,7 +174,6 @@ export const productService = {
       where: { product_id: productId },
       data: {
         product_name: data.product_name,
-        purchase_price: data.purchase_price,
         description: data.description,
         category_id: data.category_id,
 
