@@ -37,6 +37,26 @@ export type Product = {
   description?: string
   images: ProductImage[]
 }
-export type CartItemType = Product & {
+// export type CartItemType = Product & {
+//     quantity: number
+// }
+
+
+export type CartItemType = {
+    // Product info
+    product_id:   string
+    product_name: string
+    product_code: string
+    image_url?:   string
+
+    // Variant info ✅
+    variant_id:     string
+    color:          string
+    size:           string
+    sale_price:     number
+    purchase_price: number
+    stock_qty:      number
+
+    // Cart
     quantity: number
 }

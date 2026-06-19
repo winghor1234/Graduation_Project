@@ -1,6 +1,7 @@
 "use client"
 
 import { useParams } from "next/navigation"
+import { useMemo } from "react"
 import { useGetSale } from "@/app/features/hooks/Sale"
 import { formatDate } from "@/utils/FormatDate"
 import { formatCurrency } from "@/utils/FormatCurrency"
@@ -9,10 +10,51 @@ import { BackButton } from "@/utils/BackButton"
 import jsPDF from "jspdf"
 import autoTable, { RowInput } from "jspdf-autotable"
 
+// -----------------------------------------------------------------
+// ‼️ ສຳຄັນ: jsPDF ບໍ່ມີຟອນພາສາລາວມາໃນຕົວ (default font = Helvetica)
+// ຕ້ອງ embed ຟອນລາວ (ແນະນຳ Noto Sans Lao) ກ່ອນຈຶ່ງຈະພິມຕົວອັກສອນລາວ
+// ອອກໃນ PDF ໄດ້ຖືກຕ້ອງ. ວິທີສ້າງ base64 font:
+//
+// 1. ໂຫຼດຟອນ .ttf (ເຊັ່ນ NotoSansLao-Regular.ttf)
+// 2. ໃຊ້ jsPDF Fontconverter: https://rawgit.com/MrRio/jsPDF/master/fontconverter/fontconverter.html
+//    ຫຼື script: node -e "console.log(require('fs').readFileSync('font.ttf').toString('base64'))"
+// 3. ເອົາຜົນ base64 ມາວາງໃນໄຟລ໌ lib/fonts/NotoSansLao.ts ດັ່ງຕົວຢ່າງ:
+//      export const NotoSansLaoBase64 = "AAEAAAAR..." // (string ຍາວຫຼາຍ)
+// 4. import ມາໃຊ້ດັ່ງລຸ່ມນີ້
+//
+// ຖ້າຍັງບໍ່ມີໄຟລ໌ font, ໃຫ້ comment ສ່ວນ embed font ໄວ້ກ່ອນ —
+// ແຕ່ໃຫ້ຮູ້ໄວ້ວ່າ exportPDF ຈະບໍ່ສະແດງຕົວອັກສອນລາວຖືກຕ້ອງ.
+// -----------------------------------------------------------------
+
+// ປະກາດ type ໃຫ້ jsPDF instance ທີ່ມີ lastAutoTable (ແທນການໃຊ້ `as any`)
+type jsPDFWithAutoTable = jsPDF & {
+    lastAutoTable: { finalY: number }
+}
+
+function registerLaoFont(doc: jsPDF) {
+    doc.addFileToVFS("NotoSansLao-Regular.ttf", NotoSansLaoBase64)
+    doc.addFont("NotoSansLao-Regular.ttf", "NotoSansLao", "normal")
+    doc.setFont("NotoSansLao")
+}
+
 export default function ReceiptPage() {
     const { id } = useParams()
 
     const { data, isLoading } = useGetSale(id as string)
+
+    const saleDetails = data?.sale_details ?? []
+
+    // ຄຳນວນຍອດລວມຄືນຈາກ sale_details ກໍລະນີ total_amount ບໍ່ມີຄ່າ (null)
+    const computedTotal = useMemo(
+        () =>
+            saleDetails.reduce(
+                (sum, item) => sum + Number(item.quantity) * Number(item.price),
+                0
+            ),
+        [saleDetails]
+    )
+
+    const totalAmount = data?.total_amount ?? computedTotal
 
     if (isLoading) {
         return (
@@ -31,51 +73,31 @@ export default function ReceiptPage() {
     }
 
     const exportPDF = () => {
-        const doc = new jsPDF()
+        const doc = new jsPDF() as jsPDFWithAutoTable
+
+        registerLaoFont(doc)
 
         // -------------------
         // HEADER
         // -------------------
         doc.setFontSize(20)
-        doc.text("ຮ້ານຂອງຂ້ອຍ", 105, 15, {
-            align: "center",
-        })
+        doc.text("ຮ້ານຂອງຂ້ອຍ", 105, 15, { align: "center" })
 
         doc.setFontSize(10)
-
-        doc.text(
-            "ນະຄອນຫຼວງວຽງຈັນ, ລາວ",
-            105,
-            22,
-            { align: "center" }
-        )
-
-        doc.text(
-            "ໂທ: 020 XXXXXXXX",
-            105,
-            28,
-            { align: "center" }
-        )
+        doc.text("ນະຄອນຫຼວງວຽງຈັນ, ລາວ", 105, 22, { align: "center" })
+        doc.text("ໂທ: 020 XXXXXXXX", 105, 28, { align: "center" })
 
         // -------------------
         // SALE INFO
         // -------------------
         doc.setFontSize(11)
-
         doc.text(`ເລກບິນ : ${data.sale_id}`, 14, 40)
-
-        doc.text(
-            `ວັນທີ : ${formatDate(data.sale_date)}`,
-            14,
-            47
-        )
-
+        doc.text(`ວັນທີ : ${formatDate(data.sale_date)}`, 14, 47)
         doc.text(
             `ລູກຄ້າ : ${data.customer?.customer_name ?? "ລູກຄ້າທົ່ວໄປ"}`,
             14,
             54
         )
-
         doc.text(
             `ພະນັກງານ : ${data.employee?.employee_name ?? "-"}`,
             14,
@@ -85,47 +107,35 @@ export default function ReceiptPage() {
         // -------------------
         // TABLE
         // -------------------
+        const tableBody: RowInput[] = saleDetails.map((item, index) => [
+            index + 1,
+            item.variant
+                ? `${item.product?.product_name ?? "-"} (${item.variant.color}/${item.variant.size})`
+                : item.product?.product_name ?? "-",
+            item.quantity,
+            formatCurrency(item.price),
+            formatCurrency(Number(item.quantity) * Number(item.price)),
+        ])
+
         autoTable(doc, {
             startY: 70,
-            head: [
-                [
-                    "#",
-                    "ສິນຄ້າ",
-                    "ຈຳນວນ",
-                    "ລາຄາ",
-                    "ຈຳນວນເງິນ",
-                ],
-            ],
-            body: data?.sale_details?.map((item, index) => [
-                index + 1,
-                item.product?.product_name,
-                item.quantity,
-                formatCurrency(item.price),
-                formatCurrency(item.quantity * item.price),
-            ]) as RowInput[] | undefined,
+            head: [["#", "ສິນຄ້າ", "ຈຳນວນ", "ລາຄາ", "ຈຳນວນເງິນ"]],
+            body: tableBody,
             styles: {
                 fontSize: 9,
+                font: "NotoSansLao",
             },
             headStyles: {
                 fillColor: [41, 128, 185],
+                font: "NotoSansLao",
             },
         })
 
-        const finalY = (doc as any).lastAutoTable.finalY + 10
+        const finalY = doc.lastAutoTable.finalY + 10
 
         doc.setFontSize(12)
-
-        doc.text(
-            `ຈຳນວນລາຍການ : ${data?.sale_details?.length}`,
-            14,
-            finalY
-        )
-
-        doc.text(
-            `ລວມທັງໝົດ : ${formatCurrency(data?.total_amount ?? 0)}`,
-            140,
-            finalY
-        )
+        doc.text(`ຈຳນວນລາຍການ : ${saleDetails.length}`, 14, finalY)
+        doc.text(`ລວມທັງໝົດ : ${formatCurrency(totalAmount)}`, 140, finalY)
 
         doc.save(`invoice-${data.sale_id}.pdf`)
     }
@@ -141,27 +151,17 @@ export default function ReceiptPage() {
                 >
                     {/* Header */}
                     <div className="text-center border-b pb-5">
-                        <h1 className="text-3xl font-bold">
-                            ຮ້ານຂອງຂ້ອຍ
-                        </h1>
-
-                        <p className="text-gray-500">
-                            ນະຄອນຫຼວງວຽງຈັນ, ລາວ
-                        </p>
-
-                        <p className="text-gray-500">
-                            ໂທ: 020 XXXXXXXX
-                        </p>
+                        <h1 className="text-3xl font-bold">ຮ້ານຂອງຂ້ອຍ</h1>
+                        <p className="text-gray-500">ນະຄອນຫຼວງວຽງຈັນ, ລາວ</p>
+                        <p className="text-gray-500">ໂທ: 020 XXXXXXXX</p>
                     </div>
 
                     {/* Invoice Info */}
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
                         <div>
                             <p>
-                                <strong>ເລກບິນ:</strong>{" "}
-                                {data.sale_id}
+                                <strong>ເລກບິນ:</strong> {data.sale_id}
                             </p>
-
                             <p>
                                 <strong>ວັນທີ:</strong>{" "}
                                 {formatDate(data.sale_date)}
@@ -171,10 +171,8 @@ export default function ReceiptPage() {
                         <div>
                             <p>
                                 <strong>ລູກຄ້າ:</strong>{" "}
-                                {data.customer?.customer_name ??
-                                    "ລູກຄ້າທົ່ວໄປ"}
+                                {data.customer?.customer_name ?? "ລູກຄ້າທົ່ວໄປ"}
                             </p>
-
                             <p>
                                 <strong>ພະນັກງານ:</strong>{" "}
                                 {data.employee?.employee_name ?? "-"}
@@ -204,31 +202,50 @@ export default function ReceiptPage() {
                             </thead>
 
                             <tbody>
-                                {data?.sale_details?.map((item, index) => (
-                                    <tr key={item.sale_detail_id}>
-                                        <td className="border p-3 text-center">
-                                            {index + 1}
-                                        </td>
-
-                                        <td className="border p-3">
-                                            {item.product?.product_name}
-                                        </td>
-
-                                        <td className="border p-3 text-center">
-                                            {item.quantity}
-                                        </td>
-
-                                        <td className="border p-3 text-right">
-                                            {formatCurrency(item.price)}
-                                        </td>
-
-                                        <td className="border p-3 text-right">
-                                            {formatCurrency(
-                                                item.quantity * item.price
-                                            )}
+                                {saleDetails.length === 0 ? (
+                                    <tr>
+                                        <td
+                                            colSpan={5}
+                                            className="border p-6 text-center text-gray-400"
+                                        >
+                                            ບໍ່ມີລາຍການສິນຄ້າ
                                         </td>
                                     </tr>
-                                ))}
+                                ) : (
+                                    saleDetails.map((item, index) => (
+                                        <tr key={item.sale_detail_id}>
+                                            <td className="border p-3 text-center">
+                                                {index + 1}
+                                            </td>
+
+                                            <td className="border p-3">
+                                                {item.product?.product_name ?? "-"}
+                                                {item.variant && (
+                                                    <span className="text-gray-400 text-sm">
+                                                        {" "}
+                                                        ({item.variant.color}/
+                                                        {item.variant.size})
+                                                    </span>
+                                                )}
+                                            </td>
+
+                                            <td className="border p-3 text-center">
+                                                {item.quantity}
+                                            </td>
+
+                                            <td className="border p-3 text-right">
+                                                {formatCurrency(item.price)}
+                                            </td>
+
+                                            <td className="border p-3 text-right">
+                                                {formatCurrency(
+                                                    Number(item.quantity) *
+                                                        Number(item.price)
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -238,14 +255,12 @@ export default function ReceiptPage() {
                         <div className="w-[320px] border rounded-lg p-4">
                             <div className="flex justify-between mb-2">
                                 <span>ຈຳນວນລາຍການ</span>
-                                <span>{data?.sale_details?.length}</span>
+                                <span>{saleDetails.length}</span>
                             </div>
 
                             <div className="flex justify-between text-xl font-bold">
                                 <span>ລວມທັງໝົດ</span>
-                                <span>
-                                    {formatCurrency(data?.total_amount ?? 0)}
-                                </span>
+                                <span>{formatCurrency(totalAmount)}</span>
                             </div>
                         </div>
                     </div>
