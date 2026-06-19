@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server"
 import { productService } from "./product.service"
-import { BadRequestError, NotFoundError, ForbiddenError, UnauthorizedError, errorResponse, successResponse } from "@/utils/response"
+import { successResponse } from "@/utils/response"
 import { getPaginationMeta, getPaginationParams } from "@/utils/pagination"
 import { getSearchParam } from "@/utils/search"
 import { getSortingParams } from "@/utils/sorting"
@@ -8,6 +8,7 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { formDataParser } from "@/utils/cloudinary"
 import { CreateProductInput } from "./product.types"
+import { handleError } from "@/utils/handleError"
 
 export const productController = {
     async getProducts(req: NextRequest) {
@@ -53,11 +54,7 @@ export const productController = {
             return successResponse({ data: products, meta }, "Get products successfully", 200)
 
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
 
     },
@@ -66,11 +63,7 @@ export const productController = {
             const products = await productService.getAllProducts()
             return successResponse(products, "Get all products successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     },
 
@@ -80,10 +73,7 @@ export const productController = {
             const product = await productService.getProduct(id)
             return successResponse(product, "Get product successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
+           return handleError(error)
 
         }
     },
@@ -140,16 +130,7 @@ export const productController = {
             return successResponse(product, "Product created successfully", 201)
 
         } catch (error) {
-            console.error(error)
-            if (
-                error instanceof BadRequestError ||
-                error instanceof NotFoundError ||
-                error instanceof ForbiddenError ||
-                error instanceof UnauthorizedError
-            ) {
-                return errorResponse(error.message, error.statusCode)
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     },
 
@@ -170,16 +151,7 @@ export const productController = {
 
             return successResponse(product, "Product updated successfully", 200)
         } catch (error) {
-            console.error(error)
-            if (
-                error instanceof BadRequestError ||
-                error instanceof NotFoundError ||
-                error instanceof ForbiddenError ||
-                error instanceof UnauthorizedError
-            ) {
-                return errorResponse(error.message, error.statusCode)
-            }
-            return errorResponse("Internal Server Error", 500) // ✅ ເພີ່ມ fallback
+            return handleError(error)
         }
     },
     async deleteImage(req: NextRequest, id: string) {
@@ -188,9 +160,7 @@ export const productController = {
             const image = await productService.deleteImage(id);
             return successResponse(image, "Image deleted successfully", 200);
         } catch (error) {
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
+            return handleError(error)
         }
     },
 
@@ -199,11 +169,7 @@ export const productController = {
             const product = await productService.deleteProduct(id)
             return successResponse(product, "Product deleted successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     }
 

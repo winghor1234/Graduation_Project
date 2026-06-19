@@ -1,6 +1,6 @@
 
 import { prisma } from "@/lib/prisma"
-import { Prisma, PurchaseOrderStatus } from "@prisma/client"
+import { ImportStatus, Prisma, PurchaseOrderStatus } from "@prisma/client"
 import { CreateImportInput } from "./import.type"
 import { BadRequestError, NotFoundError } from "@/utils/response"
 import { generateImportCode } from "@/utils/generateCode"
@@ -235,9 +235,6 @@ export const importService = {
                     purchase_id: data.purchase_id,
                     employee_id: employeeId,
                     import_code: generateImportCode(),
-                    // import_details: {
-                    //     create: data.import_details
-                    // }
                     import_details: {
                         createMany: {
                             data: data.import_details.map(d => ({
@@ -291,76 +288,143 @@ export const importService = {
         });
     },
 
-    async deleteImport(id: string) {
+
+    // ─── Confirm (PENDING → COMPLETED) ────────────────────
+    async confirmImport(id: string) {
         return prisma.$transaction(async (tx) => {
 
-            // 🔍 1. หา import
             const existing = await tx.import.findUnique({
-                where: { import_id: id },
-                include: {
-                    import_details: true,
-                    purchase: true
-                }
-            })
-
-            if (!existing) {
-                throw new NotFoundError("Import not found")
-            }
-
-            // ❗ optional: ห้ามลบถ้า purchase completed แล้ว
-            if (existing.purchase.status === PurchaseOrderStatus.COMPLETED) {
-                throw new BadRequestError("Cannot delete import from completed purchase")
-            }
-
-            // 🔁 2. rollback stock + received_qty
-            for (const item of existing.import_details) {
-
-                // ลด received_qty
-                await tx.purchaseDetail.updateMany({
-                    where: {
-                        purchase_id: existing.purchase_id,
-                        product_id: item.product_id
-                    },
-                    data: {
-                        received_qty: {
-                            decrement: item.quantity
-                        }
-                    }
-                })
-
-                // ลด stock
-                // await tx.product.update({
-                //     where: { product_id: item.product_id },
-                //     data: {
-                //         stock_qty: {
-                //             decrement: item.quantity
-                //         }
-                //     }
-                // })
-
-                await tx.productVariant.update({
-                    where: { variant_id: item.variant_id },
-                    data: {
-                        stock_qty: {
-                            decrement: item.quantity
-                        }
-                    }
-                })
-            }
-
-            // 🗑️ 3. ลบ import
-            await tx.import.delete({
                 where: { import_id: id }
             })
+            if (!existing) throw new NotFoundError("Import not found")
 
-            // 🔄 4. update purchase status กลับเป็น pending
+            if (existing.status !== ImportStatus.PENDING)
+                throw new BadRequestError("Only PENDING import can be confirmed")
+
+            // ✅ PENDING → COMPLETED
+            return tx.import.update({
+                where: { import_id: id },
+                data: { status: ImportStatus.COMPLETED }
+            })
+        })
+    },
+
+    // ─── Cancel (PENDING → CANCELLED) ─────────────────────
+    async cancelImport(id: string) {
+        return prisma.$transaction(async (tx) => {
+
+            const existing = await tx.import.findUnique({
+                where: { import_id: id },
+                include: { import_details: true }
+            })
+            if (!existing) throw new NotFoundError("Import not found")
+
+            if (existing.status !== ImportStatus.PENDING)
+                throw new BadRequestError("Only PENDING import can be cancelled")
+
+            // ✅ Rollback stock — stock -= qty
+            for (const item of existing.import_details) {
+                await tx.productVariant.update({
+                    where: { variant_id: item.variant_id },
+                    data: { stock_qty: { decrement: item.quantity } }
+                })
+            }
+
+            // ✅ purchase → PENDING ຄືນ (ສ້າງ import ໃໝ່ໄດ້)
             await tx.purchaseOrder.update({
                 where: { purchase_id: existing.purchase_id },
                 data: { status: PurchaseOrderStatus.PENDING }
             })
 
-            return { message: "Import deleted successfully" }
+            // ✅ import → CANCELLED
+            return tx.import.update({
+                where: { import_id: id },
+                data: { status: ImportStatus.CANCELLED }
+            })
+        })
+    },
+
+    // ─── Delete (CANCELLED only) ───────────────────────────
+    async deleteImport(id: string) {
+        return prisma.$transaction(async (tx) => {
+
+            const existing = await tx.import.findUnique({
+                where: { import_id: id }
+            })
+            if (!existing) throw new NotFoundError("Import not found")
+
+            // ✅ ລຶບໄດ້ສະເພາະ CANCELLED
+            // (stock ຖືກ rollback ຕອນ cancel ແລ້ວ)
+            if (existing.status !== ImportStatus.CANCELLED)
+                throw new BadRequestError(
+                    "Must cancel import before deleting. (cancel will rollback stock)"
+                )
+
+            // cascade ລຶບ import_details ອັດຕະໂນມັດ
+            await tx.import.delete({ where: { import_id: id } })
         })
     }
+
+    // async deleteImport(id: string) {
+    //     return prisma.$transaction(async (tx) => {
+
+    //         // 🔍 1. หา import
+    //         const existing = await tx.import.findUnique({
+    //             where: { import_id: id },
+    //             include: {
+    //                 import_details: true,
+    //                 purchase: true
+    //             }
+    //         })
+
+    //         if (!existing) {
+    //             throw new NotFoundError("Import not found")
+    //         }
+
+    //         // ❗ optional: ห้ามลบถ้า purchase completed แล้ว
+    //         if (existing.purchase.status === PurchaseOrderStatus.COMPLETED) {
+    //             throw new BadRequestError("Cannot delete import from completed purchase")
+    //         }
+
+    //         // 🔁 2. rollback stock + received_qty
+    //         for (const item of existing.import_details) {
+
+    //             // ลด received_qty
+    //             await tx.purchaseDetail.updateMany({
+    //                 where: {
+    //                     purchase_id: existing.purchase_id,
+    //                     product_id: item.product_id
+    //                 },
+    //                 data: {
+    //                     received_qty: {
+    //                         decrement: item.quantity
+    //                     }
+    //                 }
+    //             })
+
+    //             await tx.productVariant.update({
+    //                 where: { variant_id: item.variant_id },
+    //                 data: {
+    //                     stock_qty: {
+    //                         decrement: item.quantity
+    //                     }
+    //                 }
+    //             })
+    //         }
+
+    //         // 🗑️ 3. ลบ import
+    //         await tx.import.delete({
+    //             where: { import_id: id }
+    //         })
+
+    //         // 🔄 4. update purchase status กลับเป็น pending
+    //         await tx.purchaseOrder.update({
+    //             where: { purchase_id: existing.purchase_id },
+    //             data: { status: PurchaseOrderStatus.PENDING }
+    //         })
+
+    //         return { message: "Import deleted successfully" }
+    //     })
+    // }
 
 }

@@ -41,6 +41,8 @@ export default function ProductsPage() {
         })
     }
 
+    console.log("products : ", products);
+
     return (
         <div className="space-y-4">
 

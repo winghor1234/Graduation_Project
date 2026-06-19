@@ -1,17 +1,41 @@
+
+
+
 "use client"
 
-import { useEffect, useState } from "react"
-import { useForm, useFieldArray } from "react-hook-form"
+import { useEffect } from "react"
+import { useForm, useFieldArray, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-// import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { UseMutationResult } from "@tanstack/react-query"
 import { CreateImportInput, Import } from "@/modules/import/import.type"
-import { ImportFormValue } from "@/schemas/schema"
-import { Button } from "@/components/ui/button"
-import SearchSelect from "@/components/SearchSelectOption"
 import { PurchaseOrder } from "../purchase/PurchaseType"
+import SearchSelect from "@/components/SearchSelectOption"
+import { NumericFormat } from "react-number-format"
+import { formatCurrency } from "@/utils/FormatCurrency"
+
+// ─── Schema ────────────────────────────────────────────────
+const importDetailSchema = z.object({
+    product_id: z.string(),
+    variant_id: z.string(),
+    quantity: z.number().min(1, "ຈຳນວນຕ້ອງຢ່າງໜ້ອຍ 1"),
+    cost_price: z.number().min(0),
+    // UI-only fields (ຖືກລຶບກ່ອນ submit)
+    product_name: z.string().optional(),
+    variant_info: z.string().optional(),
+})
+
+const importFormSchema = z.object({
+    purchase_id: z.string().min(1, "ກະລຸນາເລືອກໃບສັ່ງຊື້"),
+    import_details: z.array(importDetailSchema).min(1),
+})
+
+type ImportFormValue = z.infer<typeof importFormSchema>
+// ───────────────────────────────────────────────────────────
 
 type Props = {
     open: boolean
@@ -22,180 +46,211 @@ type Props = {
 
 export function ImportFormDialog({ open, onOpenChange, create, purchases }: Props) {
 
-
-    /* ✅ FIX: ใช้ ImportFormValue */
-    const { register, control, handleSubmit, setValue, watch, reset } = useForm<ImportFormValue>({
-        defaultValues: {
-            purchase_id: "",
-            import_details: []
-        }
+    const {
+        control, handleSubmit, setValue, watch, reset,
+        formState: { errors },
+    } = useForm<ImportFormValue>({
+        resolver: zodResolver(importFormSchema),
+        defaultValues: { purchase_id: "", import_details: [] },
     })
 
-    const { fields, replace } = useFieldArray({
-        control,
-        name: "import_details"
-    })
+    const { fields, replace } = useFieldArray({ control, name: "import_details" })
+
     const purchaseId = watch("purchase_id")
-    useEffect(() => {
-    }, [purchaseId, replace])
 
-    /* 🔥 load purchase detail */
+    // ✅ ໂຫຼດ items ຈາກ purchase ທີ່ເລືອກ
     useEffect(() => {
-        if (!purchaseId) return
-        const purchase = purchases.find(
-            p => p.purchase_id === purchaseId
-        )
+        if (!purchaseId) { replace([]); return }
+
+        const purchase = purchases.find(p => p.purchase_id === purchaseId)
         if (!purchase) return
-        const items =
-            purchase.purchase_details?.map(d => ({
-                product_id: d.product_id,
-                variant_id: d.variant_id,
-                product_name: d.product?.product_name,
-                quantity: d.quantity,
-                cost_price: d.price
 
-            })) || []
+        const items = purchase.purchase_details?.map(d => ({
+            product_id: d.product_id,
+            variant_id: d.variant_id,   // ✅
+            quantity: d.quantity,
+            cost_price: d.price,
+            product_name: d.product?.product_name ?? "—",
+            variant_info: d.variant        // ✅ ສະແດງ color/size
+                ? `${d.variant.color} / ${d.variant.size}`
+                : "—",
+        })) ?? []
 
         replace(items)
-
     }, [purchaseId, purchases, replace])
 
-    /* 🔥 submit */
+    // ✅ Reset ເມື່ອ dialog ປິດ
+    useEffect(() => {
+        if (!open) reset({ purchase_id: "", import_details: [] })
+    }, [open, reset])
+
+    // ─── Submit ──────────────────────────────────────────
     const onSubmit = async (data: ImportFormValue) => {
-
         try {
-            if (!data.purchase_id) {
-                toast.error("ກະລຸນາເລືອກລາຍການຈັດຊື້")
-                return
-            }
+            // ✅ ລຶບ UI-only fields ກ່ອນ submit
+            const cleanDetails: CreateImportInput["import_details"] =
+                data.import_details.map(({ product_id, variant_id, quantity, cost_price }) => ({
+                    product_id,
+                    variant_id,
+                    quantity,
+                    cost_price,
+                }))
 
-            if (!data.import_details.length) {
-                toast.error("ບໍ່ມີລາຍການສິນຄ້າ")
-                return
-            }
-
-            // await create.mutateAsync({
-            //     purchase_id: data.purchase_id,
-            //     import_details: data.import_details
-            // })
-
-            const cleanDetails = data.import_details.map(({ product_name, ...rest }) => rest)
             await create.mutateAsync({
                 purchase_id: data.purchase_id,
-                import_details: cleanDetails
+                import_details: cleanDetails,
             })
 
-            toast.success("ສ້າງລາຍການນຳເຂົ້າສຳເລັດແລ້ວ")
+            toast.success("ສ້າງລາຍການນຳເຂົ້າສຳເລັດ")
             onOpenChange(false)
-            reset()
-
         } catch (error) {
             console.error(error)
-            toast.error("ເກີດຂໍ້ຜผิดພາດບາງຢ່າງ")
+            toast.error("ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກ")
         }
     }
 
-    /* 🔥 only pending purchase */
-    const pendingPurchases = purchases.filter(p => p.status === "PENDING")
+    // ✅ ສະເພາະ PENDING ທີ່ຍັງບໍ່ມີ import
+    const availablePurchases = purchases.filter(
+        p => p.status === "PENDING" && !p.import
+    )
+
+    const grandTotal = watch("import_details").reduce(
+        (sum, d) => sum + (d.quantity || 0) * (d.cost_price || 0), 0
+    )
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-3xl p-6 space-y-6">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
 
-                {/* HEADER */}
                 <DialogHeader>
-                    <DialogTitle className="text-lg font-semibold">
-                        ສ້າງລາຍການນຳເຂົ້າ
-                    </DialogTitle>
+                    <DialogTitle>ສ້າງລາຍການນຳເຂົ້າ</DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-                    {/* ================= SELECT PURCHASE ================= */}
-                    <div className="space-y-2">
+                    {/* SELECT PURCHASE */}
+                    <div>
+                        <label className="text-sm font-medium mb-1 block">
+                            ໃບສັ່ງຊື້ (PENDING)
+                        </label>
                         <SearchSelect
                             value={watch("purchase_id")}
-                            placeholder="ຄົ້ນຫາລາຍການຈັດຊື້..."
-                            options={pendingPurchases.map((purchase) => ({
-                                value: purchase.purchase_id,
-                                label: `${purchase.purchase_code} - ${purchase.supplier?.supplier_name}`,
+                            placeholder="ຄົ້ນຫາໃບສັ່ງຊື້..."
+                            options={availablePurchases.map(p => ({
+                                value: p.purchase_id,
+                                label: `${p.purchase_code} — ${p.supplier?.supplier_name ?? ""}`,
                             }))}
-                            onChange={(value) =>
-                                setValue("purchase_id", value, {
-                                    shouldDirty: true,
-                                    shouldValidate: true,
-                                })
-                            }
+                            onChange={val => setValue("purchase_id", val, { shouldValidate: true })}
                         />
-                       
+                        <p className="text-xs text-red-500 mt-1">{errors.purchase_id?.message}</p>
                     </div>
 
-                    {/* ================= ITEMS ================= */}
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-semibold text-gray-700">
-                                ລາຍການສິນຄ້າ
-                            </h3>
-                        </div>
-
+                    {/* ITEMS */}
+                    {fields.length > 0 && (
                         <div className="space-y-3">
-                            {fields.map((f, i) => (
-                                <div
-                                    key={f.id}
-                                    className="grid grid-cols-12 gap-2 items-center p-3 border rounded-lg bg-gray-50"
-                                >
-                                    {/* PRODUCT NAME */}
-                                    <div className="col-span-5">
-                                        <Input
-                                            value={f.product_name || ""}
-                                            disabled
-                                            className="bg-white"
-                                        />
-                                    </div>
+                            <label className="text-sm font-medium block">ລາຍການສິນຄ້າ</label>
 
-                                    {/* QTY */}
-                                    <div className="col-span-3">
-                                        <Input
-                                            type="number"
-                                            placeholder="ຈຳນວນ"
-                                            {...register(`import_details.${i}.quantity`, {
-                                                valueAsNumber: true,
-                                            })}
-                                        />
-                                    </div>
+                            {/* Header row */}
+                            <div className="grid grid-cols-12 gap-2 px-3 text-xs text-muted-foreground">
+                                <div className="col-span-4">ສິນຄ້າ</div>
+                                <div className="col-span-3">Variant</div>
+                                <div className="col-span-2 text-right">ຈຳນວນ</div>
+                                <div className="col-span-3 text-right">ລາຄາ / ລວມ</div>
+                            </div>
 
-                                    {/* COST */}
-                                    <div className="col-span-4">
-                                        <Input
-                                            value={f.cost_price}
-                                            disabled
-                                            className="bg-white text-gray-600"
-                                        />
-                                    </div>
+                            {fields.map((f, i) => {
+                                const qty = watch(`import_details.${i}.quantity`) || 0
+                                const price = watch(`import_details.${i}.cost_price`) || 0
 
-                                    {/* hidden id */}
-                                    <input
-                                        type="hidden"
-                                        {...register(`import_details.${i}.product_id`)}
-                                    />
-                                    {/* hiden variant id */}
-                                    <input
-                                        type="hidden"
-                                        {...register(`import_details.${i}.variant_id`)}
-                                    />
-                                </div>
-                            ))}
+                                return (
+                                    <div
+                                        key={f.id}
+                                        className="grid grid-cols-12 gap-2 items-center p-3 border rounded-lg bg-muted/30"
+                                    >
+                                        {/* Product name */}
+                                        <div className="col-span-4">
+                                            <Input
+                                                value={f.product_name ?? "—"}
+                                                disabled
+                                                className="bg-background text-sm"
+                                            />
+                                        </div>
+
+                                        {/* Variant info ✅ */}
+                                        <div className="col-span-3">
+                                            <Input
+                                                value={f.variant_info ?? "—"}
+                                                disabled
+                                                className="bg-background text-sm"
+                                            />
+                                        </div>
+
+                                        {/* Quantity */}
+                                        <div className="col-span-2">
+                                            <Controller
+                                                name={`import_details.${i}.quantity`}
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <NumericFormat
+                                                        customInput={Input}
+                                                        value={field.value === 0 ? "" : field.value}
+                                                        placeholder="ຈຳນວນ"
+                                                        thousandSeparator
+                                                        allowNegative={false}
+                                                        decimalScale={0}
+                                                        className="text-right"
+                                                        onValueChange={v =>
+                                                            field.onChange(v.value === "" ? 0 : Number(v.value))
+                                                        }
+                                                    />
+                                                )}
+                                            />
+                                            <p className="text-xs text-red-500 mt-0.5">
+                                                {errors.import_details?.[i]?.quantity?.message}
+                                            </p>
+                                        </div>
+
+                                        {/* Price + subtotal */}
+                                        <div className="col-span-3 space-y-1">
+                                            <div className="px-3 py-2 border rounded-md bg-background text-xs text-right text-muted-foreground">
+                                                {formatCurrency(price)} / ໜ່ວຍ
+                                            </div>
+                                            <div className="px-3 py-1 text-xs text-right font-medium">
+                                                = {formatCurrency(qty * price)}
+                                            </div>
+                                        </div>
+
+                                        {/* Hidden fields */}
+                                        <input type="hidden" {...({ name: `import_details.${i}.product_id` } as object)} />
+                                        <input type="hidden" {...({ name: `import_details.${i}.variant_id` } as object)} />
+                                    </div>
+                                )
+                            })}
+
+                            {/* Grand total */}
+                            <div className="flex justify-between items-center border-t pt-3 px-1">
+                                <span className="text-sm font-medium">ຍອດລວມທັງໝົດ</span>
+                                <span className="text-lg font-semibold text-green-600">
+                                    {formatCurrency(grandTotal)} ກີບ
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* ================= ACTION ================= */}
-                    <div className="pt-4 border-t flex justify-end">
+                    {purchaseId && fields.length === 0 && (
+                        <p className="text-center text-sm text-muted-foreground py-4 border border-dashed rounded-lg">
+                            ໃບສັ່ງຊື້ນີ້ບໍ່ມີລາຍການສິນຄ້າ
+                        </p>
+                    )}
+
+                    {/* SUBMIT */}
+                    <div className="border-t pt-4 flex justify-end">
                         <Button
                             type="submit"
-                            className="w-full sm:w-auto px-6"
-                            disabled={create.isPending}
+                            className="min-w-[160px]"
+                            disabled={create.isPending || fields.length === 0}
                         >
-                            ບັນທຶກການນຳເຂົ້າ
+                            {create.isPending ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກການນຳເຂົ້າ"}
                         </Button>
                     </div>
 

@@ -34,6 +34,12 @@ export const importApi = {
         const res = await axiosInstance.post("/import", data)
         return res.data.data.data
     },
+    cancel: async (id: string): Promise<void> => {
+        await axiosInstance.put(`/import/cancel/${id}`)
+    },
+    confirm: async (id: string): Promise<void> => {
+        await axiosInstance.put(`/import/confirm/${id}`)
+    },
 
     delete: async (id: string): Promise<void> => {
         await axiosInstance.delete(`/import/${id}`)

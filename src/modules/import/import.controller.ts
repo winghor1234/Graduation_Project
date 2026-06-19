@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma"
 import { getPaginationParams, getPaginationMeta } from "@/utils/pagination"
 import { getSearchParam } from "@/utils/search"
 import { getSortingParams } from "@/utils/sorting"
-import { BadRequestError, errorResponse, ForbiddenError, NotFoundError, successResponse, UnauthorizedError } from "@/utils/response"
+import {  successResponse } from "@/utils/response"
 import { Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
 import { CreateImportInput } from "./import.type"
 import { getUserFromToken } from "@/utils/cookie"
+import { handleError } from "@/utils/handleError"
 export const importController = {
 
     async getImports(req: NextRequest) {
@@ -49,11 +50,7 @@ export const importController = {
             const meta = getPaginationMeta(total, page, limit)
             return successResponse({ data: imports, meta }, "Get imports successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
 
     },
@@ -63,11 +60,7 @@ export const importController = {
             const record = await importService.getImport(id)
             return successResponse(record, "Get import successfully", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            return handleError(error)
         }
     },
 
@@ -79,26 +72,37 @@ export const importController = {
             const record = await importService.createImport(body, employeeId)
             return successResponse(record, "Create import successfully", 201)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+             return handleError(error)
+        }
+    },
+
+
+
+    async confirmImport(id: string) {
+        try {
+            const result = await importService.confirmImport(id)
+            return successResponse(result, "Import confirmed", 200)
+        } catch (error) {
+            return handleError(error)
+        }
+    },
+
+    async cancelImport(id: string) {
+        try {
+            const result = await importService.cancelImport(id)
+            return successResponse(result, "Import cancelled", 200)
+        } catch (error) {
+            return handleError(error)
         }
     },
 
     async deleteImport(id: string) {
         try {
             await importService.deleteImport(id)
-            return successResponse(null, "Delete import successfully", 200)
+            return successResponse(null, "Import deleted", 200)
         } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-
+            return handleError(error)
         }
-
     }
 
 }

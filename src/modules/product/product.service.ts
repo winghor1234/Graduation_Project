@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 import { uploadMultipleImages, convertFileToBase64, deleteImages } from "@/utils/cloudinary";
 import { CreateProductInput, ProductImageInput, UpdateProductInput } from "./product.types";
-import { BadRequestError, NotFoundError } from "@/utils/response";
+import { NotFoundError } from "@/utils/response";
 import { generateProductCode } from "@/utils/generateCode";
 
 export const productService = {
@@ -57,41 +57,6 @@ export const productService = {
     return product
 
   },
-
-  /* 🔥 CREATE */
-  // async createProduct(data: CreateProductInput) {
-  //   let images: ProductImageInput[] = [];
-  //   if (data.files?.length) {
-  //     const base64Files = await Promise.all(
-  //       data.files.map(convertFileToBase64)
-  //     );
-  //     const uploaded = await uploadMultipleImages(base64Files, data.folder);
-  //     images = uploaded.map(img => ({
-  //       image_url: img.url,
-  //       public_id: img.publicId
-  //     }));
-  //   }
-
-  //   const code = generateProductCode()
-  //   const product = await prisma.product.create({
-  //     data: {
-  //       product_name: data.product_name,
-  //       product_code: code,
-  //       description: data.description,
-  //       purchase_price: data.purchase_price,
-
-  //       category_id: data.category_id,
-  //       images: {
-  //         create: images
-  //       }
-  //     },
-  //     include: { images: true }
-  //   });
-  //   if (!product) {
-  //     throw new BadRequestError("Product not created")
-  //   }
-  //   return product
-  // },
 
 
   async createProduct(data: CreateProductInput) {

@@ -159,29 +159,12 @@ import { getSearchParam } from "@/utils/search"
 import { getSortingParams } from "@/utils/sorting"
 import { Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
-import {
-    BadRequestError,
-    errorResponse,
-    ForbiddenError,
-    NotFoundError,
-    successResponse,
-    UnauthorizedError,
-} from "@/utils/response"
+import { successResponse} from "@/utils/response"
 import { getUserFromToken } from "@/utils/cookie"
 import { CreatePurchaseOrderInput, UpdatePurchaseOrderInput } from "./purchase.type"
+import { handleError } from "@/utils/handleError"
 
-const handleError = (error: unknown) => {
-    if (
-        error instanceof BadRequestError ||
-        error instanceof NotFoundError ||
-        error instanceof ForbiddenError ||
-        error instanceof UnauthorizedError
-    ) {
-        return errorResponse(error.message, error.statusCode)
-    }
-    console.error(error)
-    return errorResponse("Internal Server Error", 500)
-}
+
 
 export const purchaseController = {
 

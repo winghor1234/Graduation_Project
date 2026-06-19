@@ -523,7 +523,7 @@ export const purchaseService = {
                     purchase_date: new Date(),
                     total_amount: estimated_total,
                     paid_amount: 0,
-                    payment_status: PurchasePaymentStatus.UNPAID, // ✅ enum ຖືກ
+                    payment_status: PurchasePaymentStatus.UNPAID,
                     status: PurchaseOrderStatus.PENDING,
 
                     purchase_details: {

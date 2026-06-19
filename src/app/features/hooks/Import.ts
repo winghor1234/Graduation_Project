@@ -26,6 +26,28 @@ export const useCreateImport = () => {
     })
 }
 
+export const useCancelImport = () => {
+    const qc = useQueryClient()
+
+    return useMutation({
+        mutationFn: (id: string) => importApi.cancel(id),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["imports"] })
+        }
+    })
+}
+
+export const useConfirmImport = () => {
+    const qc = useQueryClient()
+
+    return useMutation({
+        mutationFn: (id: string) => importApi.confirm(id),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["imports"] })
+        }
+    })
+}
+
 
 export const useDeleteImport = () => {
     const qc = useQueryClient()

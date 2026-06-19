@@ -3,13 +3,13 @@
 import { useState } from "react"
 import { useDataTable } from "@/hooks/useDataTable"
 import { toast } from "sonner"
-import { useGetImports, useCreateImport, useDeleteImport } from "@/app/features/hooks/Import"
+import { useGetImports, useCreateImport, useDeleteImport, useConfirmImport, useCancelImport } from "@/app/features/hooks/Import"
 import { Import } from "@/modules/import/import.type"
 import { ImportToolbar } from "@/components/adminComponent/import/ImportToolbar"
 import { ImportTable } from "@/components/adminComponent/import/ImportTable"
 import { ImportFormDialog } from "@/components/adminComponent/import/ImportFormDialog"
-import { ImportDetail } from "@/components/adminComponent/import/ImportDetailDialog"
 import { useGetAllPurchaseOrders } from "@/app/features/hooks/Purchase"
+import { ImportDetailDialog } from "@/components/adminComponent/import/ImportDetailDialog"
 
 
 
@@ -22,10 +22,12 @@ export default function ImportPage() {
 
     const { data, isLoading } = useGetImports(table.params)
     const { data: purchases } = useGetAllPurchaseOrders()
-    console.log("purchases : ",purchases)
+    // console.log("purchases : ",purchases)
 
     const createImport = useCreateImport()
     const deleteImport = useDeleteImport()
+    const confirmImport = useConfirmImport()
+    const cancelImport = useCancelImport()
 
     const [openForm, setOpenForm] = useState(false)
     const [openDetail, setOpenDetail] = useState(false)
@@ -38,6 +40,18 @@ export default function ImportPage() {
         })
     }
 
+    // const handleConfirm = (id: string) => {
+    //     if (!confirm("Confirm?")) return
+    //     confirmImport.mutate(id, {
+    //         onSuccess: () => toast.success("Confirmed")
+    //     })
+    // }
+    // const handleCancel = (id: string) => {
+    //     if (!confirm("Cancel?")) return
+    //     cancelImport.mutate(id, {
+    //         onSuccess: () => toast.success("Canceled")
+    //     })
+    // }
     return (
         <div className="space-y-4">
 
@@ -54,6 +68,8 @@ export default function ImportPage() {
                     setOpenDetail(true)
                 }}
                 onDelete={handleDelete}
+                confirm={confirmImport}
+                cancel={cancelImport}
             />
 
             <ImportFormDialog
@@ -63,10 +79,11 @@ export default function ImportPage() {
                 purchases={purchases ?? []}
             />
 
-            <ImportDetail
+            <ImportDetailDialog
                 open={openDetail}
                 onOpenChange={setOpenDetail}
                 data={selected}
+
             />
 
         </div>

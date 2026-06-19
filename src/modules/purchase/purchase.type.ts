@@ -88,7 +88,7 @@ import { PurchasePaymentStatus } from "@prisma/client"
 
 export type PurchaseDetailInput = {
   product_id: string
-  variant_id: string  // ✅ ຕ້ອງມີ — Schema ຮຽກຮ້ອງ
+  variant_id: string  
   quantity: number
   price: number
 }
