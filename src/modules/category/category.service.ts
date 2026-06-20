@@ -6,11 +6,7 @@ type GetCategoriesOptions = Prisma.CategoryFindManyArgs
 export const categoryService = {
 
 
-  // async getCategories(options?: Prisma.CategoryFindManyArgs) {
-  //   const categories = await prisma.category.findMany(options);
-  //   return categories;
 
-  // },
 
 
   async getCategories(options: GetCategoriesOptions = {}) {
@@ -31,6 +27,29 @@ export const categoryService = {
         },
     })
   },
+
+  // getAllCategories() {
+
+  //   return prisma.category.findMany({
+  //     include: {
+  //       products: true
+  //     }
+  //   })
+  // },
+
+  getAllCategories() {
+    // ❗ ປ່ຽນ products: true → _count
+    // ກ່ອນນີ້ດຶງ Product object ທັງໝົດຂອງທຸກ category ມານຳ (ໜັກ, ບໍ່ຈຳເປັນ
+    // ສຳລັບແຕ່ Sidebar filter — ຕ້ອງການແຕ່ຈຳນວນສິນຄ້າແຕ່ລະໝວດ)
+    return prisma.category.findMany({
+        include: {
+            _count: {
+                select: { products: true },
+            },
+        },
+        orderBy: { category_name: "asc" },
+    })
+},
   async getCategory(id: string) {
     const category = await prisma.category.findUnique({
       where: { category_id: id }

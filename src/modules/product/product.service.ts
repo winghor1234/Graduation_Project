@@ -5,6 +5,16 @@ import { CreateProductInput, ProductImageInput, UpdateProductInput } from "./pro
 import { NotFoundError } from "@/utils/response";
 import { generateProductCode } from "@/utils/generateCode";
 
+export type ProductListFilters = {
+    category_id?: string
+    search?: string
+    min_price?: number
+    max_price?: number
+    sort_by?: "featured" | "price-low" | "price-high" | "name"
+    page?: number
+    page_size?: number
+}
+
 export const productService = {
 
 
@@ -33,15 +43,108 @@ export const productService = {
       },
     })
   },
-  async getAllProducts() {
+  // async getAllProducts() {
+  //   const products = await prisma.product.findMany({
+  //     include: {
+  //       category: true,
+  //       images: true,
+  //       variants: true
+  //     }
+  //   })
+  //   return products
+  // },
+
+  async getAllProducts(filters: ProductListFilters = {}) {
+    const {
+      category_id,
+      search,
+      min_price,
+      max_price,
+      sort_by = "featured",
+      page = 1,
+      page_size = 20,
+    } = filters
+
+    // 🔍 ກອງດ້ວຍ category / search ກ່ອນ (ເຮັດໄດ້ໃນ Prisma query ໂດຍກົງ)
     const products = await prisma.product.findMany({
+      where: {
+        ...(category_id && category_id !== "all" && { category_id }),
+        ...(search && {
+          product_name: {
+            contains: search,
+            mode: "insensitive",
+          },
+        }),
+      },
       include: {
         category: true,
         images: true,
-        variants: true
+        variants: true,
+      },
+      orderBy:
+        sort_by === "name"
+          ? { product_name: "asc" }
+          : { createdAt: "desc" },
+    })
+
+    // 💰 ຄຳນວນ min_price / max_price / total_stock ຈາກ variants
+    // (ລາຄາ ແລະ stock ບໍ່ໄດ້ຢູ່ໃນ Product ໂດຍກົງ, ມັນຢູ່ໃນ ProductVariant)
+    let result = products.map((p) => {
+      const prices = p.variants.map((v) => v.sale_price)
+      const total_stock = p.variants.reduce((sum, v) => sum + v.stock_qty, 0)
+
+      return {
+        ...p,
+        min_price: prices.length ? Math.min(...prices) : 0,
+        max_price: prices.length ? Math.max(...prices) : 0,
+        total_stock,
       }
     })
-    return products
+
+    // 🎯 ກອງດ້ວຍຊ່ວງລາຄາ (ຕ້ອງເຮັດຫຼັງຄຳນວນ min_price ແລ້ວ ເພາະບໍ່ແມ່ນ column ໃນ DB)
+    if (min_price !== undefined) {
+      result = result.filter((p) => p.min_price >= min_price)
+    }
+    if (max_price !== undefined) {
+      result = result.filter((p) => p.min_price <= max_price)
+    }
+
+    // ↕️ sort ຕາມລາຄາ (ສ່ວນ name/featured ຈັດໄປແລ້ວໃນ query ຂັ້ນເທິງ)
+    if (sort_by === "price-low") {
+      result.sort((a, b) => a.min_price - b.min_price)
+    } else if (sort_by === "price-high") {
+      result.sort((a, b) => b.min_price - a.min_price)
+    }
+
+    // 📄 pagination
+    const total = result.length
+    const start = (page - 1) * page_size
+    const items = result.slice(start, start + page_size)
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        page_size,
+        total_pages: Math.ceil(total / page_size),
+      },
+    }
+  },
+
+  /**
+   * ໃຊ້ຕັ້ງຄ່າ default ຂອງ price slider ໃນ frontend
+   */
+  async getPriceRange() {
+    const result = await prisma.productVariant.aggregate({
+      _min: { sale_price: true },
+      _max: { sale_price: true },
+    })
+
+    return {
+      min: result._min.sale_price ?? 0,
+      max: result._max.sale_price ?? 0,
+    }
   },
 
   async getProduct(id: string) {

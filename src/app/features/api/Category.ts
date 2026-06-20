@@ -3,11 +3,7 @@ import { Category, CreateCategoryInput, UpdateCategoryInput } from "@/modules/ca
 import { UseGetParams } from "../types"
 
 export const categoryApi = {
-    //   getAll: async (): Promise<Category[]> => {
-    //     const res = await axiosInstance.get("/category")
-    //     return res.data.data.data
-    //   },
-
+    
     getAll: async (params?: UseGetParams): Promise<{
         data: Category[]
         meta: {
@@ -22,6 +18,10 @@ export const categoryApi = {
         })
         return res.data.data
     },
+      getAlls: async (): Promise<Category[]> => {
+        const res = await axiosInstance.get("/category")
+        return res.data.data
+      },
 
     getOne: async (id: string): Promise<Category> => {
         const res = await axiosInstance.get(`/category/${id}`)

@@ -56,6 +56,20 @@ export const categoryController = {
         }
     },
 
+
+    async getAllCategories(req: NextRequest) {
+        try {
+            const categories = await categoryService.getAllCategories()
+            return successResponse(categories, "Get all categories successfully", 200)
+        } catch (error) {
+            console.log(error)
+            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
+                return errorResponse(error.message, error.statusCode);
+            }
+            return errorResponse("Internal Server Error", 500)
+        }
+    },
+
     async getCategory(id: string) {
         try {
             const category = await categoryService.getCategory(id)

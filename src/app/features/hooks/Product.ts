@@ -2,6 +2,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { UseGetParams } from "../types"
 import { productApi } from "../api/Product"
+import { ProductListFilters } from "@/modules/product/product.service"
 
 export const useGetProducts = (params?: UseGetParams) => {
     return useQuery({
@@ -11,13 +12,13 @@ export const useGetProducts = (params?: UseGetParams) => {
     })
 }
 
-export const useGetAllProducts = () => {
-    return useQuery({
-        queryKey: ["product"],
-        queryFn: productApi.getAlls,
-        placeholderData: keepPreviousData,
-    })
-}
+// export const useGetAllProducts = () => {
+//     return useQuery({
+//         queryKey: ["product"],
+//         queryFn: productApi.getAlls,
+//         placeholderData: keepPreviousData,
+//     })
+// }
 
 // export const useGetProduct = (id: string) => {
 //     return useQuery({
@@ -26,6 +27,23 @@ export const useGetAllProducts = () => {
 //         placeholderData: keepPreviousData,
 //     })
 // }
+
+export const useGetAllProducts = (filters: ProductListFilters = {}) => {
+    return useQuery({
+        queryKey: ["product", filters], // ✅ filters ຕ້ອງຢູ່ໃນ queryKey ບໍ່ດັ່ງນັ້ນຈະບໍ່ refetch ເມື່ອປ່ຽນ filter
+        queryFn: () => productApi.getAlls(filters),
+        placeholderData: keepPreviousData,
+    })
+}
+ 
+export const useGetPriceRange = () => {
+    return useQuery({
+        queryKey: ["product", "price-range"],
+        queryFn: productApi.getPriceRange,
+        staleTime: 5 * 60 * 1000, // 5 ນາທີ — ບໍ່ປ່ຽນເລື້ອຍ, ບໍ່ຕ້ອງ fetch ໃໝ່ທຸກຄັ້ງ
+    })
+}
+ 
 
 export function useGetProduct(id: string) {
     return useQuery({

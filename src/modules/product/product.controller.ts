@@ -58,10 +58,50 @@ export const productController = {
         }
 
     },
+    // async getAllProducts(req: NextRequest) {
+    //     try {
+    //         const products = await productService.getAllProducts()
+    //         return successResponse(products, "Get all products successfully", 200)
+    //     } catch (error) {
+    //         return handleError(error)
+    //     }
+    // },
+
     async getAllProducts(req: NextRequest) {
         try {
-            const products = await productService.getAllProducts()
+            const { searchParams } = req.nextUrl
+
+            const filters = {
+                category_id: searchParams.get("category_id") ?? undefined,
+                search: searchParams.get("search") ?? undefined,
+                min_price: searchParams.get("min_price")
+                    ? Number(searchParams.get("min_price"))
+                    : undefined,
+                max_price: searchParams.get("max_price")
+                    ? Number(searchParams.get("max_price"))
+                    : undefined,
+                sort_by: (searchParams.get("sort_by") as any) ?? undefined,
+                page: searchParams.get("page")
+                    ? Number(searchParams.get("page"))
+                    : undefined,
+                page_size: searchParams.get("page_size")
+                    ? Number(searchParams.get("page_size"))
+                    : undefined,
+            }
+
+            const products = await productService.getAllProducts(filters)
             return successResponse(products, "Get all products successfully", 200)
+        } catch (error) {
+            return handleError(error)
+        }
+    },
+
+    // 🆕 ໃໝ່: ໃຊ້ຕັ້ງຄ່າ default ຂອງ price slider
+    // ຕ້ອງເພີ່ມ route ໃໝ່: app/api/product/price-range/route.ts → GET → controller ນີ້
+    async getPriceRange(req: NextRequest) {
+        try {
+            const range = await productService.getPriceRange()
+            return successResponse(range, "Get price range successfully", 200)
         } catch (error) {
             return handleError(error)
         }
@@ -73,7 +113,7 @@ export const productController = {
             const product = await productService.getProduct(id)
             return successResponse(product, "Get product successfully", 200)
         } catch (error) {
-           return handleError(error)
+            return handleError(error)
 
         }
     },

@@ -1,6 +1,17 @@
 import { Product } from "@/modules/product/product.types"
 import { UseGetParams } from "../types"
 import axiosInstance from "@/lib/axiosInstance"
+import { ProductListFilters } from "@/modules/product/product.service"
+
+export type ProductListResponse = {
+    items: Product[] // ✏️ Product type ຄວນເພີ່ມ min_price / max_price / total_stock
+    meta: {
+        total: number
+        page: number
+        page_size: number
+        total_pages: number
+    }
+}
 
 export const productApi = {
 
@@ -19,10 +30,22 @@ export const productApi = {
         return res.data.data
     },
 
-    getAlls: async (): Promise<Product[]> => {
-        const res = await axiosInstance.get("/product")
+    // getAlls: async (): Promise<Product[]> => {
+    //     const res = await axiosInstance.get("/product")
+    //     return res?.data?.data
+    // },
+
+
+    getAlls: async (filters?: ProductListFilters): Promise<ProductListResponse> => {
+        const res = await axiosInstance.get("/product", { params: filters })
         return res?.data?.data
     },
+
+    getPriceRange: async (): Promise<{ min: number; max: number }> => {
+        const res = await axiosInstance.get("/product/price-range")
+        return res?.data?.data
+    },
+
 
 
     getOne: async (id: string): Promise<Product> => {

@@ -12,6 +12,14 @@ export const useGetCategories = (params?: UseGetParams) => {
     })
 }
 
+export const useGetAllCategories = () => {
+    return useQuery({
+        queryKey: ["categories"],
+        queryFn: categoryApi.getAlls,
+        placeholderData: keepPreviousData,
+    })
+}
+
 export const useGetCategory = (id: string) => {
     return useQuery({
         queryKey: ["category", id],
