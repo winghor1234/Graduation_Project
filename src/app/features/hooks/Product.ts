@@ -19,11 +19,19 @@ export const useGetAllProducts = () => {
     })
 }
 
-export const useGetProduct = (id: string) => {
+// export const useGetProduct = (id: string) => {
+//     return useQuery({
+//         queryKey: ["product", id],
+//         queryFn: () => productApi.getOne(id),
+//         placeholderData: keepPreviousData,
+//     })
+// }
+
+export function useGetProduct(id: string) {
     return useQuery({
         queryKey: ["product", id],
-        queryFn: () => productApi.getOne(id),
-        placeholderData: keepPreviousData,
+        queryFn:  () => productApi.getOne(id),
+        enabled:  !!id,   // ✅ ບໍ່ fetch ຖ้າ id ຍັງບໍ່ມາ
     })
 }
 

@@ -157,6 +157,7 @@ model ProductVariant {
   purchase_details PurchaseDetail[]
   import_details   ImportDetail[]
   sale_details     SaleDetail[]
+  order_details    OrderDetail[]
 
   @@index([product_id])
 }
@@ -397,9 +398,12 @@ model OrderDetail {
 
   order_id  String
   product_id String
+  variant_id String
 
   order   Order   @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
   product Product @relation(fields: [product_id], references: [product_id])
+  variant    ProductVariant @relation(fields: [variant_id], references: [variant_id])
+
 }
 
 model Sale {
