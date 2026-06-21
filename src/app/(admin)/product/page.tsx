@@ -7,15 +7,16 @@ import { ProductTable } from "@/components/adminComponent/products/ProductTable"
 import { useDataTable } from "@/hooks/useDataTable"
 import { useState } from "react"
 import { toast } from "sonner"
-import { useGetCategories } from "@/app/features/hooks/Category"
 import { Product } from "@/components/adminComponent/products/ProductType"
+import { useGetAllCategories } from "@/app/features/hooks/Category"
 
 export default function ProductsPage() {
     const table = useDataTable()
 
     const { data: products, isLoading } = useGetProducts(table.params)
-    const { data: categories } = useGetCategories()
-    const category = categories?.data 
+    const { data: categories } = useGetAllCategories()
+    const category = categories
+    console.log("category : ", category);
 
     const createProduct = useCreateProduct()
     const updateProduct = useUpdateProduct()

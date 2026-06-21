@@ -165,6 +165,7 @@ export const productController = {
                 files: fd.getAll("images") as File[],
                 variants,
             }
+            console.log("body:", body)
 
             const product = await productService.createProduct(body)
             return successResponse(product, "Product created successfully", 201)

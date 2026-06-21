@@ -49,8 +49,7 @@ export type CreateProductInput = {
   variants?: ProductVariantInput[]
   files?: File[]
   folder?: string
-  // ❌ product_code ລຶບ — auto-gen ໂດຍ server
-  // ❌ sale_price, stock_qty ລຶບ — ຢູ່ໃນ variant
+
 }
 
 export type UpdateProductInput = Partial<CreateProductInput>

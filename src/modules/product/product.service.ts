@@ -88,7 +88,6 @@ export const productService = {
     })
 
     // 💰 ຄຳນວນ min_price / max_price / total_stock ຈາກ variants
-    // (ລາຄາ ແລະ stock ບໍ່ໄດ້ຢູ່ໃນ Product ໂດຍກົງ, ມັນຢູ່ໃນ ProductVariant)
     let result = products.map((p) => {
       const prices = p.variants.map((v) => v.sale_price)
       const total_stock = p.variants.reduce((sum, v) => sum + v.stock_qty, 0)

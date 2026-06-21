@@ -55,7 +55,6 @@ export type Product = {
   product_id:     string;
   product_code:   string;
   product_name:   string;
-  purchase_price: number | null;  // optional in schema
   description?:   string;
   category_id:    string;
   category:       Category;

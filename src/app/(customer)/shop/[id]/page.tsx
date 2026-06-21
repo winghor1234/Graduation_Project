@@ -1,148 +1,286 @@
-"use client";
+"use client"
 
-import React, { useState, use, useMemo } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Minus, Plus, ShoppingCart, ArrowLeft } from 'lucide-react';
-import { toast } from 'sonner';
+import { use, useMemo, useState } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { Minus, Plus, ShoppingCart, ArrowLeft, Check } from "lucide-react"
+import { toast } from "sonner"
 
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { useCustomer } from '@/components/customerComponent/CustomerContext';
-import { useGetProduct, useGetAllProducts } from '@/app/features/hooks/Product';
-import { Product } from '@/components/adminComponent/products/ProductType';
+import { Button } from "@/components/ui/button"
+import { Badge }  from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { useGetProduct, useGetAllProducts } from "@/app/features/hooks/Product"
+import { useCustomer } from "@/components/customerComponent/CustomerContext"
+import { formatCurrency } from "@/utils/FormatCurrency"
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+    const { id } = use(params)
+    const router = useRouter()
+    const { addToCart } = useCustomer()
 
-    // ປ່ຽນຊື່ຕົວແປຜົນລັບຂອງ Hook ເປັນ apiProductResponse ເພື່ອບໍ່ໃຫ້ສັບສົນກັບຕົວ Type Product
-    const { data: apiProductResponse, } = useGetProduct(id);
-    const { data: apiAllProductsResponse, isLoading: isAllLoading } = useGetAllProducts();
+    const { data: product, isLoading } = useGetProduct(id)
+    const { data: allProductsRes } = useGetAllProducts({})
 
-    const router = useRouter();
-    const { addToCart } = useCustomer();
-    const [quantity, setQuantity] = useState<number>(1);
-    const [selectedImage, setSelectedImage] = useState<number>(0);
+    const [selectedColor, setSelectedColor] = useState<string | null>(null)
+    const [selectedSize,  setSelectedSize]  = useState<string | null>(null)
+    const [quantity, setQuantity]           = useState(1)
+    const [selectedImage, setSelectedImage] = useState(0)
 
-    // ✅ ປັບຄວາມປອດໄພ: ແກະຂໍ້ມູນຜ່ານຮູບແບບທີ່ຮອງຮັບກໍລະນີຂໍ້ມູນຍັງມາບໍ່ເຖິງໜ້າບ້ານ
-    const product = (apiProductResponse || apiProductResponse) as Product | null;
-    const allProducts = (apiAllProductsResponse || apiAllProductsResponse || []) as Product[];
+    // ✅ hooks ທັງໝົດ ກ່ອນ early return
+    const variants = product?.variants ?? []
+    const images   = product?.images?.length ? product.images : [{ image_id: "0", image_url: "/placeholder.png" }]
 
-    // ✨ [ກົດລະບຽບຂອງ Hooks] ປະກາດໃຊ້ກຸ່ມ useMemo ດ້ານເທິງສຸດຮ່ວມກັນຢ່າງປອດໄພ ບໍ່ມີ if ຂັ້ນກາງ
-    const images = useMemo(() => {
-        if (!product) return ['/placeholder.png'];
-        const firstImg = product.images?.[0]?.image_url || '/placeholder.png';
-        return product.images?.length ? product.images.map(img => img.image_url) : [firstImg, firstImg, firstImg];
-    }, [product]);
+    const colors = useMemo(() => Array.from(new Set(variants.map(v => v.color))), [variants])
+
+    const sizesForColor = useMemo(
+        () => variants.filter(v => v.color === selectedColor),
+        [variants, selectedColor]
+    )
+
+    const selectedVariant = useMemo(
+        () => variants.find(v => v.color === selectedColor && v.size === selectedSize),
+        [variants, selectedColor, selectedSize]
+    )
 
     const relatedProducts = useMemo(() => {
-        if (!product || !allProducts) return [];
-        return allProducts.filter(p => p.category_id === product.category_id && p.product_id !== product.product_id).slice(0, 4);
-    }, [allProducts, product]);
+        if (!product) return []
+        const all = allProductsRes?.items ?? []
+        return all
+            .filter(p => p.category_id === product.category_id && p.product_id !== product.product_id)
+            .slice(0, 4)
+    }, [allProductsRes, product])
 
-    // 🛑 [Early Return] ສະເຕັບດັກເຊັກສະຖານະແອັບພລິເຄຊັນ (ຍ້າຍລົງມາດ້ານລຸ່ມ Hooks ທັງໝົດ ຖືກຕ້ອງຕາມກົດລະບຽບ)
-    // if (isProductLoading || isAllLoading) return <LoadingDetailSkeleton />;
-    if (!product) return <ProductNotFoundState />;
+    if (isLoading) {
+        return (
+            <div className="flex h-screen items-center justify-center text-md font-medium text-muted-foreground animate-pulse">
+                ກຳລັງດຶງຂໍ້ມູນສິນຄ້າ... 📦
+            </div>
+        )
+    }
+
+    if (!product) {
+        return (
+            <div className="container mx-auto px-4 py-20 text-center">
+                <h1 className="text-2xl font-bold mb-4">ບໍ່ພົບສິນຄ້ານີ້</h1>
+                <Link href="/shop"><Button>ກັບໄປໜ້າຮ້ານ</Button></Link>
+            </div>
+        )
+    }
+
+    const prices    = variants.map(v => v.sale_price)
+    const minPrice  = prices.length ? Math.min(...prices) : 0
+    const maxPrice  = prices.length ? Math.max(...prices) : 0
+    const priceLabel = selectedVariant
+        ? formatCurrency(selectedVariant.sale_price)
+        : minPrice === maxPrice ? formatCurrency(minPrice) : `${formatCurrency(minPrice)} – ${formatCurrency(maxPrice)}`
+
+    const handleSelectColor = (color: string) => {
+        setSelectedColor(color)
+        setSelectedSize(null)
+        setQuantity(1)
+    }
 
     const handleAddToCart = () => {
-        addToCart(product.product_id, quantity);
-        toast.success(`ເພີ່ມ ${product.product_name} ລົງກະຕ່າຮຽບຮ້ອຍແລ້ວ! 🛒`);
-        router.push('/cart');
-    };
+        if (!selectedVariant) {
+            toast.error("ກະລຸນາເລືອກສີ ແລະ ຂະໜາດ")
+            return
+        }
+        addToCart({
+            product_id:   product.product_id,
+            variant_id:   selectedVariant.variant_id,
+            product_name: product.product_name,
+            image_url:    product.images?.[0]?.image_url,
+            color:        selectedVariant.color,
+            size:         selectedVariant.size,
+            sale_price:   selectedVariant.sale_price,
+            stock_qty:    selectedVariant.stock_qty,
+        }, quantity)
+        toast.success(`ເພີ່ມ ${product.product_name} ລົງກະຕ່າແລ້ວ`)
+        router.push("/cart")
+    }
 
     return (
         <div className="min-h-screen bg-white py-8">
             <div className="container mx-auto px-4">
-                <Link href="/products">
+
+                <Link href="/shop">
                     <Button variant="ghost" className="mb-6">
-                        <ArrowLeft className="size-4 mr-2" /> ກັບຄືນໄປໜ້າຮ້ານ
+                        <ArrowLeft className="size-4 mr-2" /> ກັບໄປໜ້າຮ້ານ
                     </Button>
                 </Link>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-                    {/* ຊີກຊ້າຍ: ແກເລີຣີຮູບພາບ */}
+
+                    {/* Gallery */}
                     <div>
-                        <div className="aspect-square relative bg-gray-50 rounded-xl overflow-hidden mb-4 border shadow-sm">
-                            <Image src={images[selectedImage]} alt={product.product_name} fill priority className="object-cover" />
+                        <div className="aspect-square bg-gray-50 rounded-xl overflow-hidden mb-4 relative border shadow-sm">
+                            <Image
+                                src={images[selectedImage]?.image_url ?? "/placeholder.png"}
+                                alt={product.product_name}
+                                fill
+                                sizes="(max-width: 1024px) 100vw, 50vw"
+                                className="object-cover"
+                                priority
+                            />
                         </div>
-                        <div className="grid grid-cols-3 gap-4">
-                            {images.map((img, idx) => (
-                                <button key={idx} onClick={() => setSelectedImage(idx)} className={`aspect-square relative bg-gray-50 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-black scale-95 shadow-sm' : 'border-gray-200 hover:border-gray-400'}`}>
-                                    <Image src={img} alt="" fill sizes="15vw" className="object-cover" />
-                                </button>
-                            ))}
-                        </div>
+                        {images.length > 1 && (
+                            <div className="grid grid-cols-4 gap-3">
+                                {images.map((img, idx) => (
+                                    <button
+                                        key={img.image_id}
+                                        onClick={() => setSelectedImage(idx)}
+                                        className={`aspect-square bg-gray-50 rounded-lg overflow-hidden border-2 relative ${
+                                            selectedImage === idx ? "border-black" : "border-transparent hover:border-gray-300"
+                                        }`}
+                                    >
+                                        <Image src={img.image_url} alt="" fill sizes="100px" className="object-cover" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    {/* ຊີກຂວາ: ຂໍ້ມູນລາຍລະອຽດ ແລະ ປຸ່ມສັ່ງຊື້ */}
+                    {/* Info */}
                     <div>
-                        <Badge className="mb-4">{product.category?.category_name || "ເຄື່ອງກີລາ"}</Badge>
-                        <h1 className="text-4xl font-bold mb-4 text-gray-900 tracking-tight">{product.product_name}</h1>
-                        <p className="text-3xl font-bold mb-6 text-gray-900">฿{product.sale_price.toLocaleString()}</p>
-                        <Badge variant={product.stock_qty > 20 ? 'secondary' : 'destructive'} className="mb-6">{product.stock_qty > 0 ? `${product.stock_qty} ຊິ້ນໃນສາງ` : 'ສິນຄ້າໝົດແລ້ວ'}</Badge>
-
-                        <div className="mb-8">
-                            <h3 className="text-lg font-semibold mb-2 text-gray-900">ລາຍລະອຽດສິນຄ້າ</h3>
-                            <p className="text-gray-600 font-light leading-relaxed">{product.description || "ບໍ່ມີຂໍ້ມູນລາຍລະອຽດຂອງສິນຄ້າຊິ້ນນີ້"}</p>
-                        </div>
+                        <Badge className="mb-4">{product.category?.category_name}</Badge>
+                        <h1 className="text-4xl font-bold mb-4">{product.product_name}</h1>
+                        <p className="text-3xl font-bold mb-6">{priceLabel}</p>
 
                         <div className="mb-6">
-                            <label className="mb-2 block font-semibold text-gray-900">ຈຳນວນ</label>
+                            {selectedVariant ? (
+                                <Badge variant={selectedVariant.stock_qty > 0 ? "secondary" : "destructive"}>
+                                    {selectedVariant.stock_qty > 0 ? `ເຫຼືອ ${selectedVariant.stock_qty} ໂຕ` : "ໝົດສາງ"}
+                                </Badge>
+                            ) : (
+                                <Badge variant="outline">ກະລຸນາເລືອກສີ ແລະ ຂະໜາດ</Badge>
+                            )}
+                        </div>
+
+                        {product.description && (
+                            <div className="mb-8">
+                                <h3 className="text-lg font-semibold mb-2">ລາຍລະອຽດ</h3>
+                                <p className="text-gray-600">{product.description}</p>
+                            </div>
+                        )}
+
+                        {colors.length > 0 && (
+                            <div className="mb-6">
+                                <h3 className="text-sm font-semibold mb-3">
+                                    ສີ {selectedColor && <span className="text-muted-foreground font-normal">— {selectedColor}</span>}
+                                </h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {colors.map(color => {
+                                        const isSelected = selectedColor === color
+                                        return (
+                                            <button
+                                                key={color}
+                                                onClick={() => handleSelectColor(color)}
+                                                className={`px-4 py-2 rounded-lg border text-sm font-medium flex items-center gap-1.5 ${
+                                                    isSelected ? "border-black bg-black text-white" : "border-gray-300 hover:border-gray-500"
+                                                }`}
+                                            >
+                                                {isSelected && <Check className="w-3.5 h-3.5" />}
+                                                {color}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {selectedColor && (
+                            <div className="mb-6">
+                                <h3 className="text-sm font-semibold mb-3">
+                                    ຂະໜາດ {selectedSize && <span className="text-muted-foreground font-normal">— {selectedSize}</span>}
+                                </h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {sizesForColor.map(v => {
+                                        const isSelected = selectedSize === v.size
+                                        const outOfStock = v.stock_qty === 0
+                                        return (
+                                            <button
+                                                key={v.variant_id}
+                                                disabled={outOfStock}
+                                                onClick={() => { setSelectedSize(v.size); setQuantity(1) }}
+                                                className={`min-w-[52px] px-4 py-2 rounded-lg border text-sm font-medium ${
+                                                    isSelected ? "border-black bg-black text-white" :
+                                                    outOfStock  ? "border-dashed text-gray-300 cursor-not-allowed line-through" :
+                                                    "border-gray-300 hover:border-gray-500"
+                                                }`}
+                                            >
+                                                {v.size}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="mb-6">
+                            <h3 className="text-sm font-semibold mb-3">ຈຳນວນ</h3>
                             <div className="flex items-center gap-4">
-                                <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}><Minus className="size-4" /></Button>
-                                <span className="text-xl font-semibold w-12 text-center text-gray-900">{quantity}</span>
-                                <Button variant="outline" size="icon" onClick={() => setQuantity(Math.min(product.stock_qty, quantity + 1))} disabled={quantity >= product.stock_qty}><Plus className="size-4" /></Button>
+                                <Button variant="outline" size="icon"
+                                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                    disabled={!selectedVariant || quantity <= 1}>
+                                    <Minus className="size-4" />
+                                </Button>
+                                <span className="text-xl font-semibold w-12 text-center">{quantity}</span>
+                                <Button variant="outline" size="icon"
+                                    onClick={() => setQuantity(q => Math.min(selectedVariant?.stock_qty ?? 1, q + 1))}
+                                    disabled={!selectedVariant || quantity >= (selectedVariant?.stock_qty ?? 0)}>
+                                    <Plus className="size-4" />
+                                </Button>
                             </div>
                         </div>
 
-                        <Button size="lg" className="w-full text-lg py-6 bg-blue-600 hover:bg-blue-700 text-white" onClick={handleAddToCart} disabled={product.stock_qty === 0}>
-                            <ShoppingCart className="size-5 mr-2" /> ເພີ່ມໃສ່ກະຕ່າ
+                        <Button
+                            size="lg"
+                            className="w-full text-lg py-6 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                            onClick={handleAddToCart}
+                            disabled={!selectedVariant || selectedVariant.stock_qty === 0}
+                        >
+                            <ShoppingCart className="size-5" />
+                            {!selectedVariant ? "ກະລຸນາເລືອກສີ/ຂະໜາດ" : selectedVariant.stock_qty === 0 ? "ໝົດສາງ" : "ເພີ່ມລົງກະຕ່າ"}
                         </Button>
                     </div>
                 </div>
 
-                {/* ສິນຄ້າແນະນຳໝວດໝູ່ດຽວກັນ */}
                 {relatedProducts.length > 0 && (
                     <div className="border-t pt-16">
-                        <h2 className="text-3xl font-bold mb-8 text-gray-900 tracking-tight">ສິນຄ້າທີ່ທ່ານອາດຈະສົນໃຈ</h2>
+                        <h2 className="text-3xl font-bold mb-8">ສິນຄ້າທີ່ທ່ານອາດສົນໃຈ</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {relatedProducts.map((item) => (
-                                <Card key={item.product_id} className="group cursor-pointer border shadow-sm overflow-hidden bg-white">
-                                    <Link href={`/products/${item.product_id}`}>
-                                        <div className="aspect-square relative overflow-hidden bg-gray-50">
-                                            <Image src={item.images?.[0]?.image_url || '/placeholder.png'} alt={item.product_name} fill sizes="25vw" className="object-cover group-hover:scale-102 transition-transform duration-300" />
-                                        </div>
-                                        <CardContent className="p-4">
-                                            <h3 className="font-semibold mb-2 group-hover:text-blue-600 text-gray-900 line-clamp-1">{item.product_name}</h3>
-                                            <span className="text-lg font-bold text-gray-900">฿{item.sale_price.toLocaleString()}</span>
-                                        </CardContent>
-                                    </Link>
-                                </Card>
-                            ))}
+                            {relatedProducts.map(rp => {
+                                const rpPrices = rp.variants?.map(v => v.sale_price) ?? []
+                                const rpMin = rpPrices.length ? Math.min(...rpPrices) : 0
+                                const rpMax = rpPrices.length ? Math.max(...rpPrices) : 0
+                                const rpLabel = rpPrices.length === 0 ? "—" : rpMin === rpMax ? formatCurrency(rpMin) : `${formatCurrency(rpMin)}+`
+
+                                return (
+                                    <Card key={rp.product_id} className="group cursor-pointer border shadow-sm overflow-hidden bg-white">
+                                        <Link href={`/shop/${rp.product_id}`}>
+                                            <div className="aspect-square relative overflow-hidden bg-gray-50">
+                                                <Image
+                                                    src={rp.images?.[0]?.image_url || "/placeholder.png"}
+                                                    alt={rp.product_name}
+                                                    fill sizes="25vw"
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                />
+                                            </div>
+                                            <CardContent className="p-4">
+                                                <h3 className="font-semibold mb-2 group-hover:text-blue-600 line-clamp-1">
+                                                    {rp.product_name}
+                                                </h3>
+                                                <span className="text-lg font-bold">{rpLabel}</span>
+                                            </CardContent>
+                                        </Link>
+                                    </Card>
+                                )
+                            })}
                         </div>
                     </div>
                 )}
             </div>
         </div>
-    );
-}
-
-function LoadingDetailSkeleton() {
-    return (
-        <div className="flex h-screen w-full flex-col items-center justify-center gap-3 bg-white">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
-            <p className="text-sm font-medium text-gray-500 animate-pulse">ກຳລັງດຶງຂໍ້ມູນສິນຄ້າ... 📦</p>
-        </div>
-    );
-}
-
-function ProductNotFoundState() {
-    return (
-        <div className="container mx-auto px-4 py-20 text-center">
-            <h1 className="text-2xl font-bold mb-4 text-gray-900">ບໍ່ພົບສິນຄ້າທີ່ຄົ້ນຫາ</h1>
-            <Link href="/products"><Button>ກັບຄືນໄປໜ້າຮ້ານ</Button></Link>
-        </div>
-    );
+    )
 }

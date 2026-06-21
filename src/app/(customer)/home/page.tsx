@@ -288,7 +288,7 @@ export default function HomePage() {
     const [pickerProduct, setPickerProduct] = useState<Product | null>(null)
 
     // ✅ data shape ຈາກ backend ແມ່ນ { items, meta } — ບໍ່ແມ່ນ array ກົງໆ
-    const featuredProducts = useMemo(() => featuredData?.items ?? [], [featuredData])
+    const featuredProducts = useMemo(() => featuredData?.data ?? [], [featuredData])
 
     // ✅ ໝວດໝູ່ດຶງມາຈາກ category endpoint ຈິງ (ບໍ່ derive ຈາກ products) → ມາຄົບທຸກໝວດ
     const categories = useMemo(() => categoriesData ?? [], [categoriesData])
@@ -383,7 +383,7 @@ export default function HomePage() {
                                         key={product.product_id}
                                         className="group border shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden bg-white flex flex-col justify-between"
                                     >
-                                        <Link href={`/home/${product.product_id}`} className="flex-1">
+                                        <Link href={`/shop/${product.product_id}`} className="flex-1">
                                             <div className="aspect-square relative overflow-hidden bg-gray-50">
                                                 <Image
                                                     src={product.images?.[0]?.image_url ?? "/placeholder.png"}
