@@ -1,295 +1,121 @@
-"use client"
+'use client'
 
-import { useMemo, useState } from "react"
-import ExportButton from "@/components/ExportButton"
-import { Package } from "lucide-react"
-import {
-    handleProductExcelExport,
-    handleProductPDFExport,
-} from "@/components/adminComponent/exportReport/ExportToReport"
-import { useGetExportReport } from "@/app/features/hooks/Export"
-import { Product } from "@/modules/product/product.types"
+import { formatCurrency } from "@/utils/FormatCurrency"
+import { useReport } from "@/components/adminComponent/exportReport/useExportReport"
+import DataTable, { Column } from "@/components/adminComponent/exportReport/DataTable"
+import ReportLayout from "@/components/adminComponent/exportReport/ExportReportLayout"
+import { handleProductExcelExport, handleProductPDFExport } from "@/components/adminComponent/exportReport/ExportToReport"
+import { Product } from "@/components/adminComponent/products/ProductType"
 
 export default function ProductReportPage() {
 
-    const [search, setSearch] = useState("")
-    const [filterType, setFilterType] = useState<
-        "WEEK" | "MONTH" | "YEAR" | "CUSTOM"
-    >("YEAR")
-
-    const [startDate, setStartDate] = useState<string>()
-    const [endDate, setEndDate] = useState<string>()
-
-    const { data, isLoading } = useGetExportReport({
+    const report = useReport<Product>({
         reportType: "PRODUCT",
-        period: filterType,
-        startDate,
-        endDate,
+        searchFn: (item, keyword) =>
+            (item.product_name?.toLowerCase().includes(keyword) ?? false) || (item.product_code?.toLowerCase().includes(keyword) ?? false) || (item.category?.category_name?.toLowerCase().includes(keyword) ?? false),
     })
 
-    const products = data?.data ?? []
+    console.log(report.data)
 
-    const filteredProducts = useMemo(() => {
-        const keyword = search.toLowerCase().trim()
-
-        return products.filter((item: Product) =>
-            item?.product_name?.toLowerCase().includes(keyword) ||
-            item?.product_code?.toLowerCase().includes(keyword)
-        )
-    }, [products, search])
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                ກຳລັງໂຫຼດລາຍງານ...
-            </div>
-        )
-    }
+    const columns: Column<Product>[] = [
+        {
+            key: "product_code",
+            title: "ລະຫັດສິນຄ້າ",
+            render: (row) => (
+                <span className="font-mono text-sm">{row.product_code}</span>
+            ),
+        },
+        {
+            key: "product_name",
+            title: "ຊື່ສິນຄ້າ",
+            render: (row) => row.product_name,
+        },
+        {
+            key: "category",
+            title: "ໝວດໝູ່",
+            render: (row) => row.category?.category_name ?? "—",
+        },
+        {
+            key: "variants",
+            title: "ຈຳນວນ Variant",
+            render: (row) => (
+                <span>{row.variants?.length ?? 0} variant</span>
+            ),
+        },
+        {
+            key: "stock",
+            title: "ຈຳນວນຄົງເຫຼືອ (ລວມ)",
+            render: (row) => {
+                // ✅ ລວມ stock_qty ຈາກທຸກ variant
+                const total = row.variants?.reduce(
+                    (sum, v) => sum + (v.stock_qty ?? 0), 0
+                ) ?? 0
+                return (
+                    <span className={total === 0 ? "text-red-500 font-medium" : ""}>
+                        {total}
+                    </span>
+                )
+            },
+        },
+        {
+            key: "price",
+            title: "ລາຄາຂາຍ",
+            render: (row) => {
+                // ✅ ດຶງ min/max ຈາກ variants
+                const prices = row.variants?.map(v => v.sale_price) ?? []
+                if (!prices.length) return <span className="text-gray-400">—</span>
+                const min = Math.min(...prices)
+                const max = Math.max(...prices)
+                return (
+                    <span>
+                        {min === max
+                            ? formatCurrency(min)
+                            : `${formatCurrency(min)} – ${formatCurrency(max)}`}
+                    </span>
+                )
+            },
+        },
+        {
+            key: "purchase_price",
+            title: "ລາຄາຊື້",
+            render: (row) => {
+                const prices = row.variants?.map(v => v.purchase_price) ?? []
+                if (!prices.length) return <span className="text-gray-400">—</span>
+                const min = Math.min(...prices)
+                const max = Math.max(...prices)
+                return (
+                    <span>
+                        {min === max
+                            ? formatCurrency(min)
+                            : `${formatCurrency(min)} – ${formatCurrency(max)}`}
+                    </span>
+                )
+            },
+        },
+    ]
 
     return (
-        <div className="p-4 md:p-6 bg-slate-50 min-h-screen">
-
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-800">
-                        ລາຍງານສິນຄ້າ
-                    </h1>
-
-                    <p className="text-sm text-gray-500 mt-1">
-                        ສະແດງ ແລະ ສົ່ງອອກລາຍງານຂໍ້ມູນສິນຄ້າ
-                    </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-
-                    <ExportButton
-                        title="ສົ່ງອອກ PDF"
-                        loading={isLoading}
-                        onExport={() =>
-                            handleProductPDFExport(
-                                filteredProducts
-                            )
-                        }
-                    />
-
-                    <ExportButton
-                        title="ສົ່ງອອກ Excel"
-                        loading={isLoading}
-                        onExport={() =>
-                            handleProductExcelExport(
-                                filteredProducts
-                            )
-                        }
-                    />
-
-                </div>
-
-            </div>
-
-            {/* Summary Card */}
-            <div className="bg-white rounded-xl shadow-sm border p-5 mb-6">
-
-                <div className="flex items-center gap-4">
-
-                    <div className="p-3 rounded-xl bg-blue-100 text-blue-600">
-                        <Package size={24} />
-                    </div>
-
-                    <div>
-                        <p className="text-sm text-gray-500">
-                            ຈຳນວນສິນຄ້າທັງໝົດ
-                        </p>
-
-                        <h2 className="text-2xl font-bold text-gray-800">
-                            {products.length}
-                        </h2>
-                    </div>
-
-                </div>
-
-            </div>
-
-            {/* Filters */}
-            <div className="bg-white rounded-xl shadow-sm border p-5 mb-6">
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                    <input
-                        type="text"
-                        placeholder="ຄົ້ນຫາສິນຄ້າ..."
-                        value={search}
-                        onChange={(e) =>
-                            setSearch(e.target.value)
-                        }
-                        className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-
-                    <select
-                        value={filterType}
-                        onChange={(e) =>
-                            setFilterType(
-                                e.target.value as
-                                | "WEEK"
-                                | "MONTH"
-                                | "YEAR"
-                                | "CUSTOM"
-                            )
-                        }
-                        className="border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value="WEEK">
-                            ລາຍອາທິດ
-                        </option>
-
-                        <option value="MONTH">
-                            ລາຍເດືອນ
-                        </option>
-
-                        <option value="YEAR">
-                            ລາຍປີ
-                        </option>
-
-                        <option value="CUSTOM">
-                            ກຳນົດເອງ
-                        </option>
-                    </select>
-
-                </div>
-
-                {filterType === "CUSTOM" && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-
-                        <div>
-                            <label className="block text-sm text-gray-600 mb-1">
-                                ວັນທີເລີ່ມຕົ້ນ
-                            </label>
-
-                            <input
-                                type="date"
-                                value={startDate ?? ""}
-                                onChange={(e) =>
-                                    setStartDate(
-                                        e.target.value
-                                    )
-                                }
-                                className="w-full border rounded-lg px-3 py-2"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm text-gray-600 mb-1">
-                                ວັນທີສິ້ນສຸດ
-                            </label>
-
-                            <input
-                                type="date"
-                                value={endDate ?? ""}
-                                onChange={(e) =>
-                                    setEndDate(
-                                        e.target.value
-                                    )
-                                }
-                                className="w-full border rounded-lg px-3 py-2"
-                            />
-                        </div>
-
-                    </div>
-                )}
-
-            </div>
-
-            {/* Table */}
-            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-
-                <div className="overflow-x-auto">
-
-                    <table className="w-full min-w-[700px]">
-
-                        <thead className="bg-slate-100">
-
-                            <tr>
-
-                                <th className="text-left px-4 py-3 font-semibold">
-                                    ລະຫັດສິນຄ້າ
-                                </th>
-
-                                <th className="text-left px-4 py-3 font-semibold">
-                                    ຊື່ສິນຄ້າ
-                                </th>
-
-                                <th className="text-left px-4 py-3 font-semibold">
-                                    ຈຳນວນຄົງເຫຼືອ
-                                </th>
-
-                                <th className="text-left px-4 py-3 font-semibold">
-                                    ລາຄາຂາຍ
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            {filteredProducts.length > 0 ? (
-                                filteredProducts.map(
-                                    (item: Product) => (
-                                        <tr
-                                            key={
-                                                item.product_id
-                                            }
-                                            className="border-t hover:bg-slate-50 transition-colors"
-                                        >
-
-                                            <td className="px-4 py-3">
-                                                {
-                                                    item.product_code
-                                                }
-                                            </td>
-
-                                            <td className="px-4 py-3">
-                                                {
-                                                    item.product_name
-                                                }
-                                            </td>
-
-                                            <td className="px-4 py-3">
-                                                {
-                                                    item.stock_qty
-                                                }
-                                            </td>
-
-                                            <td className="px-4 py-3">
-                                                $
-                                                {Number(
-                                                    item.sale_price
-                                                ).toLocaleString()}
-                                            </td>
-
-                                        </tr>
-                                    )
-                                )
-                            ) : (
-                                <tr>
-                                    <td
-                                        colSpan={4}
-                                        className="text-center py-10 text-gray-500"
-                                    >
-                                        ບໍ່ພົບຂໍ້ມູນສິນຄ້າ
-                                    </td>
-                                </tr>
-                            )}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </div>
+        <ReportLayout
+            title="ລາຍງານສິນຄ້າ"
+            description="ສະແດງ ແລະ ສົ່ງອອກລາຍງານຂໍ້ມູນສິນຄ້າ"
+            total={report.data.length}
+            loading={report.isLoading}
+            search={report.search}
+            setSearch={report.setSearch}
+            period={report.period}
+            setPeriod={report.setPeriod}
+            startDate={report.startDate}
+            endDate={report.endDate}
+            setStartDate={report.setStartDate}
+            setEndDate={report.setEndDate}
+            onPdf={() => handleProductPDFExport(report.data)}
+            onExcel={() => handleProductExcelExport(report.data)}
+        >
+            <DataTable
+                data={report.data}
+                columns={columns}
+                loading={report.isLoading}
+            />
+        </ReportLayout>
     )
 }

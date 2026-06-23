@@ -37,7 +37,7 @@ export default function PurchaseOrderPage() {
     const deletePurchase = useDeletePurchaseOrder()
 
     const { data: products } = useGetAllProducts()
-    const product = products
+    const product = products?.items
     const { data: suppliers } = useGetSuppliers()
     const supplier = suppliers?.data
     const { data: categories } = useGetCategories()
@@ -69,7 +69,7 @@ export default function PurchaseOrderPage() {
     }
     // const products?.data 
     // console.log("products",products?.data)
-    // console.log("data",product)
+    console.log("data",product)
 
     /* -------------------- UI -------------------- */
 

@@ -33,8 +33,8 @@ export type ExportPDFParams<T extends Record<string, unknown>> = {
 const buildSummary = <T extends Record<string, unknown>>(
     columns: Column<T>[],
     data: T[]
-): string => {
-    const totalRows = data.length;
+): string => { const totalRows = data.length;
+    // console.log("data : ", data);
 
     // ຄົ້ນຫາ column ທີ່ມີຄ່າເປັນຕົວເລກ (ຍົກເວັ້ນ __index)
     const numericColumns = columns.filter((col) => {

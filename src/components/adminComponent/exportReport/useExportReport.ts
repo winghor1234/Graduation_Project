@@ -12,17 +12,9 @@ export function useReport<T>({
     ) => boolean;
 }) {
     const [search, setSearch] = useState("");
-
-    const [period, setPeriod] = useState<
-        "WEEK" | "MONTH" | "YEAR" | "CUSTOM"
-    >("YEAR");
-
-    const [startDate, setStartDate] =
-        useState<string>();
-
-    const [endDate, setEndDate] =
-        useState<string>();
-
+    const [period, setPeriod] = useState<"WEEK" | "MONTH" | "YEAR" | "CUSTOM">("YEAR");
+    const [startDate, setStartDate] = useState<string>();
+    const [endDate, setEndDate] = useState<string>();
     const { data, isLoading } =
         useGetExportReport({
             reportType,
@@ -32,13 +24,10 @@ export function useReport<T>({
         });
 
     const records = (data?.data ?? []) as T[];
-
     const filteredData = useMemo(() => {
         const keyword = search.toLowerCase();
 
-        return records.filter((item) =>
-            searchFn(item, keyword)
-        );
+        return records.filter((item) => searchFn(item, keyword));
     }, [records, search, searchFn]);
 
     return {

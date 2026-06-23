@@ -11,6 +11,7 @@ import { Sale } from "@/app/(admin)/report/saleQuantity/page";
 // product start
 
 export const handleProductPDFExport = (products: Product[]) => {
+    console.log("products in export : ", products)
     handlePDFExport({
         title: "ລາຍງານສິນຄ້າ",
         fileName: "product-report",
@@ -36,8 +37,8 @@ export const handleProductPDFExport = (products: Product[]) => {
         data: products.map((c, index) => ({
             product_code: c.product_code,
             product_name: c.product_name,
-            stock_qty: c.stock_qty,
-            sale_price: formatCurrency(c.sale_price),
+            stock_qty: c.variants[0].stock_qty,
+            sale_price: formatCurrency(c.variants[0].sale_price),
         }))
     });
 };
@@ -69,8 +70,8 @@ export const handleProductExcelExport = (products: Product[]) => {
         data: products.map((c, index) => ({
             product_code: c.product_code,
             product_name: c.product_name,
-            stock_qty: c.stock_qty,
-            sale_price: formatCurrency(c.sale_price),
+            stock_qty: c.variants[0].stock_qty,
+            sale_price: formatCurrency(c.variants[0].sale_price),
         }))
     });
 
