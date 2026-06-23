@@ -37,9 +37,9 @@ export default function ProductReportPage() {
         },
         {
             key: "variants",
-            title: "ຈຳນວນ Variant",
+            title: "ຈຳນວນຂະໜາດ(size)",
             render: (row) => (
-                <span>{row.variants?.length ?? 0} variant</span>
+                <span>{row.variants?.length ?? 0} ຂະໜາດ(size)</span>
             ),
         },
         {

@@ -157,7 +157,7 @@ export const handleCustomerExcelExport = (customers: Customer[]) => {
 
 export const handlePurchasePDFExport = (purchases: PurchaseOrder[]) => {
     handlePDFExport({
-        title: "ລາຍງານການຈັດຊື້",
+        title: "ລາຍງານການສັ່ງຊື້",
         fileName: "purchase-report",
         columns: [
             {
@@ -165,7 +165,7 @@ export const handlePurchasePDFExport = (purchases: PurchaseOrder[]) => {
                 key: "__index",
             },
             {
-                header: "ລະຫັດການຈັດຊື້",
+                header: "ລະຫັດການສັ່ງຊື້",
                 key: "purchase_code",
             },
             {
@@ -176,13 +176,18 @@ export const handlePurchasePDFExport = (purchases: PurchaseOrder[]) => {
                 header: "ຍອດລວມ",
                 key: "amount",
             },
+            {
+                header: "ວັນທີສັ່ງຊື້",
+                key: "purchase_date",
+            }
         ],
 
         data: purchases.map((c, index) => ({
             __index: index + 1,
             purchase_code: c.purchase_code,
             supplier_name: c.supplier?.supplier_name,
-            amount: formatCurrency(c.total_amount),
+            amount: formatCurrency(c.total_amount ?? 0),
+            purchase_date: formatDate(c.purchase_date),
 
         })),
     });
@@ -190,7 +195,7 @@ export const handlePurchasePDFExport = (purchases: PurchaseOrder[]) => {
 
 export const handlePurchaseExcelExport = (purchases: PurchaseOrder[]) => {
     handleExcelExport({
-        title: "ລາຍງານການຈັດຊື້",
+        title: "ລາຍງານການສັ່ງຊື້",
         fileName: "purchase-report",
         sheetName: "Purchases",
         columns: [
@@ -199,7 +204,7 @@ export const handlePurchaseExcelExport = (purchases: PurchaseOrder[]) => {
                 key: "__index",
             },
             {
-                header: "ລະຫັດການຈັດຊື້",
+                header: "ລະຫັດການສັ່ງຊື້",
                 key: "purchase_code",
             },
             {
@@ -216,7 +221,8 @@ export const handlePurchaseExcelExport = (purchases: PurchaseOrder[]) => {
             __index: index + 1,
             purchase_code: c.purchase_code,
             supplier_name: c.supplier?.supplier_name,
-            amount: formatCurrency(c.total_amount),
+            amount: formatCurrency(c.total_amount ?? 0),
+            purchases_date: formatDate(c.purchase_date),
 
         })),
     });

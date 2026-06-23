@@ -50,3 +50,8 @@ export const generateTrackingCode = () => {
 export const generatePaymentCode = () => {
   return `PAY-${getTodayDate()}-${generateRandomString(5)}`
 }
+
+
+export const generateInvoiceCode = () => {
+  return `INV-${getTodayDate()}-${generateRandomString(5)}`
+}

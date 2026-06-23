@@ -400,7 +400,7 @@ export class ReportService {
             // ================= PRODUCT =================
             case ReportType.PRODUCT:
                 return this.prisma.product.findMany({
-                    include: { category: true },
+                    include: { category: true , images: true, variants: true},
                 });
 
             // ================= PURCHASE =================

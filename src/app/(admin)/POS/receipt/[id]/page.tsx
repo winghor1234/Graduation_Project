@@ -9,6 +9,7 @@ import { BackButton } from "@/utils/BackButton"
 
 import jsPDF from "jspdf"
 import autoTable, { RowInput } from "jspdf-autotable"
+import { generateInvoiceCode } from "@/utils/generateCode"
 
 // -----------------------------------------------------------------
 // ‼️ ສຳຄັນ: jsPDF ບໍ່ມີຟອນພາສາລາວມາໃນຕົວ (default font = Helvetica)
@@ -76,22 +77,23 @@ export default function ReceiptPage() {
         const doc = new jsPDF() as jsPDFWithAutoTable
 
         registerLaoFont(doc)
+       const invoiceCode = generateInvoiceCode()
 
         // -------------------
         // HEADER
         // -------------------
         doc.setFontSize(20)
-        doc.text("ຮ້ານຂອງຂ້ອຍ", 105, 15, { align: "center" })
+        doc.text("ຮ້ານ ວັນໄຊ", 105, 15, { align: "center" })
 
         doc.setFontSize(10)
         doc.text("ນະຄອນຫຼວງວຽງຈັນ, ລາວ", 105, 22, { align: "center" })
-        doc.text("ໂທ: 020 XXXXXXXX", 105, 28, { align: "center" })
+        doc.text("ໂທ: 020 98924536", 105, 28, { align: "center" })
 
         // -------------------
         // SALE INFO
         // -------------------
         doc.setFontSize(11)
-        doc.text(`ເລກບິນ : ${data.sale_id}`, 14, 40)
+        doc.text(`ເລກບິນ : ${invoiceCode}`, 14, 40)
         doc.text(`ວັນທີ : ${formatDate(data.sale_date)}`, 14, 47)
         doc.text(
             `ລູກຄ້າ : ${data.customer?.customer_name ?? "ລູກຄ້າທົ່ວໄປ"}`,

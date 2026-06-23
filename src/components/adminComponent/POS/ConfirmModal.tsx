@@ -192,7 +192,7 @@ export default function ConfirmModal({ cart, total, loading = false, onConfirm, 
                             </div>
 
                             <span className="text-sm font-semibold shrink-0">
-                                {formatCurrency(item.sale_price * item.quantity)}
+                                {formatCurrency(item.sale_price * item.quantity)} ກີບ
                             </span>
                         </div>
                     ))}
@@ -200,13 +200,13 @@ export default function ConfirmModal({ cart, total, loading = false, onConfirm, 
 
                 {/* Summary */}
                 <div className="border-t p-5 space-y-2">
-                    <div className="flex justify-between text-sm text-muted-foreground">
+                    <div className="flex justify-between text-muted-foreground">
                         <span>ຈຳນວນສິນຄ້າ</span>
-                        <span>{totalItems} ຊິ້ນ</span>
+                        <span>{totalItems}</span>
                     </div>
                     <div className="flex justify-between text-lg font-bold">
                         <span>ລວມທັງໝົດ</span>
-                        <span className="text-primary">{formatCurrency(total)}</span>
+                        <span className="text-primary">{formatCurrency(total)} ກີບ</span>
                     </div>
                 </div>
 
