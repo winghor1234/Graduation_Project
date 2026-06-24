@@ -3,9 +3,9 @@ import { getSearchParam } from "@/utils/search"
 import { getSortingParams } from "@/utils/sorting"
 import { Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
-import { RefundService } from "./refund.service"
 import { prisma } from "@/lib/prisma"
 import { BadRequestError, errorResponse, ForbiddenError, NotFoundError, successResponse, UnauthorizedError } from "@/utils/response"
+import { refundService } from "./refund.service"
 
 export const refundController = {
     async getRefunds(req: NextRequest) {
@@ -24,7 +24,7 @@ export const refundController = {
                 }
                 : {}
             const [refund, total] = await Promise.all([
-                RefundService.getRefunds({
+                refundService.getRefunds({
                     where,
                     skip,
                     take: limit,
@@ -45,7 +45,7 @@ export const refundController = {
     },
     async getRefund(id: string) {
         try {
-            const refund = await RefundService.getRefund(id)
+            const refund = await refundService.getRefund(id)
             return successResponse(refund, "Get refund successfully", 200)
         } catch (error) {
             console.log(error)
@@ -59,7 +59,7 @@ export const refundController = {
     async createRefund(req: NextRequest) {
         try {
             const body = await req.json()
-            const refund = await RefundService.createRefund(body)
+            const refund = await refundService.createRefund(body)
             return successResponse(refund, "Create refund successfully", 201)
         } catch (error) {
             console.log(error)

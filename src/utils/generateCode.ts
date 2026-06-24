@@ -55,3 +55,7 @@ export const generatePaymentCode = () => {
 export const generateInvoiceCode = () => {
   return `INV-${getTodayDate()}-${generateRandomString(5)}`
 }
+
+export const generatePromotionCode = () => {
+  return `PROMO-${getTodayDate()}-${generateRandomString(5)}`
+}
