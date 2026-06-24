@@ -3,33 +3,77 @@
 import { use, useMemo, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { Minus, Plus, ShoppingCart, ArrowLeft, Check } from "lucide-react"
+import { ArrowLeft, Check, Minus, Plus, ShoppingCart } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import { Badge }  from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { useGetProduct, useGetAllProducts } from "@/app/features/hooks/Product"
 import { useCustomer } from "@/components/customerComponent/CustomerContext"
 import { formatCurrency } from "@/utils/FormatCurrency"
+import { ProductCard } from "@/components/customerComponent/shop/ProductCard"
+import { ProductListItem } from "@/components/customerComponent/shop/shop.types"
+import { VariantPickerDialog } from "@/components/customerComponent/shop/VariantPickerDialog"
 
+// ────────────────────────────────────────────────────────────
+// Skeleton
+// ────────────────────────────────────────────────────────────
+function ProductDetailSkeleton() {
+    return (
+        <div className="min-h-screen bg-white">
+            <div className="container mx-auto px-6 max-w-7xl py-10 animate-pulse">
+                <div className="h-4 w-40 bg-gray-100 rounded-full mb-10" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
+                    <div className="space-y-3">
+                        <div className="aspect-square bg-gray-100 rounded-2xl" />
+                        <div className="grid grid-cols-4 gap-3">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="aspect-square bg-gray-100 rounded-xl" />
+                            ))}
+                        </div>
+                    </div>
+                    <div className="space-y-5 pt-2">
+                        <div className="h-5 w-24 bg-gray-100 rounded-full" />
+                        <div className="h-10 w-3/4 bg-gray-100 rounded-lg" />
+                        <div className="h-8 w-1/3 bg-gray-100 rounded-lg" />
+                        <div className="space-y-2 pt-2">
+                            <div className="h-4 bg-gray-100 rounded w-full" />
+                            <div className="h-4 bg-gray-100 rounded w-5/6" />
+                            <div className="h-4 bg-gray-100 rounded w-4/6" />
+                        </div>
+                        <div className="flex gap-2 pt-4">
+                            {[1, 2, 3].map(i => <div key={i} className="h-10 w-20 bg-gray-100 rounded-xl" />)}
+                        </div>
+                        <div className="h-14 bg-gray-100 rounded-xl w-full mt-4" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ────────────────────────────────────────────────────────────
+// Page
+// ────────────────────────────────────────────────────────────
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params)
-    const router = useRouter()
     const { addToCart } = useCustomer()
 
     const { data: product, isLoading } = useGetProduct(id)
-    const { data: allProductsRes } = useGetAllProducts({})
+    const { data: relatedData } = useGetAllProducts(
+        useMemo(() => ({ sort_by: "featured" as const, page_size: 8 }), [])
+    )
 
     const [selectedColor, setSelectedColor] = useState<string | null>(null)
     const [selectedSize,  setSelectedSize]  = useState<string | null>(null)
-    const [quantity, setQuantity]           = useState(1)
-    const [selectedImage, setSelectedImage] = useState(0)
+    const [quantity,      setQuantity]      = useState(1)
+    const [activeImage,   setActiveImage]   = useState(0)
+    const [pickerProduct, setPickerProduct] = useState<ProductListItem | null>(null)
 
-    // ✅ hooks ທັງໝົດ ກ່ອນ early return
     const variants = product?.variants ?? []
-    const images   = product?.images?.length ? product.images : [{ image_id: "0", image_url: "/placeholder.png" }]
+    const images   = product?.images?.length
+        ? product.images
+        : [{ image_id: "0", image_url: "/placeholder.png" }]
 
     const colors = useMemo(() => Array.from(new Set(variants.map(v => v.color))), [variants])
 
@@ -45,35 +89,41 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
     const relatedProducts = useMemo(() => {
         if (!product) return []
-        const all = allProductsRes?.items ?? []
-        return all
+        return (relatedData?.items ?? [] as ProductListItem[])
             .filter(p => p.category_id === product.category_id && p.product_id !== product.product_id)
-            .slice(0, 4)
-    }, [allProductsRes, product])
+            .slice(0, 4) as ProductListItem[]
+    }, [relatedData, product])
 
-    if (isLoading) {
-        return (
-            <div className="flex h-screen items-center justify-center text-md font-medium text-muted-foreground animate-pulse">
-                ກຳລັງດຶງຂໍ້ມູນສິນຄ້າ... 📦
-            </div>
-        )
-    }
+    if (isLoading) return <ProductDetailSkeleton />
 
     if (!product) {
         return (
-            <div className="container mx-auto px-4 py-20 text-center">
-                <h1 className="text-2xl font-bold mb-4">ບໍ່ພົບສິນຄ້ານີ້</h1>
-                <Link href="/shop"><Button>ກັບໄປໜ້າຮ້ານ</Button></Link>
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <p className="text-6xl">📦</p>
+                    <h1 className="text-2xl font-bold text-gray-900">ບໍ່ພົບສິນຄ້ານີ້</h1>
+                    <p className="text-gray-400">ສິນຄ້ານີ້ອາດຖືກລຶບຫຼືບໍ່ມີຢູ່ໃນລະບົບ</p>
+                    <Link href="/shop">
+                        <Button className="rounded-xl mt-2">ກັບໄປໜ້າຮ້ານ</Button>
+                    </Link>
+                </div>
             </div>
         )
     }
 
-    const prices    = variants.map(v => v.sale_price)
-    const minPrice  = prices.length ? Math.min(...prices) : 0
-    const maxPrice  = prices.length ? Math.max(...prices) : 0
+    // Derived values
+    const prices = variants.map(v => v.sale_price)
+    const minPrice = prices.length ? Math.min(...prices) : 0
+    const maxPrice = prices.length ? Math.max(...prices) : 0
     const priceLabel = selectedVariant
         ? formatCurrency(selectedVariant.sale_price)
-        : minPrice === maxPrice ? formatCurrency(minPrice) : `${formatCurrency(minPrice)} – ${formatCurrency(maxPrice)}`
+        : minPrice === maxPrice
+            ? formatCurrency(minPrice)
+            : `${formatCurrency(minPrice)} – ${formatCurrency(maxPrice)}`
+
+    const stockQty   = selectedVariant?.stock_qty ?? 0
+    const inStock    = stockQty > 0
+    const isLowStock = inStock && stockQty <= 5
 
     const handleSelectColor = (color: string) => {
         setSelectedColor(color)
@@ -96,42 +146,73 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             sale_price:   selectedVariant.sale_price,
             stock_qty:    selectedVariant.stock_qty,
         }, quantity)
-        toast.success(`ເພີ່ມ ${product.product_name} ລົງກະຕ່າແລ້ວ`)
-        router.push("/cart")
+        toast.success(`ເພີ່ມ "${product.product_name}" ລົງກະຕ່າແລ້ວ`)
     }
 
+    const addButtonLabel = !selectedVariant
+        ? "ກະລຸນາເລືອກສີ / ຂະໜາດ"
+        : !inStock
+            ? "ໝົດສາງ"
+            : "ເພີ່ມລົງກະຕ່າ"
+
     return (
-        <div className="min-h-screen bg-white py-8">
-            <div className="container mx-auto px-4">
+        <div className="min-h-screen bg-white">
+            <div className="container mx-auto px-6 max-w-7xl py-10">
 
-                <Link href="/shop">
-                    <Button variant="ghost" className="mb-6">
-                        <ArrowLeft className="size-4 mr-2" /> ກັບໄປໜ້າຮ້ານ
-                    </Button>
-                </Link>
+                {/* Back + Breadcrumb */}
+                <div className="flex items-center gap-2 mb-10 text-sm text-gray-400">
+                    <Link href="/shop" className="flex items-center gap-1.5 hover:text-gray-900 transition-colors font-medium">
+                        <ArrowLeft className="size-4" />
+                        ໜ້າຮ້ານ
+                    </Link>
+                    {product.category?.category_name && (
+                        <>
+                            <span>/</span>
+                            <Link
+                                href={`/shop?category_id=${product.category_id}`}
+                                className="hover:text-gray-900 transition-colors"
+                            >
+                                {product.category.category_name}
+                            </Link>
+                        </>
+                    )}
+                    <span>/</span>
+                    <span className="text-gray-900 font-medium line-clamp-1">{product.product_name}</span>
+                </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+                {/* Main layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 mb-24">
 
-                    {/* Gallery */}
-                    <div>
-                        <div className="aspect-square bg-gray-50 rounded-xl overflow-hidden mb-4 relative border shadow-sm">
+                    {/* ── Gallery ── */}
+                    <div className="space-y-3">
+                        <div className="aspect-square relative overflow-hidden rounded-2xl bg-gray-50 border border-gray-100">
                             <Image
-                                src={images[selectedImage]?.image_url ?? "/placeholder.png"}
+                                src={images[activeImage]?.image_url ?? "/placeholder.png"}
                                 alt={product.product_name}
                                 fill
                                 sizes="(max-width: 1024px) 100vw, 50vw"
-                                className="object-cover"
+                                className="object-cover transition-opacity duration-300"
                                 priority
                             />
+                            {!inStock && selectedVariant && (
+                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                    <Badge className="bg-white text-gray-900 border-none px-4 py-1.5 text-sm">
+                                        ສິນຄ້າໝົດແລ້ວ
+                                    </Badge>
+                                </div>
+                            )}
                         </div>
+
                         {images.length > 1 && (
                             <div className="grid grid-cols-4 gap-3">
                                 {images.map((img, idx) => (
                                     <button
                                         key={img.image_id}
-                                        onClick={() => setSelectedImage(idx)}
-                                        className={`aspect-square bg-gray-50 rounded-lg overflow-hidden border-2 relative ${
-                                            selectedImage === idx ? "border-black" : "border-transparent hover:border-gray-300"
+                                        onClick={() => setActiveImage(idx)}
+                                        className={`aspect-square relative rounded-xl overflow-hidden border-2 transition-all ${
+                                            activeImage === idx
+                                                ? "border-gray-900 shadow-sm"
+                                                : "border-transparent hover:border-gray-300"
                                         }`}
                                     >
                                         <Image src={img.image_url} alt="" fill sizes="100px" className="object-cover" />
@@ -141,46 +222,65 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         )}
                     </div>
 
-                    {/* Info */}
-                    <div>
-                        <Badge className="mb-4">{product.category?.category_name}</Badge>
-                        <h1 className="text-4xl font-bold mb-4">{product.product_name}</h1>
-                        <p className="text-3xl font-bold mb-6">{priceLabel}</p>
+                    {/* ── Info Panel ── */}
+                    <div className="lg:sticky lg:top-8 lg:self-start space-y-6">
 
-                        <div className="mb-6">
-                            {selectedVariant ? (
-                                <Badge variant={selectedVariant.stock_qty > 0 ? "secondary" : "destructive"}>
-                                    {selectedVariant.stock_qty > 0 ? `ເຫຼືອ ${selectedVariant.stock_qty} ໂຕ` : "ໝົດສາງ"}
+                        {/* Category + Name */}
+                        <div>
+                            {product.category?.category_name && (
+                                <Link href={`/shop?category_id=${product.category_id}`}>
+                                    <Badge variant="secondary" className="mb-3 hover:bg-gray-200 cursor-pointer">
+                                        {product.category.category_name}
+                                    </Badge>
+                                </Link>
+                            )}
+                            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900 leading-tight">
+                                {product.product_name}
+                            </h1>
+                        </div>
+
+                        {/* Price */}
+                        <div className="flex items-baseline gap-3">
+                            <span className="text-3xl font-extrabold text-gray-900">{priceLabel}</span>
+                            {selectedVariant && isLowStock && (
+                                <Badge className="bg-amber-500 text-white border-none">
+                                    ເຫຼືອ {stockQty} ໂຕ
                                 </Badge>
-                            ) : (
-                                <Badge variant="outline">ກະລຸນາເລືອກສີ ແລະ ຂະໜາດ</Badge>
+                            )}
+                            {selectedVariant && !inStock && (
+                                <Badge variant="destructive">ໝົດສາງ</Badge>
                             )}
                         </div>
 
+                        {/* Description */}
                         {product.description && (
-                            <div className="mb-8">
-                                <h3 className="text-lg font-semibold mb-2">ລາຍລະອຽດ</h3>
-                                <p className="text-gray-600">{product.description}</p>
-                            </div>
+                            <p className="text-[15px] text-gray-500 leading-relaxed border-t border-gray-100 pt-5">
+                                {product.description}
+                            </p>
                         )}
 
+                        {/* Color Selector */}
                         {colors.length > 0 && (
-                            <div className="mb-6">
-                                <h3 className="text-sm font-semibold mb-3">
-                                    ສີ {selectedColor && <span className="text-muted-foreground font-normal">— {selectedColor}</span>}
-                                </h3>
+                            <div className="border-t border-gray-100 pt-5 space-y-3">
+                                <p className="text-sm font-bold text-gray-900">
+                                    ສີ{selectedColor ? (
+                                        <span className="font-normal text-gray-400 ml-1.5">— {selectedColor}</span>
+                                    ) : null}
+                                </p>
                                 <div className="flex flex-wrap gap-2">
                                     {colors.map(color => {
-                                        const isSelected = selectedColor === color
+                                        const isActive = selectedColor === color
                                         return (
                                             <button
                                                 key={color}
                                                 onClick={() => handleSelectColor(color)}
-                                                className={`px-4 py-2 rounded-lg border text-sm font-medium flex items-center gap-1.5 ${
-                                                    isSelected ? "border-black bg-black text-white" : "border-gray-300 hover:border-gray-500"
+                                                className={`h-10 px-5 rounded-xl border text-sm font-semibold flex items-center gap-1.5 transition-all ${
+                                                    isActive
+                                                        ? "bg-gray-900 border-gray-900 text-white"
+                                                        : "border-gray-200 text-gray-700 hover:border-gray-400"
                                                 }`}
                                             >
-                                                {isSelected && <Check className="w-3.5 h-3.5" />}
+                                                {isActive && <Check className="size-3.5" />}
                                                 {color}
                                             </button>
                                         )
@@ -189,24 +289,29 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             </div>
                         )}
 
+                        {/* Size Selector */}
                         {selectedColor && (
-                            <div className="mb-6">
-                                <h3 className="text-sm font-semibold mb-3">
-                                    ຂະໜາດ {selectedSize && <span className="text-muted-foreground font-normal">— {selectedSize}</span>}
-                                </h3>
+                            <div className="space-y-3">
+                                <p className="text-sm font-bold text-gray-900">
+                                    ຂະໜາດ{selectedSize ? (
+                                        <span className="font-normal text-gray-400 ml-1.5">— {selectedSize}</span>
+                                    ) : null}
+                                </p>
                                 <div className="flex flex-wrap gap-2">
                                     {sizesForColor.map(v => {
-                                        const isSelected = selectedSize === v.size
+                                        const isActive   = selectedSize === v.size
                                         const outOfStock = v.stock_qty === 0
                                         return (
                                             <button
                                                 key={v.variant_id}
                                                 disabled={outOfStock}
                                                 onClick={() => { setSelectedSize(v.size); setQuantity(1) }}
-                                                className={`min-w-[52px] px-4 py-2 rounded-lg border text-sm font-medium ${
-                                                    isSelected ? "border-black bg-black text-white" :
-                                                    outOfStock  ? "border-dashed text-gray-300 cursor-not-allowed line-through" :
-                                                    "border-gray-300 hover:border-gray-500"
+                                                className={`min-w-[52px] h-10 px-4 rounded-xl border text-sm font-semibold transition-all ${
+                                                    isActive
+                                                        ? "bg-gray-900 border-gray-900 text-white"
+                                                        : outOfStock
+                                                            ? "border-dashed border-gray-200 text-gray-300 line-through cursor-not-allowed"
+                                                            : "border-gray-200 text-gray-700 hover:border-gray-400"
                                                 }`}
                                             >
                                                 {v.size}
@@ -217,70 +322,81 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             </div>
                         )}
 
-                        <div className="mb-6">
-                            <h3 className="text-sm font-semibold mb-3">ຈຳນວນ</h3>
-                            <div className="flex items-center gap-4">
-                                <Button variant="outline" size="icon"
+                        {/* Quantity Stepper */}
+                        <div className="space-y-3 border-t border-gray-100 pt-5">
+                            <p className="text-sm font-bold text-gray-900">ຈຳນວນ</p>
+                            <div className="flex items-center gap-3">
+                                <button
                                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                    disabled={!selectedVariant || quantity <= 1}>
+                                    disabled={!selectedVariant || quantity <= 1}
+                                    className="size-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-700 hover:border-gray-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                >
                                     <Minus className="size-4" />
-                                </Button>
-                                <span className="text-xl font-semibold w-12 text-center">{quantity}</span>
-                                <Button variant="outline" size="icon"
+                                </button>
+                                <span className="text-xl font-bold w-12 text-center tabular-nums">
+                                    {quantity}
+                                </span>
+                                <button
                                     onClick={() => setQuantity(q => Math.min(selectedVariant?.stock_qty ?? 1, q + 1))}
-                                    disabled={!selectedVariant || quantity >= (selectedVariant?.stock_qty ?? 0)}>
+                                    disabled={!selectedVariant || quantity >= (selectedVariant?.stock_qty ?? 0)}
+                                    className="size-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-700 hover:border-gray-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                >
                                     <Plus className="size-4" />
-                                </Button>
+                                </button>
+                                {selectedVariant && inStock && (
+                                    <span className="text-xs text-gray-400 font-medium">
+                                        ສາງ {selectedVariant.stock_qty} ໂຕ
+                                    </span>
+                                )}
                             </div>
                         </div>
 
+                        {/* CTA */}
                         <Button
                             size="lg"
-                            className="w-full text-lg py-6 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
                             onClick={handleAddToCart}
-                            disabled={!selectedVariant || selectedVariant.stock_qty === 0}
+                            disabled={!selectedVariant || !inStock}
+                            className="w-full h-14 text-base rounded-xl gap-2.5 bg-gray-900 hover:bg-gray-700 text-white font-bold transition-all disabled:opacity-50"
                         >
                             <ShoppingCart className="size-5" />
-                            {!selectedVariant ? "ກະລຸນາເລືອກສີ/ຂະໜາດ" : selectedVariant.stock_qty === 0 ? "ໝົດສາງ" : "ເພີ່ມລົງກະຕ່າ"}
+                            {addButtonLabel}
                         </Button>
+
+                        {!selectedVariant && (
+                            <p className="text-xs text-center text-gray-400">
+                                ເລືອກສີ ແລະ ຂະໜາດທີ່ຕ້ອງການກ່ອນ
+                            </p>
+                        )}
                     </div>
                 </div>
 
+                {/* ── Related Products ── */}
                 {relatedProducts.length > 0 && (
-                    <div className="border-t pt-16">
-                        <h2 className="text-3xl font-bold mb-8">ສິນຄ້າທີ່ທ່ານອາດສົນໃຈ</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {relatedProducts.map(rp => {
-                                const rpPrices = rp.variants?.map(v => v.sale_price) ?? []
-                                const rpMin = rpPrices.length ? Math.min(...rpPrices) : 0
-                                const rpMax = rpPrices.length ? Math.max(...rpPrices) : 0
-                                const rpLabel = rpPrices.length === 0 ? "—" : rpMin === rpMax ? formatCurrency(rpMin) : `${formatCurrency(rpMin)}+`
-
-                                return (
-                                    <Card key={rp.product_id} className="group cursor-pointer border shadow-sm overflow-hidden bg-white">
-                                        <Link href={`/shop/${rp.product_id}`}>
-                                            <div className="aspect-square relative overflow-hidden bg-gray-50">
-                                                <Image
-                                                    src={rp.images?.[0]?.image_url || "/placeholder.png"}
-                                                    alt={rp.product_name}
-                                                    fill sizes="25vw"
-                                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                                />
-                                            </div>
-                                            <CardContent className="p-4">
-                                                <h3 className="font-semibold mb-2 group-hover:text-blue-600 line-clamp-1">
-                                                    {rp.product_name}
-                                                </h3>
-                                                <span className="text-lg font-bold">{rpLabel}</span>
-                                            </CardContent>
-                                        </Link>
-                                    </Card>
-                                )
-                            })}
+                    <div className="border-t border-gray-100 pt-16">
+                        <div className="mb-8">
+                            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-amber-500 mb-2">ສິນຄ້າ</p>
+                            <h2 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-gray-900">
+                                ສິນຄ້າທີ່ທ່ານອາດສົນໃຈ
+                            </h2>
+                        </div>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-8">
+                            {relatedProducts.map(rp => (
+                                <ProductCard
+                                    key={rp.product_id}
+                                    product={rp}
+                                    onPickVariant={setPickerProduct}
+                                />
+                            ))}
                         </div>
                     </div>
                 )}
             </div>
+
+            <VariantPickerDialog
+                product={pickerProduct}
+                open={!!pickerProduct}
+                onOpenChange={v => { if (!v) setPickerProduct(null) }}
+            />
         </div>
     )
 }

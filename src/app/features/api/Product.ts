@@ -4,7 +4,7 @@ import axiosInstance from "@/lib/axiosInstance"
 import { ProductListFilters } from "@/modules/product/product.service"
 
 export type ProductListResponse = {
-    items: Product[] // ✏️ Product type ຄວນເພີ່ມ min_price / max_price / total_stock
+    items: (Product & { min_price: number; max_price: number; total_stock: number })[]
     meta: {
         total: number
         page: number

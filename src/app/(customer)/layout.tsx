@@ -1,94 +1,116 @@
-import React, { ReactNode } from 'react';
-import Link from 'next/link';
-import NavbarActions from '@/components/customerComponent/home/NavbarActions';
-
-// 1. Import ຕົວ CustomerProvider ຈາກ Path ຂອງທ່ານເຂົ້າມາ
-import { CustomerProvider } from '@/components/customerComponent/CustomerContext';
+import { ReactNode } from "react"
+import Link from "next/link"
+import { CustomerProvider } from "@/components/customerComponent/CustomerContext"
+import { CustomerNavbar } from "@/components/customerComponent/home/CustomerNavbar"
 
 export const metadata = {
-  title: 'SPORTPRO',
-  description: 'ເຄື່ອງກີລາ ແລະ ເກີບຊັ້ນສູງ ສຳລັບນັກກີລາ.',
-};
+    title: "SPORTPRO",
+    description: "ເຄື່ອງກີລາ ແລະ ເກີບຊັ້ນສູງ ສຳລັບນັກກີລາ.",
+}
 
-// ປ່ຽນຊື່ຈາກ RootLayout ເປັນ CustomerLayout ໃຫ້ຖືກຕ້ອງຕາມຕຳແໜ່ງໂຟນເດີຍ່ອຍ
 export default function CustomerLayout({ children }: { children: ReactNode }) {
-  return (
-    // ✅ ໃຊ້ CustomerProvider ແລະ <div> ຄອບໂຄງສ້າງຫຼັກແທນແທັກ html/body
-    <CustomerProvider>
-      <div className="min-h-screen flex flex-col bg-white">
+    return (
+        <CustomerProvider>
+            <div className="min-h-screen flex flex-col bg-white">
 
-        {/* ແຖບນຳທາງດ້ານເທິງ */}
-        <header className="sticky top-0 z-50 bg-white border-b">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold tracking-tight">
-              SPORTPRO
-            </Link>
+                <CustomerNavbar />
 
-            {/* ເມນູຕອນກາງ (ສະແດງສະເພາະແທັບເລັດ/ຄອມພິວເຕີ) */}
-            <nav className="hidden md:flex items-center gap-8">
-              <Link href="/home" className="text-sm font-medium hover:underline">
-                ໜ້າຫຼັກ
-              </Link>
-              <Link href="/shop" className="text-sm font-medium hover:underline">
-                ຮ້ານຄ້າ
-              </Link>
-              <Link href="/order-history" className="text-sm font-medium hover:underline">
-                ປະຫວັດການສັ່ງຊື້
-              </Link>
-            </nav>
+                <main className="flex-1">
+                    {children}
+                </main>
 
-            {/* ສ່ວນຂວາ: ປຸ່ມກະຕ່າ ແລະ ເມນູຜູ້ໃຊ້ */}
-            <NavbarActions />
-          </div>
-        </header>
+                {/* ── Footer ── */}
+                <footer className="bg-gray-950 text-white">
+                    <div className="container mx-auto px-6 max-w-7xl py-16">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
 
-        {/* ເນື້ອຫາຫຼັກ: ໜ້າ HomePage ແລະ ໜ້າອື່ນໆ ຈະສະແດງຕອນນີ້ */}
-        <main className="flex-1">
-          {children}
-        </main>
+                            {/* Brand */}
+                            <div className="md:col-span-4 space-y-4">
+                                <div className="flex items-baseline gap-0.5">
+                                    <span className="text-2xl font-extrabold tracking-tight text-white">SPORT</span>
+                                    <span className="text-2xl font-extrabold tracking-tight text-amber-400">PRO</span>
+                                </div>
+                                <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
+                                    ເຄື່ອງກີລາ ແລະ ເກີບຊັ້ນສູງ ອອກແບບ ສຳລັບນັກກີລາທີ່ຮັກການເຄື່ອນໄຫວ
+                                </p>
+                                <p className="text-xs text-gray-600 font-medium tracking-widest uppercase">
+                                    Performance · Style · Quality
+                                </p>
+                            </div>
 
-        {/* Footer */}
-        <footer className="bg-black text-white py-12">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div>
-                <h3 className="text-xl font-bold mb-4">SPORTPRO</h3>
-                <p className="text-sm text-gray-400">
-                  ເຄື່ອງກີລາ ແລະ ເກີບຊັ້ນສູງ ສຳລັບນັກກີລາ.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-4">ຮ້ານຄ້າ</h4>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li><Link href="/products?category=shoes">ເກີບ</Link></li>
-                  <li><Link href="/products?category=clothing">ເຄື່ອງນຸ່ງ</Link></li>
-                  <li><Link href="/products?category=accessories">ອຸປະກອນເສີມ</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-4">ການຊ່ວຍເຫຼືອ</h4>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li className="cursor-pointer hover:underline">ຕິດຕໍ່ພວກເຮົາ</li>
-                  <li className="cursor-pointer hover:underline">ຂໍ້ມູນການຈັດສົ່ງ</li>
-                  <li className="cursor-pointer hover:underline">ການສົ່ງຄືນສິນຄ້າ</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-4">ກ່ຽວກັບບໍລິສັດ</h4>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li className="cursor-pointer hover:underline">ກ່ຽວກັບພວກເຮົາ</li>
-                  <li className="cursor-pointer hover:underline">ຮ່ວມງານກັບເຮົາ</li>
-                  <li className="cursor-pointer hover:underline">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</li>
-                </ul>
-              </div>
+                            {/* Spacer */}
+                            <div className="hidden md:block md:col-span-2" />
+
+                            {/* Links */}
+                            <div className="md:col-span-2 space-y-4">
+                                <h4 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-400">ຮ້ານຄ້າ</h4>
+                                <ul className="space-y-3 text-sm">
+                                    <li>
+                                        <Link href="/shop" className="text-gray-400 hover:text-white transition-colors">
+                                            ສິນຄ້າທັງໝົດ
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link href="/home" className="text-gray-400 hover:text-white transition-colors">
+                                            ໜ້າຫຼັກ
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link href="/cart" className="text-gray-400 hover:text-white transition-colors">
+                                            ກະຕ່າສິນຄ້າ
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="md:col-span-2 space-y-4">
+                                <h4 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-400">ລູກຄ້າ</h4>
+                                <ul className="space-y-3 text-sm">
+                                    <li>
+                                        <Link href="/order-history" className="text-gray-400 hover:text-white transition-colors">
+                                            ປະຫວັດການສັ່ງຊື້
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <span className="text-gray-600 cursor-default">ຕິດຕໍ່ພວກເຮົາ</span>
+                                    </li>
+                                    <li>
+                                        <span className="text-gray-600 cursor-default">ຂໍ້ມູນການຈັດສົ່ງ</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="md:col-span-2 space-y-4">
+                                <h4 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-400">ກ່ຽວກັບ</h4>
+                                <ul className="space-y-3 text-sm">
+                                    <li>
+                                        <span className="text-gray-600 cursor-default">ກ່ຽວກັບພວກເຮົາ</span>
+                                    </li>
+                                    <li>
+                                        <span className="text-gray-600 cursor-default">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</span>
+                                    </li>
+                                    <li>
+                                        <span className="text-gray-600 cursor-default">ຮ່ວມງານກັບເຮົາ</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom bar */}
+                    <div className="border-t border-white/5">
+                        <div className="container mx-auto px-6 max-w-7xl py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
+                            <p className="text-xs text-gray-600">
+                                © 2026 SportPro. ສະຫງວນລິຂະສິດທຸກຢ່າງ.
+                            </p>
+                            <p className="text-xs text-gray-600">
+                                Made in <span className="text-amber-500 font-semibold">Laos 🇱🇦</span>
+                            </p>
+                        </div>
+                    </div>
+                </footer>
+
             </div>
-            <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
-              © 2026 SportPro. ສະຫງວນລິຂະສິດທຸກຢ່າງ.
-            </div>
-          </div>
-        </footer>
-
-      </div>
-    </CustomerProvider>
-  );
+        </CustomerProvider>
+    )
 }

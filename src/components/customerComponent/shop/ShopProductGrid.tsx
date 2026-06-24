@@ -1,0 +1,54 @@
+"use client"
+
+import { ProductCard } from "./ProductCard"
+import { ProductGridSkeleton } from "./ProductGridSkeleton"
+import { EmptyState } from "./EmptyState"
+import { ErrorState } from "./ErrorState"
+import { Pagination } from "./Pagination"
+import { ProductListItem } from "./shop.types"
+
+type Meta = {
+    page: number
+    total: number
+    total_pages: number
+}
+
+type Props = {
+    items: ProductListItem[]
+    meta: Meta | undefined
+    isLoading: boolean
+    isFetching: boolean
+    isError: boolean
+    isFiltered: boolean
+    onRetry: () => void
+    onReset: () => void
+    onPickVariant: (product: ProductListItem) => void
+    onPageChange: (page: number) => void
+}
+
+export function ShopProductGrid({
+    items, meta, isLoading, isFetching, isError,
+    isFiltered, onRetry, onReset, onPickVariant, onPageChange,
+}: Props) {
+    if (isLoading) return <ProductGridSkeleton />
+    if (isError) return <ErrorState onRetry={onRetry} />
+    if (items.length === 0) return <EmptyState isFiltered={isFiltered} onReset={onReset} />
+
+    return (
+        <div className="space-y-8">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10 transition-opacity duration-200 ${isFetching ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
+                {items.map(product => (
+                    <ProductCard
+                        key={product.product_id}
+                        product={product}
+                        onPickVariant={onPickVariant}
+                    />
+                ))}
+            </div>
+
+            {meta && meta.total_pages > 1 && (
+                <Pagination page={meta.page} totalPages={meta.total_pages} onChange={onPageChange} />
+            )}
+        </div>
+    )
+}
