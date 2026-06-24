@@ -4,10 +4,10 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { Product } from "@/modules/product/product.types"
 import { CartItemType } from "./type"
 import { ShoppingCart } from "lucide-react"
 import Image from "next/image"
+import { Product } from "../products/ProductType"
 
 type Props = {
     product:      Product | null

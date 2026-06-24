@@ -106,6 +106,7 @@ export const promotionService = {
         })
     },
 
+
     async toggleStatus(id: string) {
         const existing = await prisma.promotion.findUnique({ where: { promotion_id: id } })
         if (!existing) throw new NotFoundError("Promotion not found")

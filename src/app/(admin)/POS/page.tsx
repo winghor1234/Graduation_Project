@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useCreateSale } from "@/app/features/hooks/Sale"
 import { useGetAllProducts } from "@/app/features/hooks/Product"
 import { useGetCustomers } from "@/app/features/hooks/Customer"
 import { useDataTable } from "@/hooks/useDataTable"
@@ -13,6 +12,7 @@ import ProductGrid from "@/components/adminComponent/POS/ProductGrid"
 import CartPanel from "@/components/adminComponent/POS/CartPanel"
 import ConfirmModal from "@/components/adminComponent/POS/ConfirmModal"
 import { CustomerSelect } from "@/components/adminComponent/POS/CustomerSelect"
+import { useCreateSale } from "@/app/features/hooks/Sale"
 
 export default function POSPage() {
 
@@ -20,7 +20,8 @@ export default function POSPage() {
     const router = useRouter()
 
     const { data: products = [] } = useGetAllProducts()
-    const productsData = products?.items
+    const productsData = products.items ?? []
+    console.log("productsData : ", productsData);
     const { data: customersData } = useGetCustomers(table.params)
     const customers = customersData?.data ?? []
 
@@ -51,7 +52,6 @@ export default function POSPage() {
         }
     }
 
-    console.log("product :", products);
 
     return (
         <div className="h-[calc(100vh-64px)] overflow-hidden">

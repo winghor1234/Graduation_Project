@@ -8,7 +8,7 @@ export const useGetPromotions = (params?: UseGetParams) =>
     useQuery({ queryKey: ["promotions", params], queryFn: () => promotionApi.getAll(params), placeholderData: keepPreviousData })
 
 export const useGetAllPromotions = () =>
-    useQuery({ queryKey: ["promotions", id ], queryFn: promotionApi.getAllActive })
+    useQuery({ queryKey: ["promotions" ], queryFn: promotionApi.getAllActive })
 
 export const useGetPromotion = (id: string) =>
     useQuery({ queryKey: ["promotions", id], queryFn: () => promotionApi.getOne(id), enabled: !!id })

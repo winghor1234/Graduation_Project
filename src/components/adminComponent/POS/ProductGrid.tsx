@@ -104,9 +104,9 @@
 import { useState } from "react"
 import Image from "next/image"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { Product } from "@/modules/product/product.types"
 import { CartItemType } from "./type"
 import { VariantPickerDialog } from "./VariantPickerDialog"
+import { Product } from "../products/ProductType"
 
 type Props = {
     products: Product[]
@@ -114,6 +114,7 @@ type Props = {
 }
 
 export default function ProductGrid({ products, onAdd }: Props) {
+    console.log("products : ", products)
 
     const [pickerProduct, setPickerProduct] = useState<Product | null>(null)
 

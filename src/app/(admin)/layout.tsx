@@ -30,6 +30,7 @@ const navigation = [
     { name: "ໜ້າຂາຍໜ້າຮ້ານ", href: "/POS", icon: ShoppingCart, roles: ["ADMIN", "STAFF"] },
     { name: "ຄຳສັ່ງຊື້", href: "/order", icon: ShoppingBag, roles: ["ADMIN", "STAFF"] },
     { name: "ຈັດການສິນຄ້າ", href: "/product", icon: Package, roles: ["ADMIN"] },
+    { name: "ຈັດກາານໂປໂມຊັນ", href: "/promotion", icon: ShoppingCart, roles: ["ADMIN"] },
     { name: "ຈັດການລູກຄ້າ", href: "/customer", icon: Users, roles: ["ADMIN"] },
     { name: "ຈັດການພະນັກງານ", href: "/employee", icon: UserCog, roles: ["ADMIN"] },
     { name: "ຈັດການສາຂາ", href: "/location", icon: Store, roles: ["ADMIN"] },
