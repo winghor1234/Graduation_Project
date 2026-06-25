@@ -1,7 +1,7 @@
 "use client"
 
 import { UseFormRegister, FieldErrors } from "react-hook-form"
-import { Label } from "@/components/ui/label"
+import { MapPin } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckoutFormData, Province, District } from "./checkout.types"
 
@@ -15,25 +15,30 @@ type Props = {
     selectedDistrictData: District | null
 }
 
+const selectClass = "flex h-11 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm mt-1.5 text-gray-900 focus:border-brand-orange focus:outline-none focus:ring-2 focus:ring-brand-orange/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+
 export function CheckoutLocationCard({
     register, errors, provinces,
     selectedProvinceId, selectedDistrictId,
     selectedProvinceData, selectedDistrictData,
 }: Props) {
     return (
-        <Card className="border shadow-sm bg-white">
-            <CardHeader>
-                <CardTitle className="text-gray-900">ທີ່ຢູ່ ແລະ ສາຂາຮັບເຄື່ອງ</CardTitle>
+        <Card className="border border-gray-200 bg-white shadow-sm rounded-2xl">
+            <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2.5 text-gray-900 text-base">
+                    <div className="size-8 rounded-xl bg-orange-50 flex items-center justify-center">
+                        <MapPin className="size-4 text-brand-orange" />
+                    </div>
+                    ທີ່ຢູ່ ແລະ ສາຂາຮັບເຄື່ອງ
+                </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
 
                 <div>
-                    <Label htmlFor="province_id" className="text-gray-700">ແຂວງ *</Label>
-                    <select
-                        id="province_id"
-                        {...register("province_id")}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1.5"
-                    >
+                    <label htmlFor="province_id" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        ແຂວງ <span className="text-red-500">*</span>
+                    </label>
+                    <select id="province_id" {...register("province_id")} className={selectClass}>
                         <option value="">-- ເລືອກແຂວງ --</option>
                         {provinces.map(p => (
                             <option key={p.province_id} value={p.province_id}>
@@ -42,18 +47,20 @@ export function CheckoutLocationCard({
                         ))}
                     </select>
                     {errors.province_id && (
-                        <p className="text-xs text-destructive mt-1">{errors.province_id.message}</p>
+                        <p className="text-xs text-red-500 mt-1.5">{errors.province_id.message}</p>
                     )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <Label htmlFor="district_id" className="text-gray-700">ເມືອງ *</Label>
+                        <label htmlFor="district_id" className="block text-sm font-medium text-gray-700 mb-1.5">
+                            ເມືອງ <span className="text-red-500">*</span>
+                        </label>
                         <select
                             id="district_id"
                             {...register("district_id")}
                             disabled={!selectedProvinceId}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1.5 disabled:opacity-50"
+                            className={selectClass}
                         >
                             <option value="">-- ເລືອກເມືອງ --</option>
                             {selectedProvinceData?.districts.map(d => (
@@ -63,17 +70,19 @@ export function CheckoutLocationCard({
                             ))}
                         </select>
                         {errors.district_id && (
-                            <p className="text-xs text-destructive mt-1">{errors.district_id.message}</p>
+                            <p className="text-xs text-red-500 mt-1.5">{errors.district_id.message}</p>
                         )}
                     </div>
 
                     <div>
-                        <Label htmlFor="branch_id" className="text-gray-700">ສາຂາ *</Label>
+                        <label htmlFor="branch_id" className="block text-sm font-medium text-gray-700 mb-1.5">
+                            ສາຂາ <span className="text-red-500">*</span>
+                        </label>
                         <select
                             id="branch_id"
                             {...register("branch_id")}
                             disabled={!selectedDistrictId}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1.5 disabled:opacity-50"
+                            className={selectClass}
                         >
                             <option value="">-- ເລືອກສາຂາ --</option>
                             {selectedDistrictData?.branches.map(b => (
@@ -83,7 +92,7 @@ export function CheckoutLocationCard({
                             ))}
                         </select>
                         {errors.branch_id && (
-                            <p className="text-xs text-destructive mt-1">{errors.branch_id.message}</p>
+                            <p className="text-xs text-red-500 mt-1.5">{errors.branch_id.message}</p>
                         )}
                     </div>
                 </div>

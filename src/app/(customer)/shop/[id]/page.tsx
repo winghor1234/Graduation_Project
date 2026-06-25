@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useGetProduct, useGetAllProducts } from "@/app/features/hooks/Product"
 import { useCustomer } from "@/components/customerComponent/CustomerContext"
+import { useGetAllPromotions } from "@/app/features/hooks/promotion"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { ProductCard } from "@/components/customerComponent/shop/ProductCard"
 import { ProductListItem } from "@/components/customerComponent/shop/shop.types"
@@ -63,6 +64,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const { data: relatedData } = useGetAllProducts(
         useMemo(() => ({ sort_by: "featured" as const, page_size: 8 }), [])
     )
+    const { data: allPromotions = [] } = useGetAllPromotions()
 
     const [selectedColor, setSelectedColor] = useState<string | null>(null)
     const [selectedSize,  setSelectedSize]  = useState<string | null>(null)
@@ -94,6 +96,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             .slice(0, 4) as ProductListItem[]
     }, [relatedData, product])
 
+    // ຕ້ອງ declare ກ່ອນ early return — Rules of Hooks
+    const promotion = useMemo(() => {
+        if (!product || !allPromotions.length) return null
+        const now = new Date()
+        return allPromotions.find(p => {
+            if (p.status !== "ACTIVE") return false
+            if (new Date(p.start_date) > now || new Date(p.end_date) < now) return false
+            if (!p.promotion_products?.length) return true
+            return p.promotion_products.some(pp => pp.product_id === product.product_id)
+        }) ?? null
+    }, [allPromotions, product])
+
     if (isLoading) return <ProductDetailSkeleton />
 
     if (!product) {
@@ -115,6 +129,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const prices = variants.map(v => v.sale_price)
     const minPrice = prices.length ? Math.min(...prices) : 0
     const maxPrice = prices.length ? Math.max(...prices) : 0
+    const basePrice = selectedVariant?.sale_price ?? minPrice
+    const discountedPrice = promotion ? Math.max(0, basePrice - promotion.discount_value) : null
     const priceLabel = selectedVariant
         ? formatCurrency(selectedVariant.sale_price)
         : minPrice === maxPrice
@@ -239,17 +255,46 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             </h1>
                         </div>
 
+                        {/* Promotion banner */}
+                        {promotion && (
+                            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                                <span className="text-lg">🎁</span>
+                                <div>
+                                    <p className="text-xs font-bold text-emerald-700">{promotion.promotion_code} · {promotion.promotion_name}</p>
+                                    <p className="text-xs text-emerald-600">ສ່ວນຫຼຸດ -{formatCurrency(promotion.discount_value)} ສຳລັບສິນຄ້ານີ້</p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Price */}
-                        <div className="flex items-baseline gap-3">
-                            <span className="text-3xl font-extrabold text-gray-900">{priceLabel}</span>
-                            {selectedVariant && isLowStock && (
-                                <Badge className="bg-amber-500 text-white border-none">
-                                    ເຫຼືອ {stockQty} ໂຕ
-                                </Badge>
+                        <div className="space-y-1">
+                            {promotion && discountedPrice !== null ? (
+                                <div className="flex items-baseline gap-3 flex-wrap">
+                                    <span className="text-3xl font-extrabold text-emerald-600">
+                                        {formatCurrency(discountedPrice)}
+                                    </span>
+                                    <span className="text-xl text-gray-400 line-through">
+                                        {priceLabel}
+                                    </span>
+                                    <Badge className="bg-emerald-500 text-white border-none text-xs">
+                                        -{formatCurrency(promotion.discount_value)} OFF
+                                    </Badge>
+                                </div>
+                            ) : (
+                                <div className="flex items-baseline gap-3">
+                                    <span className="text-3xl font-extrabold text-gray-900">{priceLabel}</span>
+                                </div>
                             )}
-                            {selectedVariant && !inStock && (
-                                <Badge variant="destructive">ໝົດສາງ</Badge>
-                            )}
+                            <div className="flex items-center gap-2">
+                                {selectedVariant && isLowStock && (
+                                    <Badge className="bg-amber-500 text-white border-none">
+                                        ເຫຼືອ {stockQty} ໂຕ
+                                    </Badge>
+                                )}
+                                {selectedVariant && !inStock && (
+                                    <Badge variant="destructive">ໝົດສາງ</Badge>
+                                )}
+                            </div>
                         </div>
 
                         {/* Description */}

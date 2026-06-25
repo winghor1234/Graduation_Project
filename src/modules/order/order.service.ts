@@ -80,6 +80,7 @@ export const orderService = {
         const branch_id     = formData.get("branch_id") as string
         const order_details: OrderDetailInput[] = JSON.parse(formData.get("order_details") as string)
         const file           = formData.get("file") as File | null
+        const points_used    = Number(formData.get("points_used") ?? 0)
 
         if (!customer_id) throw new BadRequestError("customer_id is required")
         if (!order_details?.length) throw new BadRequestError("Order must have at least one item")
@@ -115,15 +116,33 @@ export const orderService = {
                     throw new BadRequestError(`Insufficient stock for variant ${item.variant_id}`)
             }
 
-            const total_amount = order_details.reduce(
+            const cart_total = order_details.reduce(
                 (acc, item) => acc + item.price * item.quantity, 0
             )
+
+            // ✅ ກວດ points ທີ່ໃຊ້ — ຕ້ອງໄດ້ຮັບການຢືນຢັນຈາກ DB
+            let validatedPoints = 0
+            if (points_used > 0) {
+                const customer = await tx.customer.findUnique({
+                    where: { customer_id },
+                    select: { point: true },
+                })
+                if (!customer) throw new NotFoundError("Customer not found")
+                const maxRedeem = Math.floor(cart_total * 0.3 / 100) // 30% of cart, 1pt=100₭
+                const available = Math.floor(customer.point)
+                validatedPoints = Math.min(points_used, available, maxRedeem)
+                if (validatedPoints < 10) validatedPoints = 0
+            }
+
+            const point_discount = validatedPoints * 100
+            const total_amount   = Math.max(0, cart_total - point_discount)
 
             const order = await tx.order.create({
                 data: {
                     customer_id,
                     order_code:   generateOrderCode(),
                     total_amount,
+                    points_used:  validatedPoints,
                     status:       OrderStatus.WAITING_PAYMENT,
                 },
             })
@@ -168,6 +187,23 @@ export const orderService = {
                 await tx.productVariant.update({
                     where: { variant_id: item.variant_id },
                     data:  { stock_qty: { decrement: item.quantity } },
+                })
+            }
+
+            // ✅ ຫັກຄະແນນທີ່ໃຊ້ + log ປະຫວັດ
+            if (validatedPoints > 0) {
+                await tx.customer.update({
+                    where: { customer_id },
+                    data:  { point: { decrement: validatedPoints } },
+                })
+                await tx.pointTransaction.create({
+                    data: {
+                        customer_id,
+                        type:        "REDEEM",
+                        points:      -validatedPoints,
+                        description: `ໃຊ້ຄະແນນສ່ວນຫຼຸດ ${validatedPoints * 100}₭ ສຳລັບ order ${order.order_code}`,
+                        order_id:    order.order_id,
+                    },
                 })
             }
 
@@ -218,6 +254,27 @@ export const orderService = {
                     where: { order_id: orderId },
                     data:  { status: "VERIFIED" },
                 })
+            }
+
+            // ✅ ເມື່ອ COMPLETED → ໃຫ້ຄະແນນລູກຄ້າ (10,000₭ = 1 ຄະແນນ)
+            if (status === "COMPLETED" && order.customer_id) {
+                const baseAmount = (order.total_amount ?? 0)
+                const earned = Math.floor(baseAmount / 10000)
+                if (earned > 0) {
+                    await tx.customer.update({
+                        where: { customer_id: order.customer_id },
+                        data:  { point: { increment: earned } },
+                    })
+                    await tx.pointTransaction.create({
+                        data: {
+                            customer_id: order.customer_id,
+                            type:        "EARN",
+                            points:      earned,
+                            description: `ໄດ້ຮັບຄະແນນຈາກ order ${order.order_code}`,
+                            order_id:    orderId,
+                        },
+                    })
+                }
             }
 
             return tx.order.update({

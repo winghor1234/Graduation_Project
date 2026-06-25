@@ -2,19 +2,34 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ShoppingCart } from "lucide-react"
+import { ShoppingCart, Tag } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { ProductListItem } from "./shop.types"
 import { useCustomer } from "@/components/customerComponent/CustomerContext"
+import { useGetAllPromotions } from "@/app/features/hooks/promotion"
+import { Promotion } from "@/modules/promotion/promotion.types"
 import { toast } from "sonner"
+import { useMemo } from "react"
 
 type Props = {
     product: ProductListItem
     onPickVariant: (product: ProductListItem) => void
 }
 
+/** ຊອກຫາ promotion ທີ່ active ແລະ apply ກັບ product ນີ້ */
+function findProductPromotion(promotions: Promotion[], productId: string): Promotion | null {
+    const now = new Date()
+    return promotions.find(p => {
+        if (p.status !== "ACTIVE") return false
+        if (new Date(p.start_date) > now || new Date(p.end_date) < now) return false
+        if (!p.promotion_products?.length) return true
+        return p.promotion_products.some(pp => pp.product_id === productId)
+    }) ?? null
+}
+
 export function ProductCard({ product, onPickVariant }: Props) {
     const { addToCart } = useCustomer()
+    const { data: allPromotions = [] } = useGetAllPromotions()
 
     const totalStock = product.variants?.reduce((sum, v) => sum + v.stock_qty, 0) ?? 0
     const isOutOfStock = totalStock <= 0
@@ -25,6 +40,15 @@ export function ProductCard({ product, onPickVariant }: Props) {
         const diff = Date.now() - new Date(product.createdAt).getTime()
         return diff < 1000 * 60 * 60 * 24 * 14
     })()
+
+    const promotion = useMemo(
+        () => findProductPromotion(allPromotions, product.product_id),
+        [allPromotions, product.product_id]
+    )
+
+    const discountedPrice = promotion
+        ? Math.max(0, product.min_price - promotion.discount_value)
+        : null
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault()
@@ -81,7 +105,22 @@ export function ProductCard({ product, onPickVariant }: Props) {
                                 ໃກ້ໝົດ
                             </span>
                         )}
+                        {promotion && !isOutOfStock && (
+                            <span className="text-[10px] font-extrabold text-white bg-emerald-500 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                <Tag className="size-2.5" />
+                                SALE
+                            </span>
+                        )}
                     </div>
+
+                    {/* Promotion discount tag — top-right */}
+                    {promotion && !isOutOfStock && (
+                        <div className="absolute top-3 right-3">
+                            <span className="text-[10px] font-extrabold text-white bg-brand-orange/90 backdrop-blur-sm px-2 py-0.5 rounded-md">
+                                -{formatCurrency(promotion.discount_value)}
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Info */}
@@ -93,14 +132,39 @@ export function ProductCard({ product, onPickVariant }: Props) {
                         {product.description || "ເຄື່ອງກີລາຊັ້ນສູງ ອອກແບບດ້ວຍວັດສະດຸທີ່ທັນສະໄໝ"}
                     </p>
 
+                    {/* Promotion name banner */}
+                    {promotion && !isOutOfStock && (
+                        <div className="flex items-center gap-1.5 bg-emerald-900/30 border border-emerald-700/40 rounded-lg px-2 py-1">
+                            <Tag className="size-3 text-emerald-400 shrink-0" />
+                            <span className="text-[10px] text-emerald-300 font-semibold truncate">
+                                {promotion.promotion_name}
+                            </span>
+                        </div>
+                    )}
+
                     <div className="flex items-end justify-between pt-1">
                         <div>
-                            {product.min_price !== product.max_price && (
-                                <p className="text-[10px] text-brand-muted mb-0.5">ເລີ່ມຕົ້ນ</p>
+                            {promotion && discountedPrice !== null ? (
+                                <>
+                                    <span className="text-xs text-brand-muted line-through">
+                                        {formatCurrency(product.min_price)}
+                                    </span>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-lg font-extrabold text-emerald-400">
+                                            {formatCurrency(discountedPrice)}
+                                        </span>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {product.min_price !== product.max_price && (
+                                        <p className="text-[10px] text-brand-muted mb-0.5">ເລີ່ມຕົ້ນ</p>
+                                    )}
+                                    <span className="text-lg font-extrabold text-brand-orange">
+                                        {formatCurrency(product.min_price)}
+                                    </span>
+                                </>
                             )}
-                            <span className="text-lg font-extrabold text-brand-orange">
-                                {formatCurrency(product.min_price)}
-                            </span>
                         </div>
                         {!isOutOfStock && (
                             <span className="text-[10px] text-brand-muted font-medium">
