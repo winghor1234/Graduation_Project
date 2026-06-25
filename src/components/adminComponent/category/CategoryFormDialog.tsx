@@ -102,7 +102,7 @@ export function CategoryFormDialog({ open, onOpenChange, category, create, updat
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">ຊື່ປະເພດສິນຄ້າ</label>
+            <label className="text-sm font-medium text-admin-text block mb-1">ຊື່ປະເພດສິນຄ້າ</label>
             <Input {...register("category_name")} placeholder="ປ້ອນຊື່ປະເພດສິນຄ້າ..." />
             {errors.category_name?.message && (
               <div className="text-red-500 text-sm mt-1">{errors.category_name.message}</div>
@@ -110,7 +110,7 @@ export function CategoryFormDialog({ open, onOpenChange, category, create, updat
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">ລາຍລະອຽດ</label>
+            <label className="text-sm font-medium text-admin-text block mb-1">ລາຍລະອຽດ</label>
             <Input {...register("description")} placeholder="ປ້ອນລາຍລະອຽດປະເພດສິນຄ້າ..." />
             {errors.description?.message && (
               <div className="text-red-500 text-sm mt-1">{errors.description.message}</div>

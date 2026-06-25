@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance"
-import { Order, CreateOrderInput, UpdateOrderStatusInput } from "@/modules/order/order.types"
+import { Order, CreateOrderInput, UpdateOrderStatusInput } from "@/modules/order/order.type"
 import { UseGetParams } from "../types"
 
 export const orderApi = {

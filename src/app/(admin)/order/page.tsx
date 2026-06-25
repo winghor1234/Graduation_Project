@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useDataTable } from "@/hooks/useDataTable"
 import { useGetOrders } from "@/app/features/hooks/Order"
 import { AppPagination } from "@/components/AppPagination"
-import { Order } from "@/modules/order/order.types"
+import { Order } from "@/modules/order/order.type"
 import { OrderDetailDialog } from "@/components/adminComponent/order/OrderDetail"
 import { OrderTable } from "@/components/adminComponent/order/OrderTable"
 

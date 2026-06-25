@@ -203,7 +203,7 @@ export default function ReceiptModal({
 
                     <button
                         onClick={onClose}
-                        className="flex-1 rounded-lg border py-2 hover:bg-gray-50"
+                        className="flex-1 rounded-lg border py-2 hover:bg-admin-bg"
                     >
                         ປິດ
                     </button>

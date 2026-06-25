@@ -15,7 +15,6 @@ export default function ProductReportPage() {
             (item.product_name?.toLowerCase().includes(keyword) ?? false) || (item.product_code?.toLowerCase().includes(keyword) ?? false) || (item.category?.category_name?.toLowerCase().includes(keyword) ?? false),
     })
 
-    console.log(report.data)
 
     const columns: Column<Product>[] = [
         {

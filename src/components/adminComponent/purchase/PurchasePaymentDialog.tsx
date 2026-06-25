@@ -20,7 +20,6 @@
 // /* ----------------------------- Component ----------------------------- */
 
 // export function PurchasePaymentDialog({ open, onOpenChange, purchase }: Props) {
-//     console.log("purchase im payment : ", purchase)
 
 //     const { mutate: confirmPayment, isPending } = useCreatePaymentPurchaseOrder()
 
@@ -67,7 +66,7 @@
 //                             <DialogTitle className="text-base font-bold text-gray-900">
 //                                 ຢືນຢັນການຊຳລະເງິນ
 //                             </DialogTitle>
-//                             <DialogDescription className="text-xs text-gray-400 mt-0.5">
+//                             <DialogDescription className="text-xs text-admin-muted mt-0.5">
 //                                 ກວດສອບລາຍລະອຽດກ່ອນຊຳລະ
 //                             </DialogDescription>
 //                         </div>
@@ -90,46 +89,46 @@
 //                 {/* ── Purchase + Import Meta ── */}
 //                 <div className="grid grid-cols-2 gap-3 text-sm bg-gray-50/60 p-4 rounded-xl border border-gray-100">
 //                     <div className="space-y-2">
-//                         <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+//                         <p className="text-[11px] font-semibold text-admin-muted uppercase tracking-wider">
 //                             ໃບສັ່ງຊື້
 //                         </p>
 //                         <div className="flex justify-between">
-//                             <span className="text-gray-400">ລະຫັດ:</span>
-//                             <span className="font-mono font-semibold text-gray-800">
+//                             <span className="text-admin-muted">ລະຫັດ:</span>
+//                             <span className="font-mono font-semibold text-admin-text">
 //                                 {purchase.purchase_code}
 //                             </span>
 //                         </div>
 //                         <div className="flex justify-between">
-//                             <span className="text-gray-400">ວັນທີ:</span>
-//                             <span className="text-gray-700">{formatDate(purchase.purchase_date)}</span>
+//                             <span className="text-admin-muted">ວັນທີ:</span>
+//                             <span className="text-admin-text">{formatDate(purchase.purchase_date)}</span>
 //                         </div>
 //                         <div className="flex justify-between">
-//                             <span className="text-gray-400">ຜູ້ສະໜອງ:</span>
-//                             <span className="text-gray-700">{purchase.supplier?.supplier_name}</span>
+//                             <span className="text-admin-muted">ຜູ້ສະໜອງ:</span>
+//                             <span className="text-admin-text">{purchase.supplier?.supplier_name}</span>
 //                         </div>
 //                     </div>
 
 //                     <div className="space-y-2">
-//                         <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1">
+//                         <p className="text-[11px] font-semibold text-admin-muted uppercase tracking-wider flex items-center gap-1">
 //                             <PackageCheck className="w-3.5 h-3.5" /> ການນຳເຂົ້າ
 //                         </p>
 //                         <div className="flex justify-between">
-//                             <span className="text-gray-400">ລະຫັດ:</span>
-//                             <span className="font-mono font-semibold text-gray-800">
+//                             <span className="text-admin-muted">ລະຫັດ:</span>
+//                             <span className="font-mono font-semibold text-admin-text">
 //                                 {purchase.import?.import_code ?? "-"}
 //                             </span>
 //                         </div>
 //                         <div className="flex justify-between">
-//                             <span className="text-gray-400">ວັນທີຮັບ:</span>
-//                             <span className="text-gray-700">
+//                             <span className="text-admin-muted">ວັນທີຮັບ:</span>
+//                             <span className="text-admin-text">
 //                                 {purchase.import?.import_date
 //                                     ? formatDate(purchase.import.import_date)
 //                                     : "-"}
 //                             </span>
 //                         </div>
 //                         <div className="flex justify-between">
-//                             <span className="text-gray-400">ຜູ້ຮັບ:</span>
-//                             <span className="text-gray-700">
+//                             <span className="text-admin-muted">ຜູ້ຮັບ:</span>
+//                             <span className="text-admin-text">
 //                                 {purchase?.employee?.employee_name ?? "-"}
 //                             </span>
 //                         </div>
@@ -156,13 +155,13 @@
 //                                 return (
 //                                     <TableRow
 //                                         key={d.purchase_detail_id}
-//                                         className="hover:bg-gray-50/50 transition-colors"
+//                                         className="hover:bg-brand-blue-soft/30 transition-colors"
 //                                     >
-//                                         <TableCell className="text-center text-gray-400">{i + 1}</TableCell>
+//                                         <TableCell className="text-center text-admin-muted">{i + 1}</TableCell>
 //                                         <TableCell className="font-medium text-gray-900">
 //                                             {d.product?.product_name}
 //                                         </TableCell>
-//                                         <TableCell className="text-right text-gray-400 tabular-nums">
+//                                         <TableCell className="text-right text-admin-muted tabular-nums">
 //                                             {d.quantity}
 //                                         </TableCell>
 //                                         <TableCell className="text-right tabular-nums">
@@ -201,7 +200,7 @@
 //                 {/* ── Summary ── */}
 //                 <div className="flex justify-end">
 //                     <div className="w-full sm:w-[320px] rounded-xl border border-gray-200 bg-gray-50/40 p-4 space-y-2.5 shadow-sm">
-//                         <div className="flex justify-between text-sm text-gray-400">
+//                         <div className="flex justify-between text-sm text-admin-muted">
 //                             <span>ຍອດຕາມໃບສັ່ງ</span>
 //                             <span className="tabular-nums line-through">
 //                                 {formatCurrency(orderedTotal)} ກີບ
@@ -235,7 +234,7 @@
 //                             <span className="text-sm font-bold text-gray-900">ຍອດຕ້ອງຊຳລະ</span>
 //                             <span className="text-xl font-extrabold text-green-600 tabular-nums">
 //                                 {formatCurrency(remaining)}
-//                                 <span className="text-xs font-semibold text-gray-400 ml-1">ກີບ</span>
+//                                 <span className="text-xs font-semibold text-admin-muted ml-1">ກີບ</span>
 //                             </span>
 //                         </div>
 //                     </div>
@@ -273,7 +272,7 @@
 
 //                 {/* canPay hint */}
 //                 {!canPay && purchase.payment_status !== "PAID" && (
-//                     <p className="text-center text-xs text-gray-400 -mt-2">
+//                     <p className="text-center text-xs text-admin-muted -mt-2">
 //                         {!purchase.import
 //                             ? "⚠ ຕ້ອງມີໃບນຳເຂົ້າກ່ອນຈຶ່ງຊຳລະໄດ້"
 //                             : purchase.status !== "COMPLETED"

@@ -1,4 +1,4 @@
-import { Order } from "@/modules/order/order.types"
+import { Order } from "@/modules/order/order.type"
 
 
 export type PaymentStatus =

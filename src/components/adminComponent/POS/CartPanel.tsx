@@ -27,7 +27,7 @@
 //             </div>
 
 //             {/* SUMMARY */}
-//             <div className="p-4 border-t bg-gray-50 space-y-2 text-sm">
+//             <div className="p-4 border-t bg-admin-bg space-y-2 text-sm">
 
 //                 {/* <div className="flex justify-between">
 //                     <span>ລວມຍ່ອຍ (Subtotal)</span>
@@ -100,7 +100,7 @@ export default function CartPanel({ cart, update, remove, subtotal, tax, total, 
             </div>
 
             {/* Summary */}
-            <div className="p-4 border-t bg-gray-50 space-y-2 text-sm shrink-0">
+            <div className="p-4 border-t bg-admin-bg space-y-2 text-sm shrink-0">
                 <div className="flex justify-between font-bold text-base">
                     <span>ລວມທັງໝົດ</span>
                     <span className="text-primary">{formatCurrency(total)}</span>

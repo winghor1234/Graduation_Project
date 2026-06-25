@@ -28,7 +28,7 @@
 //                             className="object-cover w-full h-full"
 //                         />
 //                     ) : (
-//                         <span className="text-[10px] text-gray-400">ບໍ່ມີຮູບ</span>
+//                         <span className="text-[10px] text-admin-muted">ບໍ່ມີຮູບ</span>
 //                     )}
 //                 </div>
 //                 <div>
@@ -81,7 +81,7 @@ export default function CartItems({ item, onUpdate, onRemove }: Props) {
                         className="object-cover w-full h-full"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
+                    <div className="w-full h-full flex items-center justify-center text-[10px] text-admin-muted">
                         ບໍ່ມີຮູບ
                     </div>
                 )}

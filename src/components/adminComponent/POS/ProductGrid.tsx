@@ -39,7 +39,7 @@
 //                                 className="  object-cover transition-transform duration-300 group-hover:scale-105  "
 //                             />
 //                         ) : (
-//                             <div className="flex h-full items-center justify-center text-xs text-gray-400">
+//                             <div className="flex h-full items-center justify-center text-xs text-admin-muted">
 //                                 ບໍ່ມີຮູບ
 //                             </div>
 //                         )}
@@ -84,7 +84,7 @@
 //                                     ring-1
 //                                     ring-inset
 //                                     ring-primary/10
-//                                     hover:bg-blue-500 hover:text-white
+//                                     hover:bg-brand-blue-soft0 hover:text-white
 //                                 "
 //                             >
 //                                 + ເພີ່ມ
@@ -114,7 +114,6 @@ type Props = {
 }
 
 export default function ProductGrid({ products, onAdd }: Props) {
-    console.log("products : ", products)
 
     const [pickerProduct, setPickerProduct] = useState<Product | null>(null)
 
@@ -166,7 +165,7 @@ export default function ProductGrid({ products, onAdd }: Props) {
                                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
                                 ) : (
-                                    <div className="flex h-full items-center justify-center text-xs text-gray-400">
+                                    <div className="flex h-full items-center justify-center text-xs text-admin-muted">
                                         ບໍ່ມີຮູບ
                                     </div>
                                 )}

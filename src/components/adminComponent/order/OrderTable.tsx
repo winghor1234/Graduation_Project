@@ -1,25 +1,28 @@
+"use client"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import Image from "next/image"
-import { Order, OrderStatus } from "@/modules/order/order.types"
+import { Order } from "@/modules/order/order.type"
 import { Payment } from "@/modules/payment/payment.type"
+import { Delivery } from "@/modules/delivery/delivery.type"
 import { useState } from "react"
 import { toast } from "sonner"
 import { PaymentVerifyDialog } from "../payment/PaymentVerifyDialog"
 import { DeliveryUpdateDialog } from "./DeliveryUpdateDialog"
-import { Delivery } from "@/modules/delivery/delivery.type"
 import { useVerifyPayment } from "@/app/features/hooks/Payment"
 import { useUpdateDelivery } from "@/app/features/hooks/Delivery"
 import { BadgeComponent } from "../StatusComponent"
+import { cn } from "@/lib/utils"
+import { theme } from "@/styles/theme"
+import { Eye } from "lucide-react"
+import { formatCurrency } from "@/utils/FormatCurrency"
 
 type Props = {
     data: Order[]
     isLoading: boolean
     onView: (order: Order) => void
-    // onUpdateStatus: (id: string, status: OrderStatus) => void
-    // onVerifyPayment: (p: Payment) => void
-    // onUpdateDelivery: (id: string) => void
-    // onDelete: (id: string) => void
 }
 
 export function OrderTable({ data, isLoading, onView }: Props) {
@@ -31,8 +34,6 @@ export function OrderTable({ data, isLoading, onView }: Props) {
     const [selectedPayment, setSelectedPayment] = useState<Payment | undefined>()
     const [selectedDelivery, setSelectedDelivery] = useState<Delivery | undefined>()
 
-    if (isLoading) return <div>ກຳລັງໂຫຼດຂໍ້ມູນ...</div>
-
     const handleVerify = (payment: Payment) => {
         setSelectedPayment(payment)
         setOpenDialog(true)
@@ -41,18 +42,10 @@ export function OrderTable({ data, isLoading, onView }: Props) {
     const handleSubmitVerify = (status: "VERIFIED" | "REJECTED") => {
         if (!selectedPayment) return
         verifyPayment.mutate(
+            { id: selectedPayment.payment_id, data: { status } },
             {
-                id: selectedPayment.payment_id,
-                data: { status }
-            },
-            {
-                onSuccess: () => {
-                    toast.success("ອັບເດດການຊຳລະເງິນສຳເລັດແລ້ວ")
-                    setOpenDialog(false)
-                },
-                onError: () => {
-                    toast.error("ການອັບເດດລົ້ມເຫຼວ")
-                }
+                onSuccess: () => { toast.success("ອັບເດດການຊຳລະເງິນສຳເລັດ"); setOpenDialog(false) },
+                onError:   () => toast.error("ການອັບເດດລົ້ມເຫຼວ"),
             }
         )
     }
@@ -65,118 +58,129 @@ export function OrderTable({ data, isLoading, onView }: Props) {
     const handleUpdateDelivery = (status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED") => {
         if (!selectedDelivery?.delivery_id) return
         updateDelivery.mutate(
+            { id: selectedDelivery.delivery_id, data: { status } },
             {
-                id: selectedDelivery.delivery_id,
-                data: { status }
-            },
-            {
-                onSuccess: () => {
-                    toast.success("ອັບເດດສະຖານະການຈັດສົ່ງສຳເລັດແລ້ວ")
-                    setOpenDeliveryDialog(false)
-                },
-                onError: () => {
-                    toast.error("ການອັບເດດລົ้มເຫຼວ")
-                }
+                onSuccess: () => { toast.success("ອັບເດດສະຖານະການຈັດສົ່ງສຳເລັດ"); setOpenDeliveryDialog(false) },
+                onError:   () => toast.error("ການອັບເດດລົ້ມເຫຼວ"),
             }
         )
     }
 
-    return (
-        <div>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>ລຳດັບ:</TableHead>
-                        <TableHead>ລະຫັດອໍເດີ້</TableHead>
-                        <TableHead>ຊື່ລູກຄ້າ</TableHead>
-                        <TableHead>ຍອດລວມ</TableHead>
-
-                        <TableHead>ການຊຳລະເງິນ</TableHead>
-                        <TableHead>ບິນໂອນ (Slip)</TableHead>
-
-                        <TableHead>ການຈັດສົ່ງ</TableHead>
-                        <TableHead>ເລກຕິດຕາມພັດສະດຸ</TableHead>
-
-                        <TableHead>ການຈັດການ</TableHead>
-                    </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                    {data.map((o, index) => (
-                        console.log(o),
-                        <TableRow key={o.order_id}>
-                            {/* ORDER */}
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell>{o.order_code}</TableCell>
-                            <TableCell>{o.customer?.customer_name}</TableCell>
-                            <TableCell>{o.total_amount}</TableCell>
-
-                            {/* PAYMENT */}
-                            <TableCell>
-                                <BadgeComponent status={o.payment?.status} />
-                            </TableCell>
-                            <TableCell>
-                                {o.payment?.slip_url && (
-                                    <Image
-                                        src={o.payment.slip_url}
-                                        width={40}
-                                        height={40}
-                                        alt="slip"
-                                        className="rounded"
-                                    />
-                                )}
-                            </TableCell>
-
-                            {/* DELIVERY */}
-                            <TableCell>
-                                <BadgeComponent status={o.delivery?.status} />
-                            </TableCell>
-                            <TableCell>{o.delivery?.tracking_number || "-"}</TableCell>
-
-                            {/* ACTION */}
-                            <TableCell className="flex gap-2">
-
-                                <Button size="sm" onClick={() => onView(o)}>
-                                    ເບິ່ງ
-                                </Button>
-
-                                {/* verify payment */}
-                                <Button
-                                    size="sm"
-                                    onClick={() => o.payment && handleVerify(o.payment)}
-                                    disabled={o.payment?.status !== "PENDING" || !o.payment}
-                                    className={
-                                        o.payment?.status === "PENDING"
-                                            ? "bg-yellow-500 hover:bg-yellow-600 text-white"
-                                            : o.payment?.status === "REJECTED"
-                                                ? "bg-red-500 hover:bg-red-600 text-white"
-                                                : "bg-green-500 hover:bg-green-600 text-white"
-                                    }
-                                >
-                                    {o.payment?.status === "PENDING"
-                                        ? "ກວດສອບ"
-                                        : o.payment?.status === "REJECTED"
-                                            ? "ປະຕິເສດແລ້ວ"
-                                            : "ກວດສອບແລ້ວ"}
-                                </Button>
-
-                                {/* update delivery */}
-                                <Button
-                                    size="sm"
-                                    onClick={() => o.delivery && handleUpdateDeliveryDialog(o.delivery)}
-                                    disabled={!o.delivery}
-                                >
-                                    {/* {o.delivery?.status || "ບໍ່ມີຂໍ້ມູນ"} */}
-                                    <BadgeComponent status={o.delivery?.status} />
-
-                                </Button>
-
-                            </TableCell>
-
+    if (isLoading) {
+        return (
+            <Card className={cn("overflow-hidden rounded-2xl", theme.card)}>
+                <Table>
+                    <TableHeader>
+                        <TableRow className="bg-admin-bg hover:bg-admin-bg border-admin-border">
+                            {["#", "ລະຫັດ", "ລູກຄ້າ", "ຍອດລວມ", "ການຊຳລະ", "ສລິບ", "ຈັດສົ່ງ", "ເລກຕິດຕາມ", ""].map((h) => (
+                                <TableHead key={h} className={theme.subText}>{h}</TableHead>
+                            ))}
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {[...Array(5)].map((_, i) => (
+                            <TableRow key={i} className="border-admin-border">
+                                {[...Array(9)].map((__, j) => (
+                                    <TableCell key={j}><Skeleton className="h-4 w-16" /></TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </Card>
+        )
+    }
+
+    return (
+        <>
+            <Card className={cn("overflow-hidden rounded-2xl", theme.card)}>
+                <div className="w-full overflow-x-auto">
+                    <Table className="min-w-225">
+                        <TableHeader>
+                            <TableRow className="bg-admin-bg hover:bg-admin-bg border-admin-border">
+                                <TableHead className={theme.subText}>#</TableHead>
+                                <TableHead className={theme.subText}>ລະຫັດອໍເດີ້</TableHead>
+                                <TableHead className={theme.subText}>ລູກຄ້າ</TableHead>
+                                <TableHead className={theme.subText}>ຍອດລວມ</TableHead>
+                                <TableHead className={theme.subText}>ການຊຳລະ</TableHead>
+                                <TableHead className={theme.subText}>ສລິບ</TableHead>
+                                <TableHead className={theme.subText}>ຈັດສົ່ງ</TableHead>
+                                <TableHead className={theme.subText}>ເລກຕິດຕາມ</TableHead>
+                                <TableHead className={theme.subText}>ການຈັດການ</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {data.map((o, index) => (
+                                <TableRow
+                                    key={o.order_id}
+                                    className="border-admin-border hover:bg-brand-blue-soft/30 transition-colors"
+                                >
+                                    <TableCell className={cn("font-medium", theme.subText)}>{index + 1}</TableCell>
+                                    <TableCell className={cn("font-mono text-xs", theme.text)}>{o.order_code}</TableCell>
+                                    <TableCell className={theme.text}>{o.customer?.customer_name}</TableCell>
+                                    <TableCell className={cn("font-semibold", theme.primary)}>{formatCurrency(o.total_amount ?? 0)}</TableCell>
+                                    <TableCell><BadgeComponent status={o.payment?.status} /></TableCell>
+                                    <TableCell>
+                                        {o.payment?.slip_url && (
+                                            <Image
+                                                src={o.payment.slip_url}
+                                                width={40}
+                                                height={40}
+                                                alt="slip"
+                                                className="rounded-lg object-cover"
+                                            />
+                                        )}
+                                    </TableCell>
+                                    <TableCell><BadgeComponent status={o.delivery?.status} /></TableCell>
+                                    <TableCell className={cn("font-mono text-xs", theme.subText)}>
+                                        {o.delivery?.tracking_number || "-"}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex gap-1.5">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-7 px-2 gap-1 text-xs border-admin-border hover:bg-brand-blue-soft hover:text-brand-blue hover:border-brand-blue"
+                                                onClick={() => onView(o)}
+                                            >
+                                                <Eye className="size-3" />
+                                                ເບິ່ງ
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                className={cn(
+                                                    "h-7 px-2 text-xs",
+                                                    o.payment?.status === "PENDING"
+                                                        ? "bg-yellow-500 hover:bg-yellow-600 text-white"
+                                                        : o.payment?.status === "REJECTED"
+                                                            ? "bg-red-500 hover:bg-red-600 text-white"
+                                                            : "bg-emerald-500 hover:bg-emerald-600 text-white"
+                                                )}
+                                                onClick={() => o.payment && handleVerify(o.payment)}
+                                                disabled={o.payment?.status !== "PENDING" || !o.payment}
+                                            >
+                                                {o.payment?.status === "PENDING" ? "ກວດສອບ"
+                                                    : o.payment?.status === "REJECTED" ? "ປະຕິເສດ"
+                                                    : "ຢືນຢັນແລ້ວ"}
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-7 px-2 text-xs border-admin-border"
+                                                onClick={() => o.delivery && handleUpdateDeliveryDialog(o.delivery)}
+                                                disabled={!o.delivery}
+                                            >
+                                                <BadgeComponent status={o.delivery?.status} />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </Card>
+
             <PaymentVerifyDialog
                 open={openDialog}
                 onOpenChange={setOpenDialog}
@@ -189,6 +193,6 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                 delivery={selectedDelivery}
                 onUpdateStatus={handleUpdateDelivery}
             />
-        </div>
+        </>
     )
 }

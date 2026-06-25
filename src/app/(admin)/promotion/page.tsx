@@ -9,15 +9,14 @@ import { useDataTable } from "@/hooks/useDataTable"
 import { Promotion } from "@/modules/promotion/promotion.types"
 import { PromotionTable } from "@/components/adminComponent/promotion/PromotionTable"
 import { PromotionFormDialog } from "@/components/adminComponent/promotion/PromotionFormDialog"
-import { useCreatePromotion, useDeletePromotion, useGetPromotions, useTogglePromotionStatus, useUpdatePromotion } from "@/app/features/hooks/prodmotion"
+import { useCreatePromotion, useDeletePromotion, useGetPromotions, useTogglePromotionStatus, useUpdatePromotion } from "@/app/features/hooks/promotion"
 
 
 export default function PromotionPage() {
     const table = useDataTable()
     const { data, isLoading } = useGetPromotions(table.params)
-    const { data: products = [] } = useGetAllProducts()
-    // console.log("product : ",products)
-    const productData = products?.items || []
+    const { data: products } = useGetAllProducts()
+    const productData = products?.items ?? []
 
     const create = useCreatePromotion()
     const update = useUpdatePromotion()
@@ -43,7 +42,7 @@ export default function PromotionPage() {
     }
 
     return (
-        <div className="space-y-4 p-6">
+        <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold">ຈັດການໂປໂມຊັນ</h1>

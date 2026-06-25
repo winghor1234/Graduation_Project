@@ -143,7 +143,7 @@ export default function ReceiptPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-100 py-8">
+        <div className="min-h-screen bg-admin-bg py-8">
             <div className="max-w-5xl mx-auto">
                 <BackButton />
 
@@ -186,7 +186,7 @@ export default function ReceiptPage() {
                     <div className="overflow-x-auto mt-8">
                         <table className="w-full border">
                             <thead>
-                                <tr className="bg-slate-100">
+                                <tr className="bg-admin-bg">
                                     <th className="border p-3 w-16">#</th>
                                     <th className="border p-3 text-left">
                                         ສິນຄ້າ
@@ -276,7 +276,7 @@ export default function ReceiptPage() {
                     <div className="flex gap-3 mt-8 print:hidden">
                         <button
                             onClick={() => window.print()}
-                            className="px-5 py-2 rounded-lg border hover:bg-gray-50"
+                            className="px-5 py-2 rounded-lg border hover:bg-brand-blue-soft"
                         >
                             ພິມ
                         </button>

@@ -57,11 +57,11 @@ export default function StatCard({ title, value, prefix, growth, sub, icon, colo
 
             {/* Body */}
             <div className="space-y-0.5">
-                <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wide">{title}</p>
-                <h2 className="text-2xl font-bold text-gray-800 leading-tight">
+                <p className="text-[11px] font-medium text-admin-muted uppercase tracking-wide">{title}</p>
+                <h2 className="text-2xl font-bold text-admin-text leading-tight">
                     {formatCurrency(value)}
                 </h2>
-                {sub && <p className="text-[11px] text-gray-400">{sub}</p>}
+                {sub && <p className="text-[11px] text-admin-muted">{sub}</p>}
             </div>
 
             {/* Accent bar */}

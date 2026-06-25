@@ -2,8 +2,6 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { ShoppingCart } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { ProductListItem } from "./shop.types"
@@ -22,6 +20,11 @@ export function ProductCard({ product, onPickVariant }: Props) {
     const isOutOfStock = totalStock <= 0
     const hasMultipleVariants = (product.variants?.length ?? 0) > 1
     const isLowStock = !isOutOfStock && totalStock <= 5
+    const isNew = (() => {
+        if (!product.createdAt) return false
+        const diff = Date.now() - new Date(product.createdAt).getTime()
+        return diff < 1000 * 60 * 60 * 24 * 14
+    })()
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault()
@@ -44,69 +47,86 @@ export function ProductCard({ product, onPickVariant }: Props) {
     }
 
     return (
-        <div className="flex flex-col group">
-            <Link href={`/shop/${product.product_id}`} className="block flex-1">
+        <div className="group relative flex flex-col bg-brand-card-dark rounded-2xl overflow-hidden border border-brand-divider hover:border-brand-orange/50 transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,107,0,0.12)]">
 
+            <Link href={`/shop/${product.product_id}`} className="block">
                 {/* Image */}
-                <div className="aspect-square relative overflow-hidden rounded-2xl bg-gray-50">
+                <div className="aspect-square relative overflow-hidden bg-brand-black">
                     <Image
                         src={product.images?.[0]?.image_url || "/placeholder.png"}
                         alt={product.product_name}
                         fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+
+                    {/* Out of stock overlay */}
                     {isOutOfStock && (
-                        <div className="absolute inset-0 bg-white/70 flex items-center justify-center backdrop-blur-[1px]">
-                            <Badge className="bg-gray-900 text-white border-none text-xs px-3 py-1">
+                        <div className="absolute inset-0 bg-brand-black/70 flex items-center justify-center backdrop-blur-[2px]">
+                            <span className="text-xs font-bold text-brand-muted bg-brand-card-dark border border-brand-divider px-3 py-1.5 rounded-full">
                                 ສິນຄ້າໝົດແລ້ວ
-                            </Badge>
+                            </span>
                         </div>
                     )}
-                    {isLowStock && (
-                        <div className="absolute top-3 left-3">
-                            <Badge className="bg-amber-500 text-white border-none text-[11px] px-2.5 py-0.5">
-                                ເຫຼືອໜ້ອຍ
-                            </Badge>
-                        </div>
-                    )}
+
+                    {/* Badges — top-left */}
+                    <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                        {isNew && !isOutOfStock && (
+                            <span className="text-[10px] font-extrabold tracking-wider text-brand-black bg-brand-gold px-2 py-0.5 rounded-md">
+                                NEW
+                            </span>
+                        )}
+                        {isLowStock && (
+                            <span className="text-[10px] font-bold text-white bg-brand-orange px-2 py-0.5 rounded-md">
+                                ໃກ້ໝົດ
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Info */}
-                <div className="pt-3.5 pb-2 space-y-1">
-                    <h3 className="font-bold text-[15px] text-gray-900 leading-snug line-clamp-2 min-h-[44px]">
+                <div className="p-4 space-y-2">
+                    <h3 className="font-bold text-sm text-brand-white leading-snug line-clamp-2 min-h-10">
                         {product.product_name}
                     </h3>
-                    <p className="text-xs text-gray-400 line-clamp-2 min-h-[36px] leading-relaxed">
+                    <p className="text-xs text-brand-muted line-clamp-2 min-h-8 leading-relaxed">
                         {product.description || "ເຄື່ອງກີລາຊັ້ນສູງ ອອກແບບດ້ວຍວັດສະດຸທີ່ທັນສະໄໝ"}
                     </p>
 
-                    <div className="flex items-center justify-between pt-1.5">
-                        <span className="text-lg font-extrabold text-gray-900">
+                    <div className="flex items-end justify-between pt-1">
+                        <div>
                             {product.min_price !== product.max_price && (
-                                <span className="text-xs font-normal text-gray-400 mr-1">ເລີ່ມ</span>
+                                <p className="text-[10px] text-brand-muted mb-0.5">ເລີ່ມຕົ້ນ</p>
                             )}
-                            {formatCurrency(product.min_price)}
-                        </span>
-                        {!isOutOfStock && !isLowStock && (
-                            <span className="text-[11px] text-gray-400 font-medium">
-                                ເຫຼືອ {totalStock} ອັນ
+                            <span className="text-lg font-extrabold text-brand-orange">
+                                {formatCurrency(product.min_price)}
+                            </span>
+                        </div>
+                        {!isOutOfStock && (
+                            <span className="text-[10px] text-brand-muted font-medium">
+                                {totalStock} ອັນ
                             </span>
                         )}
                     </div>
                 </div>
             </Link>
 
-            {/* Button */}
-            <div className="pt-2">
-                <Button
-                    className="w-full h-10 rounded-xl bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold transition-colors gap-2"
+            {/* Add to cart button */}
+            <div className="px-4 pb-4">
+                <button
                     disabled={isOutOfStock}
                     onClick={handleAddToCart}
+                    className="w-full h-10 flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover disabled:bg-brand-divider disabled:text-brand-muted disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-all duration-200 active:scale-[0.98]"
                 >
-                    <ShoppingCart className="size-4" />
-                    {hasMultipleVariants ? "ເລືອກຕົວເລືອກ" : "ເພີ່ມໃສ່ກະຕ່າ"}
-                </Button>
+                    {isOutOfStock ? (
+                        "ສິນຄ້າໝົດ"
+                    ) : (
+                        <>
+                            <ShoppingCart className="size-4" />
+                            {hasMultipleVariants ? "ເລືອກຕົວເລືອກ" : "ເພີ່ມໃສ່ກະຕ່າ"}
+                        </>
+                    )}
+                </button>
             </div>
         </div>
     )

@@ -1,6 +1,6 @@
 // modules/payment/payment.types.ts
 
-import { Order } from "../order/order.types"
+import { Order } from "../order/order.type"
 
 export type PaymentStatus =
     | "PENDING"

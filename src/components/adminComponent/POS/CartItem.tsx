@@ -28,7 +28,7 @@ export default function CartItem({ item, onUpdate, onRemove }: Props) {
                             className="object-cover w-full h-full"
                         />
                     ) : (
-                        <div className="flex items-center justify-center h-full text-xs text-gray-400">
+                        <div className="flex items-center justify-center h-full text-xs text-admin-muted">
                             ບໍ່ມີຮູບ
                         </div>
                     )}

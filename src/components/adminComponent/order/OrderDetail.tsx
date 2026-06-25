@@ -1,7 +1,7 @@
 "use client"
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { Order } from "@/modules/order/order.types"
+import { Order } from "@/modules/order/order.type"
 import { formatDate } from "@/utils/FormatDate"
 import Image from "next/image"
 import {  BadgeComponent } from "../StatusComponent"

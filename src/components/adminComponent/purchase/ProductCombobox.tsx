@@ -71,7 +71,7 @@ export function ProductCombobox({ products, value, onChange, onCreateNew, placeh
                         ))}
                         <Button
                             variant="ghost"
-                            className="w-full justify-start text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            className="w-full justify-start text-blue-600 hover:text-blue-700 hover:bg-brand-blue-soft"
                             onClick={() => {
                                 setOpen(false)
                                 onCreateNew()

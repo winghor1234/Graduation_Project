@@ -106,26 +106,26 @@
 //             {/* ── Metadata ── */}
 //             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm bg-gray-50/50 p-4 rounded-lg border border-gray-100">
 //                 <div className="flex justify-between sm:justify-start gap-4">
-//                     <span className="text-gray-400 min-w-[90px]">ລະຫັດສັ່ງຊື້:</span>
+//                     <span className="text-admin-muted min-w-[90px]">ລະຫັດສັ່ງຊື້:</span>
 //                     <span className="font-mono font-medium text-gray-900">
 //                         {purchase.purchase_code}
 //                     </span>
 //                 </div>
 //                 <div className="flex justify-between sm:justify-start gap-4">
-//                     <span className="text-gray-400 min-w-[90px]">ວັນທີ:</span>
-//                     <span className="font-medium text-gray-800">
+//                     <span className="text-admin-muted min-w-[90px]">ວັນທີ:</span>
+//                     <span className="font-medium text-admin-text">
 //                         {formatDate(purchase.purchase_date)}
 //                     </span>
 //                 </div>
 //                 <div className="flex justify-between sm:justify-start gap-4">
-//                     <span className="text-gray-400 min-w-[90px]">ຜູ້ສັ່ງຊື້:</span>
-//                     <span className="font-medium text-gray-800">
+//                     <span className="text-admin-muted min-w-[90px]">ຜູ້ສັ່ງຊື້:</span>
+//                     <span className="font-medium text-admin-text">
 //                         {purchase.employee?.employee_name}
 //                     </span>
 //                 </div>
 //                 <div className="flex justify-between sm:justify-start gap-4">
-//                     <span className="text-gray-400 min-w-[90px]">ຜູ້ສະໜອງ:</span>
-//                     <span className="font-medium text-gray-800">
+//                     <span className="text-admin-muted min-w-[90px]">ຜູ້ສະໜອງ:</span>
+//                     <span className="font-medium text-admin-text">
 //                         {purchase.supplier?.supplier_name}
 //                     </span>
 //                 </div>
@@ -147,15 +147,15 @@
 //                         {purchase.purchase_details?.map((item, index) => (
 //                             <TableRow
 //                                 key={item.purchase_detail_id}
-//                                 className="hover:bg-gray-50/50 transition-colors duration-150"
+//                                 className="hover:bg-brand-blue-soft/30 transition-colors duration-150"
 //                             >
-//                                 <TableCell className="text-center text-gray-400 font-medium">
+//                                 <TableCell className="text-center text-admin-muted font-medium">
 //                                     {index + 1}
 //                                 </TableCell>
 //                                 <TableCell className="font-medium text-gray-900">
 //                                     {item.product?.product_name}
 //                                 </TableCell>
-//                                 <TableCell className="text-right font-medium text-gray-700">
+//                                 <TableCell className="text-right font-medium text-admin-text">
 //                                     {item.quantity}
 //                                 </TableCell>
 //                                 <TableCell className="text-right text-gray-600">
@@ -175,7 +175,7 @@
 //                 <div className="w-full sm:w-[340px] rounded-xl border border-gray-200 bg-gray-50/30 p-4 space-y-3 shadow-sm">
 //                     <div className="flex justify-between text-sm text-gray-500">
 //                         <span>ຍອດລວມ</span>
-//                         <span className="font-medium text-gray-800">
+//                         <span className="font-medium text-admin-text">
 //                             {formatCurrency(total)} ກີບ
 //                         </span>
 //                     </div>
@@ -341,7 +341,7 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
                             ສົ່ງຫາ WhatsApp
                         </Button>
                     ) : (
-                        <span className="text-xs text-gray-400 italic">
+                        <span className="text-xs text-admin-muted italic">
                             ບໍ່ມີເບີໂທຜູ້ສະໜອງ
                         </span>
                     )}
@@ -364,29 +364,29 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
             {/* Metadata */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm bg-gray-50/50 p-4 rounded-lg border border-gray-100">
                 <div className="flex justify-between sm:justify-start gap-4">
-                    <span className="text-gray-400 min-w-[90px]">ລະຫັດສັ່ງຊື້:</span>
+                    <span className="text-admin-muted min-w-[90px]">ລະຫັດສັ່ງຊື້:</span>
                     <span className="font-mono font-medium text-gray-900">
                         {purchase.purchase_code}
                     </span>
                 </div>
                 <div className="flex justify-between sm:justify-start gap-4">
-                    <span className="text-gray-400 min-w-[90px]">ວັນທີ:</span>
-                    <span className="font-medium text-gray-800">
+                    <span className="text-admin-muted min-w-[90px]">ວັນທີ:</span>
+                    <span className="font-medium text-admin-text">
                         {formatDate(purchase.purchase_date)}
                     </span>
                 </div>
                 <div className="flex justify-between sm:justify-start gap-4">
-                    <span className="text-gray-400 min-w-[90px]">ຜູ້ສັ່ງຊື້:</span>
-                    <span className="font-medium text-gray-800">
+                    <span className="text-admin-muted min-w-[90px]">ຜູ້ສັ່ງຊື້:</span>
+                    <span className="font-medium text-admin-text">
                         {purchase.employee?.employee_name}
                     </span>
                 </div>
 
                 {/* ✅ ຜູ້ສະໜອງ + ເບີໂທ clickable */}
                 <div className="flex justify-between sm:justify-start gap-4">
-                    <span className="text-gray-400 min-w-[90px]">ຜູ້ສະໜອງ:</span>
+                    <span className="text-admin-muted min-w-[90px]">ຜູ້ສະໜອງ:</span>
                     <div className="flex flex-col items-end sm:items-start gap-0.5">
-                        <span className="font-medium text-gray-800">
+                        <span className="font-medium text-admin-text">
                             {purchase.supplier?.supplier_name}
                         </span>
                         {supplierPhone && (
@@ -420,15 +420,15 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
                         {purchase.purchase_details?.map((item, index) => (
                             <TableRow
                                 key={item.purchase_detail_id}
-                                className="hover:bg-gray-50/50 transition-colors duration-150"
+                                className="hover:bg-brand-blue-soft/30 transition-colors duration-150"
                             >
-                                <TableCell className="text-center text-gray-400 font-medium">
+                                <TableCell className="text-center text-admin-muted font-medium">
                                     {index + 1}
                                 </TableCell>
                                 <TableCell className="font-medium text-gray-900">
                                     {item.product?.product_name}
                                 </TableCell>
-                                <TableCell className="text-right font-medium text-gray-700">
+                                <TableCell className="text-right font-medium text-admin-text">
                                     {item.quantity}
                                 </TableCell>
                                 <TableCell className="text-right text-gray-600">
@@ -448,7 +448,7 @@ export function PurchaseDetail({ purchase, isLoading }: Props) {
                 <div className="w-full sm:w-[340px] rounded-xl border border-gray-200 bg-gray-50/30 p-4 space-y-3 shadow-sm">
                     <div className="flex justify-between text-sm text-gray-500">
                         <span>ຍອດລວມ</span>
-                        <span className="font-medium text-gray-800">
+                        <span className="font-medium text-admin-text">
                             {formatCurrency(total)} ກີບ
                         </span>
                     </div>

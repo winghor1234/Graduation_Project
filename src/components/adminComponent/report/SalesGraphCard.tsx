@@ -65,8 +65,8 @@ export default function SalesGraphCard(data: Props) {
             {/* Header */}
             <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
                 <div>
-                    <h2 className="text-[15px] font-semibold text-gray-800">ແຜນພູມສະແດງຍອດຂາຍ (Sales Graph)</h2>
-                    <p className="text-[11px] text-gray-400 mt-0.5">ພາບລວມຜົນການດຳເນີນງານຕາມຊ່ວງເວລາ</p>
+                    <h2 className="text-[15px] font-semibold text-admin-text">ແຜນພູມສະແດງຍອດຂາຍ (Sales Graph)</h2>
+                    <p className="text-[11px] text-admin-muted mt-0.5">ພາບລວມຜົນການດຳເນີນງານຕາມຊ່ວງເວລາ</p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                     <ChartTabBar tab={tab} onChange={setTab} />

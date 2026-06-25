@@ -27,12 +27,12 @@ export default function NavbarActions() {
             <Button
                 variant="ghost"
                 size="icon"
-                className="relative size-9 rounded-xl"
+                className="relative size-9 rounded-xl text-brand-muted hover:text-brand-white hover:bg-brand-card-dark transition-theme"
                 onClick={() => router.push("/cart")}
             >
                 <ShoppingCart className="size-5" />
                 {cartCount > 0 && (
-                    <Badge className="absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center p-0 text-[10px] bg-amber-500 hover:bg-amber-500 border-2 border-white">
+                    <Badge className="absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center p-0 text-[10px] bg-brand-orange hover:bg-brand-orange border-2 border-brand-black text-white font-bold">
                         {cartCount > 9 ? "9+" : cartCount}
                     </Badge>
                 )}
@@ -41,20 +41,27 @@ export default function NavbarActions() {
             {/* User dropdown */}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="size-9 rounded-xl">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-9 rounded-xl text-brand-muted hover:text-brand-white hover:bg-brand-card-dark transition-theme"
+                    >
                         <User className="size-5" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                <DropdownMenuContent
+                    align="end"
+                    className="w-48 rounded-xl bg-brand-card-dark border-brand-divider text-brand-white"
+                >
                     <DropdownMenuItem
-                        className="rounded-lg cursor-pointer"
+                        className="rounded-lg cursor-pointer text-brand-muted hover:text-brand-white focus:bg-brand-black focus:text-brand-white"
                         onClick={() => router.push("/order-history")}
                     >
                         ປະຫວັດການສັ່ງຊື້
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator className="bg-brand-divider" />
                     <DropdownMenuItem
-                        className="rounded-lg cursor-pointer text-rose-600 focus:text-rose-700 focus:bg-rose-50"
+                        className="rounded-lg cursor-pointer text-rose-400 focus:text-rose-300 focus:bg-rose-950/30"
                         onClick={() => {
                             if (confirm("ທ່ານຕ້ອງການອອກຈາກລະບົບແທ້ຫຼືບໍ່?")) logout()
                         }}

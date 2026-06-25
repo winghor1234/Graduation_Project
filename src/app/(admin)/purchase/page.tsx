@@ -30,7 +30,6 @@ export default function PurchaseOrderPage() {
 
     const { data, isLoading } = useGetPurchaseOrders(table.params)
     const { data: purchases } = useGetAllPurchaseOrders()
-    console.log("purchases : ",purchases);
 
     const createPurchase = useCreatePurchaseOrder()
     const updatePurchase = useUpdatePurchaseOrder()
@@ -68,8 +67,6 @@ export default function PurchaseOrderPage() {
         setOpenDetail(true)
     }
     // const products?.data 
-    // console.log("products",products?.data)
-    console.log("data",product)
 
     /* -------------------- UI -------------------- */
 

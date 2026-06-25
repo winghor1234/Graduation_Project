@@ -9,7 +9,7 @@ import {
 } from "@/utils/response"
 import { Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
-import { UpdateOrderStatusInput } from "./order.types"
+import { UpdateOrderStatusInput } from "./order.type"
 
 const handleError = (error: unknown) => {
     if (

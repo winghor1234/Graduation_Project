@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useGetAllOrders, useUploadPaymentSlip } from "@/app/features/hooks/Order"
-import { Order } from "@/modules/order/order.types"
+import { Order } from "@/modules/order/order.type"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { formatDate } from "@/utils/FormatDate"
 

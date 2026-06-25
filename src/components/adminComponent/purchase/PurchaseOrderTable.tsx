@@ -27,7 +27,7 @@
 
 //             <tbody>
 //                 {purchases.map((p) => (
-//                     <tr key={p.purchase_id} className="border-b hover:bg-gray-50/50">
+//                     <tr key={p.purchase_id} className="border-b hover:bg-brand-blue-soft/30">
 //                         <td className="p-3">{p.supplier?.supplier_name}</td>
 //                         <td className="p-3">{p.total_amount}</td>
 //                         <td className="p-3">{p.status}</td>
@@ -94,7 +94,7 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                     <Table className="min-w-[860px]">
 
                         <TableHeader>
-                            <TableRow className="bg-gray-50">
+                            <TableRow className="bg-admin-bg hover:bg-admin-bg border-admin-border">
                                 <TableHead className="w-10">#</TableHead>
                                 <TableHead>ລະຫັດສັ່ງຊື້</TableHead>
                                 <TableHead>ຜູ້ສະໜອງ</TableHead>
@@ -168,10 +168,10 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
 
                                                 {/* View */}
                                                 <Button size="icon" variant="ghost"
-                                                    className="hover:bg-blue-50"
+                                                    className="hover:bg-brand-blue-soft"
                                                     onClick={() => onView(item)}
                                                 >
-                                                    <Eye className="w-4 h-4 text-gray-500 hover:text-blue-600" />
+                                                    <Eye className="w-4 h-4 text-gray-500 hover:text-brand-blue" />
                                                 </Button>
 
                                                 {/* Edit — PENDING only */}

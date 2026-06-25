@@ -16,7 +16,6 @@ export default function ProductsPage() {
     const { data: products, isLoading } = useGetProducts(table.params)
     const { data: categories } = useGetAllCategories()
     const category = categories
-    console.log("category : ", category);
 
     const createProduct = useCreateProduct()
     const updateProduct = useUpdateProduct()
@@ -42,7 +41,6 @@ export default function ProductsPage() {
         })
     }
 
-    // console.log("products : ", products);
 
     return (
         <div className="space-y-4">

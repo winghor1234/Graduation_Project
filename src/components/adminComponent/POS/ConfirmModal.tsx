@@ -104,7 +104,7 @@
 //                     <button
 //                         onClick={onClose}
 //                         disabled={loading}
-//                         className="flex-1 rounded-lg border py-2.5 font-medium transition hover:bg-gray-50 disabled:opacity-50"
+//                         className="flex-1 rounded-lg border py-2.5 font-medium transition hover:bg-admin-bg disabled:opacity-50"
 //                     >
 //                         ຍົກເລີກ
 //                     </button>
@@ -175,7 +175,7 @@ export default function ConfirmModal({ cart, total, loading = false, onConfirm, 
                                         className="object-cover w-full h-full"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
+                                    <div className="w-full h-full flex items-center justify-center text-[10px] text-admin-muted">
                                         ບໍ່ມີຮູບ
                                     </div>
                                 )}
@@ -215,7 +215,7 @@ export default function ConfirmModal({ cart, total, loading = false, onConfirm, 
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="flex-1 rounded-lg border py-2.5 font-medium transition hover:bg-gray-50 disabled:opacity-50"
+                        className="flex-1 rounded-lg border py-2.5 font-medium transition hover:bg-admin-bg disabled:opacity-50"
                     >
                         ຍົກເລີກ
                     </button>

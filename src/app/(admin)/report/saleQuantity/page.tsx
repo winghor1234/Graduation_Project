@@ -143,7 +143,6 @@ export default function SaleReportPage() {
             (item.customer?.customer_name?.toLowerCase().includes(keyword) ?? false) ||
             (item.employee?.employee_name?.toLowerCase().includes(keyword) ?? false),
     });
-    console.log("report : ",report);
 
     // ✅ columns ຕາມ Sale type
     const columns: Column<Sale>[] = [
@@ -209,7 +208,6 @@ export default function SaleReportPage() {
         amount: formatCurrency(row.total_amount ?? 0),
         date: formatDate(row.sale_date),
     }));
-// console.log("pdfData : ",pdfData);
     return (
         <ReportLayout
             title="ລາຍງານການຂາຍ"

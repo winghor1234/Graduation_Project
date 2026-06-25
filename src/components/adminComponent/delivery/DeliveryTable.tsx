@@ -16,10 +16,10 @@ type Props = {
 
 export function DeliveryTable({ data, isLoading, onView, onEdit }: Props) {
 
-    if (isLoading) return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
+    if (isLoading) return <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><div className="animate-pulse">ກຳລັງໂຫຼດ...</div></Card>
 
     return (
-        <Card>
+        <Card className="overflow-hidden rounded-2xl border border-admin-border bg-admin-card shadow-sm">
 
             <Table>
 

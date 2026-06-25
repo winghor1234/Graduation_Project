@@ -163,7 +163,7 @@
 //                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm bg-gray-50/50 p-4 rounded-lg border border-gray-100">
 
 //                     <div className="flex justify-between sm:justify-start gap-4">
-//                         <span className="text-gray-400 min-w-[100px]">
+//                         <span className="text-admin-muted min-w-[100px]">
 //                             ລະຫັດນຳເຂົ້າ:
 //                         </span>
 //                         <span className="font-mono font-medium text-gray-900">
@@ -172,7 +172,7 @@
 //                     </div>
 
 //                     <div className="flex justify-between sm:justify-start gap-4">
-//                         <span className="text-gray-400 min-w-[100px]">
+//                         <span className="text-admin-muted min-w-[100px]">
 //                             ລະຫັດສັ່ງຊື້:
 //                         </span>
 //                         <span className="font-mono font-medium text-gray-900">
@@ -181,7 +181,7 @@
 //                     </div>
 
 //                     <div className="flex justify-between sm:justify-start gap-4">
-//                         <span className="text-gray-400 min-w-[100px]">
+//                         <span className="text-admin-muted min-w-[100px]">
 //                             ວັນທີນຳເຂົ້າ:
 //                         </span>
 //                         <span>
@@ -194,7 +194,7 @@
 //                     </div>
 
 //                     <div className="flex justify-between sm:justify-start gap-4">
-//                         <span className="text-gray-400 min-w-[100px]">
+//                         <span className="text-admin-muted min-w-[100px]">
 //                             ວັນທີສັ່ງຊື້:
 //                         </span>
 //                         <span>
@@ -207,7 +207,7 @@
 //                     </div>
 
 //                     <div className="flex justify-between sm:justify-start gap-4">
-//                         <span className="text-gray-400 min-w-[100px]">
+//                         <span className="text-admin-muted min-w-[100px]">
 //                             ຜູ້ນຳເຂົ້າ:
 //                         </span>
 //                         <span>
@@ -217,7 +217,7 @@
 //                     </div>
 
 //                     <div className="flex justify-between sm:justify-start gap-4">
-//                         <span className="text-gray-400 min-w-[100px]">
+//                         <span className="text-admin-muted min-w-[100px]">
 //                             ຜູ້ສະໜອງ:
 //                         </span>
 //                         <span>

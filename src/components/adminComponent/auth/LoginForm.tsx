@@ -12,9 +12,10 @@ import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { getRedirectPath } from "@/utils/auth";
-import { loginSchema } from "../validation";
+import { useLogin } from "@/app/features/hooks/Auth";
 import { LoginDto } from "@/modules/auth/auth.type";
-import { useLogin } from "../hooks/Auth";
+import { loginSchema } from "@/app/features/validation";
+
 
 
 
@@ -91,7 +92,7 @@ export default function LoginForm() {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-admin-text"
                         >
                             {showPassword ? (
                                 <EyeOff className="h-4 w-4" />

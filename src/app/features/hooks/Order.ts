@@ -2,7 +2,7 @@
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { orderApi } from "../api/Order"
-import { UpdateOrderStatusInput } from "@/modules/order/order.types"
+import { UpdateOrderStatusInput } from "@/modules/order/order.type"
 import { UseGetParams } from "../types"
 
 // ─── Queries ───────────────────────────────────────────────

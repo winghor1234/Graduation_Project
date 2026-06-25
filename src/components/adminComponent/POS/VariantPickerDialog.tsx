@@ -63,7 +63,7 @@ export function VariantPickerDialog({ product, open, onOpenChange, onAdd }: Prop
                                 className="object-cover w-full h-full"
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                            <div className="w-full h-full flex items-center justify-center text-xs text-admin-muted">
                                 ບໍ່ມີຮູບ
                             </div>
                         )}

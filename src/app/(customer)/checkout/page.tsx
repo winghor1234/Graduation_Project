@@ -13,7 +13,7 @@ import { useCustomer } from "@/components/customerComponent/CustomerContext"
 import { useAuthMe } from "@/app/features/hooks/Auth"
 import { useCreateOrder } from "@/app/features/hooks/Order"
 import { useGetAllProvince } from "@/app/features/hooks/Location"
-import { useGetPromotionByCode } from "@/app/features/hooks/prodmotion"
+import { useGetPromotionByCode } from "@/app/features/hooks/promotion"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { Promotion } from "@/modules/promotion/promotion.types"
 

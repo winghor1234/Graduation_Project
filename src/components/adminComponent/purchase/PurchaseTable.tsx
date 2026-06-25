@@ -20,13 +20,13 @@
 // export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onView }: Props) {
 //     // console.log("purchase : ", purchases)
 
-//     if (isLoading) return <p className="text-center p-4">ກຳລັງໂຫຼດຂໍ້ມູນ...</p>
+//     if (isLoading) return <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><div className="animate-pulse">ກຳລັງໂຫຼດ...</div></Card>
 
 //     return (
-//         <Card>
+//         <Card className="overflow-hidden rounded-2xl border border-admin-border bg-admin-card shadow-sm">
 //             <Table>
 //                 <TableHeader>
-//                     <TableRow>
+//                     <TableRow className="bg-admin-bg hover:bg-admin-bg border-admin-border">
 //                         <TableHead>ລຳດັບ</TableHead>
 //                         <TableHead>ລະຫັດສັ່ງຊື້</TableHead>
 //                         <TableHead>ຜູ້ສະໜອງ</TableHead>
@@ -67,10 +67,10 @@
 //                                     <Button
 //                                         size="icon"
 //                                         variant="ghost"
-//                                         className="hover:bg-blue-50"
+//                                         className="hover:bg-brand-blue-soft"
 //                                         onClick={() => onView(purchases[index])}
 //                                     >
-//                                         <Eye className="w-4 h-4 text-gray-600 hover:text-blue-600" />
+//                                         <Eye className="w-4 h-4 text-admin-text hover:text-brand-blue" />
 //                                     </Button>
 //                                     <Button
 //                                         size="icon"
@@ -130,14 +130,14 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
         setPaymentOpen(true)
     }
 
-    if (isLoading) return <p className="text-center p-4">ກຳລັງໂຫຼດຂໍ້ມູນ...</p>
+    if (isLoading) return <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><div className="animate-pulse">ກຳລັງໂຫຼດ...</div></Card>
 
     return (
         <>
-            <Card>
+            <Card className="overflow-hidden rounded-2xl border border-admin-border bg-admin-card shadow-sm">
                 <Table>
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="bg-admin-bg hover:bg-admin-bg border-admin-border">
                             <TableHead>ລຳດັບ</TableHead>
                             <TableHead>ລະຫັດສັ່ງຊື້</TableHead>
                             <TableHead>ຜູ້ສະໜອງ</TableHead>
@@ -200,10 +200,10 @@ export function PurchaseOrderTable({ purchases, isLoading, onEdit, onDelete, onV
                                             <Button
                                                 size="icon"
                                                 variant="ghost"
-                                                className="hover:bg-blue-50"
+                                                className="hover:bg-brand-blue-soft"
                                                 onClick={() => onView(item)}
                                             >
-                                                <Eye className="w-4 h-4 text-gray-600 hover:text-blue-600" />
+                                                <Eye className="w-4 h-4 text-admin-text hover:text-brand-blue" />
                                             </Button>
 
                                             <Button

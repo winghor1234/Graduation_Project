@@ -16,7 +16,6 @@ export default function ImportReportPage() {
             (item.import_code?.toLowerCase().includes(keyword) ?? false) ||
             (item.purchase?.supplier?.supplier_name?.toLowerCase().includes(keyword) ?? false),
     });
-console.log("import report : ",report.data);
     const columns: Column<Import>[] = [
         {
             key: "import_code",

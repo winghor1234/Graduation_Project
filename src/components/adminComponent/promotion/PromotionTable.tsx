@@ -18,19 +18,18 @@ type Props = {
 
 export function PromotionTable({ promotions, isLoading, onEdit, onDelete, onToggle }: Props) {
 
-    if (isLoading) return <p className="text-center p-6">ກຳລັງໂຫຼດ...</p>
+    if (isLoading) return <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><div className="animate-pulse">ກຳລັງໂຫຼດ...</div></Card>
 
     if (!promotions?.length) return (
-        <Card className="p-6 text-center text-muted-foreground">ບໍ່ມີໂປໂມຊັນ</Card>
+        <Card className="p-12 text-center rounded-2xl border border-admin-border bg-admin-card"><p className="text-sm text-admin-muted">ຍັງບໍ່ມີໂປໂມຊັນ</p></Card>
     )
-    console.log("promotions : ", promotions)
 
     return (
-        <Card className="rounded-2xl border shadow-sm">
+        <Card className="overflow-hidden rounded-2xl border border-admin-border bg-admin-card shadow-sm">
             <div className="overflow-x-auto">
-                <Table className="min-w-[900px]">
+                <Table className="min-w-225">
                     <TableHeader>
-                        <TableRow className="bg-muted/50">
+                        <TableRow className="bg-admin-bg hover:bg-admin-bg border-admin-border">
                             <TableHead className="w-10">#</TableHead>
                             <TableHead>ລະຫັດ</TableHead>
                             <TableHead>ຊື່ໂປໂມຊັນ</TableHead>
@@ -92,11 +91,11 @@ export function PromotionTable({ promotions, isLoading, onEdit, onDelete, onTogg
                                             <Button size="icon" variant="ghost"
                                                 onClick={() => onToggle(item.promotion_id)}
                                                 title={isActive ? "ປິດໃຊ້ງານ" : "ເປີດໃຊ້ງານ"}
-                                                className="hover:bg-blue-50"
+                                                className="hover:bg-brand-blue-soft"
                                             >
                                                 {isActive
                                                     ? <ToggleRight className="w-4 h-4 text-emerald-600" />
-                                                    : <ToggleLeft className="w-4 h-4 text-gray-400" />
+                                                    : <ToggleLeft className="w-4 h-4 text-admin-muted" />
                                                 }
                                             </Button>
                                             <Button size="icon" variant="ghost" className="hover:bg-red-50"

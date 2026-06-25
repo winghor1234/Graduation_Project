@@ -22,7 +22,6 @@ export default function ImportPage() {
 
     const { data, isLoading } = useGetImports(table.params)
     const { data: purchases } = useGetAllPurchaseOrders()
-    // console.log("purchases : ",purchases)
 
     const createImport = useCreateImport()
     const deleteImport = useDeleteImport()

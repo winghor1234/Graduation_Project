@@ -2,11 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Store, LucideIcon } from "lucide-react"
-
+import { LucideIcon, Store, LogOut, ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Employee } from "@/modules/employee/employee.type"
-import { theme } from "@/styles/theme"
 
 type Role = "ADMIN" | "STAFF"
 
@@ -27,146 +25,117 @@ type Props = {
     onLogout: () => void
 }
 
-export function Sidebar({
-    navigation,
-    user,
-    collapsed,
-    mobileOpen,
-    setCollapsed,
-    setMobileOpen,
-    onLogout,
-}: Props) {
+export function Sidebar(props: Props) {
+    const { navigation, user, collapsed, mobileOpen, setCollapsed, setMobileOpen, onLogout } = props
     const pathname = usePathname()
+
+    function handleNavClick() {
+        setMobileOpen(false)
+    }
 
     return (
         <aside
             className={cn(
-                "fixed md:relative z-40 h-screen transition-all duration-300",
-                theme.sidebar,
-
+                "fixed md:relative z-40 h-screen flex flex-col transition-all duration-300",
+                "bg-brand-navy border-r border-brand-navy-dark",
                 collapsed ? "w-20" : "w-64",
-
-                mobileOpen
-                    ? "left-0"
-                    : "-left-64 md:left-0"
+                mobileOpen ? "left-0" : "-left-64 md:left-0"
             )}
         >
-            {/* ໂລໂກ້ */}
-            <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
-
-                <div className="flex items-center gap-2">
-                    <Store className={cn("h-8 w-8", theme.primary)} />
-
-                    {!collapsed && (
-                        <div>
-                            <h1 className="font-bold text-lg tracking-wide text-slate-900">
-                                SportWear
-                            </h1>
-
-                            <p className="text-xs text-slate-500">
-                                ລະບົບຂາຍຍ່ອຍ
-                            </p>
+            {/* ── Logo ── */}
+            <div className={cn(
+                "flex h-16 items-center border-b border-brand-navy-dark px-4",
+                collapsed ? "justify-center" : "justify-between"
+            )}>
+                {!collapsed && (
+                    <Link href="/dashboard" className="flex items-center gap-2.5 min-w-0">
+                        <div className="size-8 rounded-xl bg-brand-orange flex items-center justify-center shrink-0">
+                            <Store className="size-4 text-white" />
                         </div>
-                    )}
-                </div>
+                        <div className="min-w-0">
+                            <p className="text-sm font-extrabold text-white tracking-wide leading-none">SportPro</p>
+                            <p className="text-[10px] text-white/40 mt-0.5">ລະບົບຈັດການ</p>
+                        </div>
+                    </Link>
+                )}
+
+                {collapsed && (
+                    <div className="size-8 rounded-xl bg-brand-orange flex items-center justify-center">
+                        <Store className="size-4 text-white" />
+                    </div>
+                )}
 
                 <button
                     onClick={() => setCollapsed(!collapsed)}
-                    className={cn(
-                        "p-2 rounded-xl transition",
-                        theme.hover
-                    )}
+                    className="size-7 rounded-lg flex items-center justify-center bg-brand-navy-dark hover:bg-brand-navy-hover text-white/60 hover:text-white transition-colors"
                 >
-                    ☰
+                    {collapsed
+                        ? <ChevronRight className="size-4" />
+                        : <ChevronLeft className="size-4" />
+                    }
                 </button>
             </div>
 
-            {/* ເມນູນຳທາງ */}
-            <nav className="flex-1 space-y-1 px-2 py-4">
-
-                {user &&
-                    navigation
-                        .filter((item) =>
-                            item.roles.includes(user.role)
+            {/* ── Nav ── */}
+            <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-0.5">
+                {user && navigation
+                    .filter((item) => item.roles.includes(user.role))
+                    .map((item) => {
+                        const isActive = pathname.startsWith(item.href)
+                        return (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                onClick={handleNavClick}
+                                title={collapsed ? item.name : undefined}
+                                className={cn(
+                                    "relative flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                                    collapsed ? "justify-center" : "gap-3",
+                                    isActive
+                                        ? "bg-brand-blue/15 text-white"
+                                        : "text-white/50 hover:text-white hover:bg-brand-navy-hover"
+                                )}
+                            >
+                                {isActive && (
+                                    <span className="absolute left-0 top-1 bottom-1 w-0.5 rounded-r-full bg-brand-blue" />
+                                )}
+                                <item.icon className={cn(
+                                    "size-5 shrink-0",
+                                    isActive ? "text-brand-blue" : "text-white/50"
+                                )} />
+                                {!collapsed && (
+                                    <span className="truncate">{item.name}</span>
+                                )}
+                            </Link>
                         )
-                        .map((item) => {
-                            const isActive =
-                                pathname.startsWith(item.href)
-
-                            return (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={cn(
-                                        "relative flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
-
-                                        collapsed
-                                            ? "justify-center"
-                                            : "gap-3",
-
-                                        isActive
-                                            ? cn(
-                                                theme.primarySoft,
-                                                theme.primaryBorder,
-                                                "text-blue-600"
-                                            )
-                                            : "text-slate-500 hover:text-slate-900 hover:bg-gray-100"
-                                    )}
-                                >
-                                    {isActive && (
-                                        <span
-                                            className={cn(
-                                                "absolute left-0 top-0 h-full w-1 rounded-r",
-                                                theme.primaryBg
-                                            )}
-                                        />
-                                    )}
-
-                                    <item.icon className="h-5 w-5" />
-
-                                    {!collapsed && item.name}
-                                </Link>
-                            )
-                        })}
+                    })}
             </nav>
 
-            {/* ສ່ວນລຸ່ມ */}
-            <div className="border-t border-gray-200 p-4">
-
-                <div
-                    className={cn(
-                        "flex items-center",
-                        collapsed
-                            ? "justify-center"
-                            : "gap-3"
-                    )}
-                >
-                    <div
-                        className={cn(
-                            "h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold",
-                            theme.avatarGradient
-                        )}
-                    >
-                        {user?.employee_name?.charAt(0)}
+            {/* ── User ── */}
+            <div className="border-t border-brand-navy-dark p-3">
+                <div className={cn(
+                    "flex items-center gap-3 px-2 py-2 rounded-xl",
+                    collapsed ? "justify-center" : ""
+                )}>
+                    <div className="size-9 rounded-full bg-linear-to-br from-brand-navy-hover to-brand-blue flex items-center justify-center text-white text-sm font-bold shrink-0">
+                        {user?.employee_name?.charAt(0)?.toUpperCase() ?? "U"}
                     </div>
-
                     {!collapsed && (
                         <>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm truncate text-slate-900">
+                                <p className="text-sm font-semibold text-white truncate leading-none">
                                     {user?.employee_name}
                                 </p>
-
-                                <p className="text-xs text-slate-500 truncate">
-                                    {user?.email}
+                                <p className="text-[11px] text-white/40 truncate mt-0.5">
+                                    {user?.role}
                                 </p>
                             </div>
-
                             <button
                                 onClick={onLogout}
-                                className="text-xs text-red-500 hover:text-red-600 transition"
+                                className="size-7 rounded-lg flex items-center justify-center text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                title="ອອກຈາກລະບົບ"
                             >
-                                ອອກຈາກລະບົບ
+                                <LogOut className="size-4" />
                             </button>
                         </>
                     )}

@@ -100,7 +100,7 @@ export default function RevenueChart({ data }: Props) {
     return (
         <>
             <div className="flex justify-between mb-1">
-                <span className="text-[11px] text-gray-400">Amount, $K</span>
+                <span className="text-[11px] text-admin-muted">Amount, $K</span>
             </div>
             <div className="relative h-[300px] w-full min-w-0">
                 <Chart type="bar" data={chartData} options={options} />

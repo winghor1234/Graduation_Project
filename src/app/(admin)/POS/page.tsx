@@ -21,7 +21,6 @@ export default function POSPage() {
 
     const { data: products = [] } = useGetAllProducts()
     const productsData = products.items ?? []
-    console.log("productsData : ", productsData);
     const { data: customersData } = useGetCustomers(table.params)
     const customers = customersData?.data ?? []
 

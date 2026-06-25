@@ -29,15 +29,15 @@ export function ImportTable({ imports, isLoading, onView, onDelete, confirm, can
     const [viewOpen, setViewOpen] = useState(false)
 
     if (isLoading) {
-        return <Card className="p-6 text-center text-muted-foreground">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
+        return <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><div className="animate-pulse">ກຳລັງໂຫຼດ...</div></Card>
     }
     if (!imports?.length) {
-        return <Card className="p-6 text-center text-muted-foreground">ບໍ່ພົບຂໍ້ມູນການນຳເຂົ້າ</Card>
+        return <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><p>ຍັງບໍ່ມີຂໍ້ມູນການນຳເຂົ້າ</p></Card>
     }
 
     return (
         <>
-            <Card className="rounded-2xl border shadow-sm">
+            <Card className="overflow-hidden rounded-2xl border border-admin-border bg-admin-card shadow-sm">
                 <div className="w-full overflow-x-auto">
                     <Table className="min-w-[760px]">
 
@@ -96,11 +96,11 @@ export function ImportTable({ imports, isLoading, onView, onDelete, confirm, can
                                                 {/* View detail */}
                                                 <Button
                                                     size="icon" variant="ghost"
-                                                    className="hover:bg-blue-50"
+                                                    className="hover:bg-brand-blue-soft"
                                                     onClick={() => onView(item)}
                                                     title="ລາຍລະອຽດ (PDF)"
                                                 >
-                                                    <Eye className="w-4 h-4 text-gray-500 hover:text-blue-600" />
+                                                    <Eye className="w-4 h-4 text-gray-500 hover:text-brand-blue" />
                                                 </Button>
 
                                                 {/* ✅ ປຸ່ມ view+action dialog */}

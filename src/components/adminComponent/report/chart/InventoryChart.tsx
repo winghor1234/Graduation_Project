@@ -121,8 +121,8 @@ export default function InventoryChart({ data }: Props) {
     return (
         <>
             <div className="flex justify-between mb-1">
-                <span className="text-[11px] text-gray-400">Stock Units</span>
-                <span className="text-[11px] text-gray-400">Received</span>
+                <span className="text-[11px] text-admin-muted">Stock Units</span>
+                <span className="text-[11px] text-admin-muted">Received</span>
             </div>
             <div className="relative h-[300px] w-full min-w-0">
                 <Chart type="bar" data={chartData} options={options} />

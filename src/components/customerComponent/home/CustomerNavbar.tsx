@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Home, Menu, Package, ShoppingBag, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { cn } from "@/lib/utils"
 import NavbarActions from "./NavbarActions"
 
 const NAV_LINKS = [
@@ -21,15 +22,34 @@ function isActive(pathname: string, href: string) {
 export function CustomerNavbar() {
     const pathname = usePathname()
     const [mobileOpen, setMobileOpen] = useState(false)
+    const [scrolled, setScrolled] = useState(false)
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 10)
+        window.addEventListener("scroll", onScroll, { passive: true })
+        return () => window.removeEventListener("scroll", onScroll)
+    }, [])
 
     return (
-        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-            <div className="container mx-auto px-6 max-w-7xl h-16 flex items-center gap-6">
+        <header
+            className={cn(
+                "sticky top-0 z-50 transition-all duration-300",
+                "bg-brand-black",
+                scrolled
+                    ? "backdrop-blur-md border-b border-brand-divider shadow-lg shadow-black/20"
+                    : "border-b border-brand-divider"
+            )}
+        >
+            <div className="container mx-auto px-6 max-w-7xl h-16 flex items-center gap-8">
 
                 {/* Logo */}
-                <Link href="/home" className="flex items-baseline gap-0.5 shrink-0">
-                    <span className="text-xl font-extrabold tracking-tight text-gray-900">SPORT</span>
-                    <span className="text-xl font-extrabold tracking-tight text-amber-500">PRO</span>
+                <Link href="/home" className="flex items-baseline gap-0 shrink-0 group">
+                    <span className="text-xl font-extrabold tracking-tight text-brand-white transition-opacity group-hover:opacity-90">
+                        SPORT
+                    </span>
+                    <span className="text-xl font-extrabold tracking-tight text-brand-orange transition-opacity group-hover:opacity-90">
+                        PRO
+                    </span>
                 </Link>
 
                 {/* Desktop nav */}
@@ -40,13 +60,17 @@ export function CustomerNavbar() {
                             <Link
                                 key={href}
                                 href={href}
-                                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                                className={cn(
+                                    "relative px-4 py-2 text-sm font-medium transition-all duration-200",
                                     active
-                                        ? "bg-gray-100 text-gray-900 font-semibold"
-                                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-                                }`}
+                                        ? "text-brand-white"
+                                        : "text-brand-muted hover:text-brand-white"
+                                )}
                             >
                                 {label}
+                                {active && (
+                                    <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-brand-orange rounded-full" />
+                                )}
                             </Link>
                         )
                     })}
@@ -59,7 +83,7 @@ export function CustomerNavbar() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="md:hidden size-9 rounded-xl"
+                        className="md:hidden size-9 rounded-xl text-brand-muted hover:text-brand-white hover:bg-brand-card-dark"
                         onClick={() => setMobileOpen(true)}
                     >
                         <Menu className="size-5" />
@@ -69,18 +93,21 @@ export function CustomerNavbar() {
 
             {/* Mobile Sheet */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-                <SheetContent side="right" className="w-72 p-0 border-l border-gray-100">
+                <SheetContent
+                    side="right"
+                    className="w-72 p-0 bg-brand-card-dark border-l border-brand-divider"
+                >
                     <div className="flex flex-col h-full">
                         {/* Sheet header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                            <Link href="/home" onClick={() => setMobileOpen(false)} className="flex items-baseline gap-0.5">
-                                <span className="text-lg font-extrabold tracking-tight text-gray-900">SPORT</span>
-                                <span className="text-lg font-extrabold tracking-tight text-amber-500">PRO</span>
+                        <div className="flex items-center justify-between px-6 py-5 border-b border-brand-divider">
+                            <Link href="/home" onClick={() => setMobileOpen(false)} className="flex items-baseline gap-0">
+                                <span className="text-lg font-extrabold tracking-tight text-brand-white">SPORT</span>
+                                <span className="text-lg font-extrabold tracking-tight text-brand-orange">PRO</span>
                             </Link>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-8 rounded-xl"
+                                className="size-8 rounded-xl text-brand-muted hover:text-brand-white hover:bg-brand-black"
                                 onClick={() => setMobileOpen(false)}
                             >
                                 <X className="size-4" />
@@ -96,11 +123,12 @@ export function CustomerNavbar() {
                                         key={href}
                                         href={href}
                                         onClick={() => setMobileOpen(false)}
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                                        className={cn(
+                                            "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                                             active
-                                                ? "bg-gray-100 text-gray-900 font-semibold"
-                                                : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-                                        }`}
+                                                ? "bg-brand-orange/10 text-brand-orange border border-brand-orange/20"
+                                                : "text-brand-muted hover:text-brand-white hover:bg-brand-black"
+                                        )}
                                     >
                                         <Icon className="size-4 shrink-0" />
                                         {label}
@@ -110,8 +138,8 @@ export function CustomerNavbar() {
                         </nav>
 
                         {/* Sheet footer */}
-                        <div className="px-6 py-4 border-t border-gray-100">
-                            <p className="text-xs text-gray-400">© 2026 SportPro</p>
+                        <div className="px-6 py-4 border-t border-brand-divider">
+                            <p className="text-xs text-brand-muted">© 2026 SportPro. Made in Laos 🇱🇦</p>
                         </div>
                     </div>
                 </SheetContent>

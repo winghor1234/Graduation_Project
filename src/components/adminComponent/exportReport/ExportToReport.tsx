@@ -11,7 +11,6 @@ import { Sale } from "@/app/(admin)/report/saleQuantity/page";
 // product start
 
 export const handleProductPDFExport = (products: Product[]) => {
-    console.log("products in export : ", products)
     handlePDFExport({
         title: "ລາຍງານສິນຄ້າ",
         fileName: "product-report",

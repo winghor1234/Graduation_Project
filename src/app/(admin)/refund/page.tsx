@@ -89,7 +89,7 @@ function RefundDetailDialog({
                         refund.refund_details.map(detail => (
                             <div
                                 key={detail.refund_detail_id}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100"
+                                className="flex items-center gap-3 p-3 rounded-xl bg-admin-bg border border-admin-border"
                             >
                                 <div className="size-12 bg-white rounded-lg overflow-hidden shrink-0 relative border border-gray-100">
                                     <Image
@@ -158,7 +158,7 @@ function RefundTable({
     return (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             {/* Table header */}
-            <div className="grid grid-cols-[2.5rem_1fr_1fr_2fr_5rem_8rem_7rem_6rem] gap-0 border-b border-gray-100 bg-gray-50/60">
+            <div className="grid grid-cols-[2.5rem_1fr_1fr_2fr_5rem_8rem_7rem_6rem] gap-0 border-b border-admin-border bg-admin-bg">
                 {TABLE_HEADERS.map((h, i) => (
                     <div key={i} className={`px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wide ${h.width}`}>
                         {h.label}
@@ -178,7 +178,7 @@ function RefundTable({
                     {refunds.map((r, idx) => (
                         <div
                             key={r.refund_id}
-                            className="grid grid-cols-[2.5rem_1fr_1fr_2fr_5rem_8rem_7rem_6rem] items-center hover:bg-gray-50/50 transition-colors"
+                            className="grid grid-cols-[2.5rem_1fr_1fr_2fr_5rem_8rem_7rem_6rem] items-center hover:bg-brand-blue-soft/30 transition-colors"
                         >
                             <div className="px-4 py-3.5 text-xs text-gray-400 font-medium">{idx + 1}</div>
 
@@ -281,7 +281,7 @@ export default function RefundPage() {
     const totalRefundAmount = refunds.reduce((s, r) => s + (r.total_amount ?? 0), 0)
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="space-y-6">
 
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

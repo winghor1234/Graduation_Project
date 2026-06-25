@@ -3,127 +3,166 @@
 /* dark mode */
 @custom-variant dark (&:is(.dark *));
 
-/* =========================
-   DESIGN SYSTEM (SPORTWEAR)
-========================= */
+/* ============================================================
+   BRAND DESIGN TOKENS — SPORTPRO
+   ============================================================ */
 
-body {
-  font-family: var(--font-noto-lao), sans-serif;
-}
 :root {
+  /* ── Font ── */
   --font-size: 16px;
 
-  /* Core colors */
-  --background: #ffffff;
-  --foreground: #0b0b0b;
+  /* ── Brand: Customer Side (Dark / Orange) ── */
+  --brand-orange:       #FF6B00;
+  --brand-orange-hover: #CC5500;
+  --brand-gold:         #FFD700;
+  --brand-black:        #0A0A0A;
+  --brand-card-dark:    #1A1A1A;
+  --brand-footer:       #111111;
+  --brand-divider:      #2A2A2A;
+  --brand-muted:        #A0A0A0;
+  --brand-white:        #FFFFFF;
 
-  --card: #ffffff;
-  --card-foreground: #0b0b0b;
+  /* ── Brand: Admin Side (Navy / Blue) ── */
+  --brand-navy:         #1E3A5F;
+  --brand-navy-dark:    #162D4A;
+  --brand-navy-hover:   #243F67;
+  --brand-blue:         #4A90D9;
+  --brand-blue-hover:   #357ABD;
+  --brand-blue-soft:    #EBF3FB;
 
-  --popover: #ffffff;
-  --popover-foreground: #0b0b0b;
+  /* ── Admin UI ── */
+  --admin-bg:           #F4F6F9;
+  --admin-card:         #FFFFFF;
+  --admin-border:       #DEE2E6;
+  --admin-text:         #2C3E50;
+  --admin-muted:        #6C757D;
+  --admin-success:      #28A745;
+  --admin-danger:       #DC3545;
+  --admin-warning:      #FFC107;
 
-  /* Primary - Black */
-  --primary: #0b0b0b;
-  --primary-foreground: #ffffff;
+  /* ── shadcn semantic (Admin default) ── */
+  --background:         #F4F6F9;
+  --foreground:         #2C3E50;
+  --card:               #FFFFFF;
+  --card-foreground:    #2C3E50;
+  --popover:            #FFFFFF;
+  --popover-foreground: #2C3E50;
+  --primary:            #4A90D9;
+  --primary-foreground: #FFFFFF;
+  --secondary:          #EBF3FB;
+  --secondary-foreground: #2C3E50;
+  --muted:              #F4F6F9;
+  --muted-foreground:   #6C757D;
+  --accent:             #EBF3FB;
+  --accent-foreground:  #2C3E50;
+  --destructive:        #DC3545;
+  --success:            #28A745;
+  --warning:            #FFC107;
+  --border:             #DEE2E6;
+  --input:              #DEE2E6;
+  --ring:               #4A90D9;
 
-  /* Secondary */
-  --secondary: #f5f5f5;
-  --secondary-foreground: #0b0b0b;
+  /* ── Sidebar (Admin) ── */
+  --sidebar:              #1E3A5F;
+  --sidebar-foreground:   #FFFFFF;
+  --sidebar-primary:      #4A90D9;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent:       #162D4A;
+  --sidebar-accent-foreground:  #FFFFFF;
+  --sidebar-border:       #243F67;
+  --sidebar-ring:         #4A90D9;
 
-  /* Accent (Neon green) */
-  --accent: #22c55e;
-  --accent-foreground: #ffffff;
-
-  /* States */
-  --destructive: #ef4444;
-  --warning: #f59e0b;
-  --success: #22c55e;
-
-  /* UI */
-  --border: #d1d5db;
-  --input: #d1d5db;
-  --ring: #22c55e;
-
-  /* Sidebar */
-  --sidebar: #0b0b0b;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #22c55e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #374151;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #374151;
-  --sidebar-ring: #22c55e;
-
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 }
 
-/* =========================
-   DARK MODE
-========================= */
-.dark {
-  --background: #0b0b0b;
-  --foreground: #ffffff;
-
-  --card: #1a1a1a;
-  --card-foreground: #ffffff;
-
-  --popover: #1a1a1a;
-  --popover-foreground: #ffffff;
-
-  --primary: #ffffff;
-  --primary-foreground: #0b0b0b;
-
-  --secondary: #374151;
-  --secondary-foreground: #ffffff;
-
-  --border: #374151;
-  --input: #374151;
-
-  --sidebar: #0b0b0b;
+/* ============================================================
+   CUSTOMER THEME — dark background, orange accent
+   Applied via  data-theme="customer"  on customer layout root
+   ============================================================ */
+[data-theme="customer"] {
+  --background:         #0A0A0A;
+  --foreground:         #FFFFFF;
+  --card:               #1A1A1A;
+  --card-foreground:    #FFFFFF;
+  --popover:            #1A1A1A;
+  --popover-foreground: #FFFFFF;
+  --primary:            #FF6B00;
+  --primary-foreground: #FFFFFF;
+  --secondary:          #1A1A1A;
+  --secondary-foreground: #FFFFFF;
+  --muted:              #1A1A1A;
+  --muted-foreground:   #A0A0A0;
+  --accent:             #FF6B00;
+  --accent-foreground:  #FFFFFF;
+  --destructive:        #EF4444;
+  --border:             #2A2A2A;
+  --input:              #2A2A2A;
+  --ring:               #FF6B00;
 }
 
-/* =========================
-   TAILWIND THEME (v4)
-========================= */
+/* ============================================================
+   TAILWIND v4 — map CSS tokens → utility classes
+   ============================================================ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-
-  --color-secondary: var(--secondary);
+  /* semantic */
+  --color-background:          var(--background);
+  --color-foreground:          var(--foreground);
+  --color-card:                var(--card);
+  --color-card-foreground:     var(--card-foreground);
+  --color-popover:             var(--popover);
+  --color-popover-foreground:  var(--popover-foreground);
+  --color-primary:             var(--primary);
+  --color-primary-foreground:  var(--primary-foreground);
+  --color-secondary:           var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-
-  --color-destructive: var(--destructive);
-
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
+  --color-muted:               var(--muted);
+  --color-muted-foreground:    var(--muted-foreground);
+  --color-accent:              var(--accent);
+  --color-accent-foreground:   var(--accent-foreground);
+  --color-destructive:         var(--destructive);
+  --color-border:              var(--border);
+  --color-input:               var(--input);
+  --color-ring:                var(--ring);
+  --color-sidebar:             var(--sidebar);
+  --color-sidebar-foreground:  var(--sidebar-foreground);
+  --color-sidebar-primary:     var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent:      var(--sidebar-accent);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border:      var(--sidebar-border);
+  --color-sidebar-ring:        var(--sidebar-ring);
+
+  /* brand utilities */
+  --color-brand-orange:        var(--brand-orange);
+  --color-brand-orange-hover:  var(--brand-orange-hover);
+  --color-brand-gold:          var(--brand-gold);
+  --color-brand-black:         var(--brand-black);
+  --color-brand-card-dark:     var(--brand-card-dark);
+  --color-brand-footer:        var(--brand-footer);
+  --color-brand-divider:       var(--brand-divider);
+  --color-brand-muted:         var(--brand-muted);
+  --color-brand-white:         var(--brand-white);
+  --color-brand-navy:          var(--brand-navy);
+  --color-brand-navy-dark:     var(--brand-navy-dark);
+  --color-brand-navy-hover:    var(--brand-navy-hover);
+  --color-brand-blue:          var(--brand-blue);
+  --color-brand-blue-hover:    var(--brand-blue-hover);
+  --color-brand-blue-soft:     var(--brand-blue-soft);
+  --color-admin-bg:            var(--admin-bg);
+  --color-admin-card:          var(--admin-card);
+  --color-admin-border:        var(--admin-border);
+  --color-admin-text:          var(--admin-text);
+  --color-admin-muted:         var(--admin-muted);
+  --color-admin-success:       var(--admin-success);
+  --color-admin-danger:        var(--admin-danger);
+  --color-admin-warning:       var(--admin-warning);
 
   --radius-lg: var(--radius);
 }
 
-/* =========================
+/* ============================================================
    BASE STYLES
-========================= */
+   ============================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -131,37 +170,33 @@ body {
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-noto-lao), sans-serif;
   }
 
   html {
     font-size: var(--font-size);
   }
 
-  h1 {
-    @apply text-2xl font-semibold;
+  h1 { @apply text-2xl font-bold; }
+  h2 { @apply text-xl font-bold; }
+  h3 { @apply text-lg font-semibold; }
+  h4 { @apply text-base font-semibold; }
+  label { @apply text-sm font-medium; }
+  button { @apply text-sm font-medium; }
+  input { @apply text-sm; }
+}
+
+/* ============================================================
+   UTILITY — scroll bar & transitions
+   ============================================================ */
+@layer utilities {
+  .transition-theme {
+    @apply transition-all duration-200 ease-in-out;
   }
 
-  h2 {
-    @apply text-xl font-semibold;
-  }
-
-  h3 {
-    @apply text-lg font-semibold;
-  }
-
-  h4 {
-    @apply text-base font-semibold;
-  }
-
-  label {
-    @apply text-sm font-medium;
-  }
-
-  button {
-    @apply text-sm font-medium;
-  }
-
-  input {
-    @apply text-sm;
-  }
+  /* custom scrollbar */
+  ::-webkit-scrollbar          { width: 6px; }
+  ::-webkit-scrollbar-track    { background: transparent; }
+  ::-webkit-scrollbar-thumb    { background: #374151; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
 }

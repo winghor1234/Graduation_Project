@@ -37,7 +37,6 @@ export function DeliveryUpdateDialog({
 
     if (!delivery) return null
 
-    // console.log(typeof delivery.status)
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>

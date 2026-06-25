@@ -32,7 +32,6 @@ export function PaymentVerifyDialog({
     }
 
     const order = payment?.order
-    // console.log("payment : ", payment)
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -100,7 +99,7 @@ export function PaymentVerifyDialog({
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-400 text-center">
+                            <p className="text-admin-muted text-center">
                                 ບໍ່ມີຂໍ້ມູນສິນຄ້າ
                             </p>
                         )}
