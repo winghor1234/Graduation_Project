@@ -5,7 +5,7 @@ import { EmployeeRegisterInput, CustomerRegisterInput, ForgotPasswordInput, Veri
 import { generateAccessToken, generateRefreshToken } from "@/utils/cookie"
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "@/utils/response"
 import { NextRequest } from "next/server"
-import { verifyAccessToken } from "@/utils/jwt"
+import { verifyAccessToken, verifyRefreshToken } from "@/utils/jwt"
 
 export const authService = {
     // CUSTOMER REGISTER
@@ -225,30 +225,14 @@ export const authService = {
         await prisma.refreshToken.create({
             data: {
                 token: refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
                 ...(isEmployee
-                    ? {
-                        employee: {
-                            connect: {
-                                employee_id: userId
-                            }
-                        }
-                    }
-                    : {
-                        customer: {
-                            connect: {
-                                customer_id: userId
-                            }
-                        }
-                    })
+                    ? { employee: { connect: { employee_id: userId } } }
+                    : { customer: { connect: { customer_id: userId } } })
             }
         });
 
-        return {
-            user,
-            accessToken,
-            refreshToken
-        };
+        return { user, accessToken, refreshToken };
     },
 
     // -----------------------------------------------------------------------------------
@@ -446,50 +430,49 @@ export const authService = {
     },
 
     async refreshToken(token: string) {
+        // Verify JWT signature and type before DB lookup
+        verifyRefreshToken(token);
+
         const storedToken = await prisma.refreshToken.findUnique({
             where: { token },
-            include: { customer: true }
+            include: { customer: true, employee: true }
         });
+
         if (!storedToken) {
             throw new UnauthorizedError("Invalid refresh token");
         }
 
-        if (!storedToken.customer) {
-            throw new UnauthorizedError("Customer not found");
-        }
-
         if (storedToken.expiresAt < new Date()) {
+            await prisma.refreshToken.delete({ where: { token } });
             throw new UnauthorizedError("Refresh token expired");
         }
 
-        const customer = storedToken.customer;
-        const newAccessToken = generateAccessToken(
-            customer.customer_id,
-            customer.role
-        );
+        const isCustomer = storedToken.customer_id !== null;
+        const userId = isCustomer
+            ? storedToken.customer!.customer_id
+            : storedToken.employee!.employee_id;
+        const role = isCustomer
+            ? storedToken.customer!.role
+            : storedToken.employee!.role;
 
-        const newRefreshToken = generateRefreshToken(
-            customer.customer_id
-        );
+        if (!userId) {
+            throw new UnauthorizedError("User not found");
+        }
 
-        await prisma.refreshToken.delete({
-            where: { token }
-        });
+        const newAccessToken = generateAccessToken(userId, role);
+        const newRefreshToken = generateRefreshToken(userId);
 
-        const result = await prisma.refreshToken.create({
+        await prisma.refreshToken.delete({ where: { token } });
+
+        await prisma.refreshToken.create({
             data: {
                 token: newRefreshToken,
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                customer: {
-                    connect: {
-                        customer_id: customer.customer_id
-                    }
-                }
+                ...(isCustomer
+                    ? { customer: { connect: { customer_id: userId } } }
+                    : { employee: { connect: { employee_id: userId } } })
             }
         });
-        if (!result) {
-            throw new BadRequestError("Failed to create new refresh token");
-        }
 
         return {
             accessToken: newAccessToken,
@@ -612,7 +595,6 @@ export const authService = {
     //     return { user, accessToken, refreshToken };
     // },
     async adminForgotPassword(data: ForgotPasswordInput) {
-        console.log("data : ", data)
         const user = await prisma.employee.findUnique({
             where: { email: data.email }
         });
@@ -631,13 +613,11 @@ export const authService = {
         if (!result) {
             throw new BadRequestError("Failed to create OTP");
         }
-        console.log(`OTP: ${otp}`)
-        // send code to email
         sendOTPEmail(data.email, otp);
         return { message: "OTP sent" }
     },
 
-    // RESEND OTP 
+    // RESEND OTP
     async adminResendOTP(data: ResendOTPInput) {
         const user = await prisma.employee.findUnique({
             where: { email: data.email }
@@ -657,8 +637,6 @@ export const authService = {
         if (!result) {
             throw new BadRequestError("Failed to create OTP");
         }
-        console.log(`OTP: ${otp}`)
-        // send code to email
         sendOTPEmail(data.email, otp);
         return { message: "OTP sent" }
     },
@@ -762,17 +740,10 @@ export const authService = {
         };
     },
 
-    async adminLogout(customerId: string) {
-
-        const result = await prisma.refreshToken.deleteMany({
-            where: {
-                customer_id: customerId
-            }
+    async adminLogout(employeeId: string) {
+        await prisma.refreshToken.deleteMany({
+            where: { employee_id: employeeId }
         });
-        if (!result) {
-            throw new BadRequestError("Failed to logout");
-        }
-
         return true;
     },
 

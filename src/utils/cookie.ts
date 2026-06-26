@@ -19,7 +19,8 @@ export function setAuthCookies({ response, accessToken, refreshToken }: AuthCook
         secure: isProd,
         sameSite: "strict",
         path: "/",
-        maxAge: 60 * 60 * 24 * 1 // 1 days
+        // maxAge: 60 * 15 // 15 minutes
+        maxAge: 60 * 2 // 2 minutes
     });
 
     response.cookies.set("refresh_token", refreshToken, {
@@ -27,7 +28,7 @@ export function setAuthCookies({ response, accessToken, refreshToken }: AuthCook
         secure: isProd,
         sameSite: "strict",
         path: "/",
-        maxAge: 60 * 60 * 24 * 14 // 14 days
+        maxAge: 60 * 60 * 24 * 7 // 7 days
     });
 
 }
@@ -60,17 +61,21 @@ export async function getUserFromToken(req: NextRequest) {
 }
 
 export function clearAuthCookies(response: NextResponse) {
+    const isProd = process.env.NODE_ENV === "production";
     response.cookies.set("access_token", "", {
         httpOnly: true,
+        secure: isProd,
+        sameSite: "strict",
         path: "/",
         expires: new Date(0)
     });
     response.cookies.set("refresh_token", "", {
         httpOnly: true,
+        secure: isProd,
+        sameSite: "strict",
         path: "/",
         expires: new Date(0)
     });
-
 }
 
 export function generateAccessToken(userId: string, role: string): string {
@@ -81,14 +86,14 @@ export function generateAccessToken(userId: string, role: string): string {
     try {
         const token = jwt.sign(
             {
-                userId: userId,           // ✅ แค่ userId
-                role: role,               // ✅ เพิ่ม role
-                type: 'access',           // ✅ ระบุประเภท
-                iat: Math.floor(Date.now() / 1000)
+                userId: userId,
+                role: role,
+                type: 'access',
             },
             ACCESS_TOKEN_SECRET,
             {
-                expiresIn: "1d",// ✅ อายุยาว 1 วัน
+                // expiresIn: "15m",
+                expiresIn: "2m",
                 algorithm: 'HS256'
             }
         );
@@ -107,12 +112,11 @@ export function generateRefreshToken(userId: string): string {
         const token = jwt.sign(
             {
                 userId,
-                type: 'refresh',       // ✅ ระบุประเภท
-                iat: Math.floor(Date.now() / 1000)
+                type: 'refresh',
             },
-            REFRESH_TOKEN_SECRET,      // ✅ ใช้ secret คนละตัว!
+            REFRESH_TOKEN_SECRET,
             {
-                expiresIn: "14d",       // ✅ อายุยาว 14 วัน
+                expiresIn: "7d",
                 algorithm: 'HS256'
             }
         );

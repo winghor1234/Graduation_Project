@@ -14,7 +14,7 @@ type Props = {
     products: TopProduct[]
 }
 
-export function TopProducts({ products }: Props) {
+export function TopProducts({ products = [] }: Props) {
     return (
         <div
             className={cn(

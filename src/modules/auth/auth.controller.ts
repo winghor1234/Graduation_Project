@@ -67,15 +67,7 @@ export const authController = {
             await loginLimiter.consume(key);
             const result = await authService.login(body);
             const { password, ...safeUser } = result.user;
-            const response = successResponse(
-                {
-                    ...safeUser,
-                    accessToken: result.accessToken,
-                    refreshToken: result.refreshToken,
-                },
-                "Login successful",
-                200
-            );
+            const response = successResponse(safeUser, "Login successful", 200);
 
             setAuthCookies({
                 response,
