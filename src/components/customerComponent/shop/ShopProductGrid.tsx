@@ -6,6 +6,7 @@ import { EmptyState } from "./EmptyState"
 import { ErrorState } from "./ErrorState"
 import { Pagination } from "./Pagination"
 import { ProductListItem } from "./shop.types"
+import { Promotion } from "@/modules/promotion/promotion.types"
 
 type Meta = {
     page: number
@@ -20,6 +21,7 @@ type Props = {
     isFetching: boolean
     isError: boolean
     isFiltered: boolean
+    promotionMap: Map<string, Promotion>
     onRetry: () => void
     onReset: () => void
     onPickVariant: (product: ProductListItem) => void
@@ -28,7 +30,7 @@ type Props = {
 
 export function ShopProductGrid({
     items, meta, isLoading, isFetching, isError,
-    isFiltered, onRetry, onReset, onPickVariant, onPageChange,
+    isFiltered, promotionMap, onRetry, onReset, onPickVariant, onPageChange,
 }: Props) {
     if (isLoading) return <ProductGridSkeleton />
     if (isError) return <ErrorState onRetry={onRetry} />
@@ -42,6 +44,7 @@ export function ShopProductGrid({
                         key={product.product_id}
                         product={product}
                         onPickVariant={onPickVariant}
+                        promotion={promotionMap.get(product.product_id) ?? null}
                     />
                 ))}
             </div>

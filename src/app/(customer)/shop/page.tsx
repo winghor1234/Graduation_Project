@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation"
 
 import { useGetAllProducts, useGetPriceRange } from "@/app/features/hooks/Product"
 import { useGetAllCategories } from "@/app/features/hooks/Category"
+import { useGetAllPromotions } from "@/app/features/hooks/promotion"
+import { Promotion } from "@/modules/promotion/promotion.types"
 import { ALL_CATEGORY_ID, PAGE_SIZE } from "@/components/customerComponent/shop/constants"
 import { CategoryItem, ProductListItem, SortBy } from "@/components/customerComponent/shop/shop.types"
 import { FilterPanel } from "@/components/customerComponent/shop/FilterPanel"
@@ -40,12 +42,39 @@ export default function ShopPage() {
         }), [categoryId, debouncedSearch, userPriceRange, priceBounds, sortBy, page])
     )
     const { data: categories, isLoading: isLoadingCategories } = useGetAllCategories()
+    const { data: allPromotions = [] } = useGetAllPromotions()
 
     // Derive effective price range — no useEffect needed
     const priceRange: [number, number] = userPriceRange ?? [priceBounds?.min ?? 0, priceBounds?.max ?? 0]
 
-    const items = (data?.items ?? []) as ProductListItem[]
+    const items = useMemo(() => (data?.items ?? []) as ProductListItem[], [data])
     const meta  = data?.meta
+
+    // Build promotion map once — product_id → active Promotion
+    const promotionMap = useMemo(() => {
+        const now = new Date()
+        const map = new Map<string, Promotion>()
+        const activePromos = allPromotions.filter(p => {
+            if (p.status !== "ACTIVE") return false
+            return new Date(p.start_date) <= now && new Date(p.end_date) >= now
+        })
+        // product-specific promotions first
+        for (const p of activePromos) {
+            if (p.promotion_products?.length) {
+                for (const pp of p.promotion_products) {
+                    if (!map.has(pp.product_id)) map.set(pp.product_id, p)
+                }
+            }
+        }
+        // store-wide promotion fills remaining products
+        const storeWide = activePromos.find(p => !p.promotion_products?.length)
+        if (storeWide) {
+            for (const item of items) {
+                if (!map.has(item.product_id)) map.set(item.product_id, storeWide)
+            }
+        }
+        return map
+    }, [allPromotions, items])
 
     const activeCategory = (categories as CategoryItem[] | undefined)
         ?.find(c => c.category_id === categoryId)
@@ -132,6 +161,7 @@ export default function ShopPage() {
                             isFetching={isFetching}
                             isError={isError}
                             isFiltered={!!isFiltered}
+                            promotionMap={promotionMap}
                             onRetry={() => refetch()}
                             onReset={resetFilters}
                             onPickVariant={setPickerProduct}

@@ -6,7 +6,6 @@ import { ShoppingCart, Tag } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { ProductListItem } from "./shop.types"
 import { useCustomer } from "@/components/customerComponent/CustomerContext"
-import { useGetAllPromotions } from "@/app/features/hooks/promotion"
 import { Promotion } from "@/modules/promotion/promotion.types"
 import { toast } from "sonner"
 import { useMemo } from "react"
@@ -14,37 +13,23 @@ import { useMemo } from "react"
 type Props = {
     product: ProductListItem
     onPickVariant: (product: ProductListItem) => void
+    promotion?: Promotion | null
 }
 
-/** ຊອກຫາ promotion ທີ່ active ແລະ apply ກັບ product ນີ້ */
-function findProductPromotion(promotions: Promotion[], productId: string): Promotion | null {
-    const now = new Date()
-    return promotions.find(p => {
-        if (p.status !== "ACTIVE") return false
-        if (new Date(p.start_date) > now || new Date(p.end_date) < now) return false
-        if (!p.promotion_products?.length) return true
-        return p.promotion_products.some(pp => pp.product_id === productId)
-    }) ?? null
-}
-
-export function ProductCard({ product, onPickVariant }: Props) {
+export function ProductCard({ product, onPickVariant, promotion = null }: Props) {
     const { addToCart } = useCustomer()
-    const { data: allPromotions = [] } = useGetAllPromotions()
 
-    const totalStock = product.variants?.reduce((sum, v) => sum + v.stock_qty, 0) ?? 0
+    const totalStock = useMemo(
+        () => product.variants?.reduce((sum, v) => sum + v.stock_qty, 0) ?? 0,
+        [product.variants]
+    )
     const isOutOfStock = totalStock <= 0
     const hasMultipleVariants = (product.variants?.length ?? 0) > 1
     const isLowStock = !isOutOfStock && totalStock <= 5
-    const isNew = (() => {
+    const isNew = useMemo(() => {
         if (!product.createdAt) return false
-        const diff = Date.now() - new Date(product.createdAt).getTime()
-        return diff < 1000 * 60 * 60 * 24 * 14
-    })()
-
-    const promotion = useMemo(
-        () => findProductPromotion(allPromotions, product.product_id),
-        [allPromotions, product.product_id]
-    )
+        return Date.now() - new Date(product.createdAt).getTime() < 1000 * 60 * 60 * 24 * 14
+    }, [product.createdAt])
 
     const discountedPrice = promotion
         ? Math.max(0, product.min_price - promotion.discount_value)

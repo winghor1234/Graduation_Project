@@ -399,6 +399,8 @@ model Order {
   delivery      Delivery?
 
   @@index([customer_id])
+  @@index([status])
+  @@index([order_date])
 }
 
 
@@ -426,6 +428,8 @@ model OrderDetail {
   product Product @relation(fields: [product_id], references: [product_id])
   variant    ProductVariant @relation(fields: [variant_id], references: [variant_id])
 
+  @@index([order_id])
+  @@index([product_id])
 }
 
 model Sale {
@@ -443,6 +447,10 @@ model Sale {
 
   sale_details SaleDetail[]
   refund Refund?
+
+  @@index([employee_id])
+  @@index([customer_id])
+  @@index([sale_date])
 }
 
 model SaleDetail {
@@ -460,6 +468,8 @@ model SaleDetail {
   product Product @relation(fields: [product_id], references: [product_id])
   variant      ProductVariant @relation(fields: [variant_id], references: [variant_id])
 
+  @@index([sale_id])
+  @@index([product_id])
 }
 
 

@@ -106,7 +106,7 @@
 
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react"
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -182,54 +182,54 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
 
   // ─── Cart actions ──────────────────────────────────────
 
-  const addToCart = (item: Omit<CartItem, "quantity">, quantity = 1) => {
+  const addToCart = useCallback((item: Omit<CartItem, "quantity">, quantity = 1) => {
     setCart(prev => {
-      // ✅ key = variant_id — variant ດຽວກັນລວມ, variant ຕ່າງກັນແຍກ row
       const existing = prev.find(i => i.variant_id === item.variant_id)
-
       if (existing) {
         const newQty = Math.min(existing.quantity + quantity, item.stock_qty)
         return prev.map(i =>
           i.variant_id === item.variant_id ? { ...i, quantity: newQty } : i
         )
       }
-
       return [...prev, { ...item, quantity: Math.min(quantity, item.stock_qty) }]
     })
-  }
+  }, [])
 
-  const removeFromCart = (variant_id: string) => {
+  const removeFromCart = useCallback((variant_id: string) => {
     setCart(prev => prev.filter(i => i.variant_id !== variant_id))
-  }
+  }, [])
 
-  const updateCartQuantity = (variant_id: string, quantity: number) => {
-    if (quantity <= 0) return removeFromCart(variant_id)
+  const updateCartQuantity = useCallback((variant_id: string, quantity: number) => {
+    if (quantity <= 0) {
+      setCart(prev => prev.filter(i => i.variant_id !== variant_id))
+      return
+    }
     setCart(prev => prev.map(i =>
       i.variant_id === variant_id
         ? { ...i, quantity: Math.min(quantity, i.stock_qty) }
         : i
     ))
-  }
+  }, [])
 
-  const clearCart = () => setCart([])
+  const clearCart = useCallback(() => setCart([]), [])
 
-  const placeOrder = (order: Order) => {
+  const placeOrder = useCallback((order: Order) => {
     setOrders(prev => [order, ...prev])
-    clearCart()
-  }
+    setCart([])
+  }, [])
 
   // ─── Derived values ────────────────────────────────────
 
-  const cartTotal = cart.reduce((sum, i) => sum + i.sale_price * i.quantity, 0)
-  const cartCount = cart.reduce((sum, i) => sum + i.quantity, 0)
+  const cartTotal = useMemo(() => cart.reduce((sum, i) => sum + i.sale_price * i.quantity, 0), [cart])
+  const cartCount = useMemo(() => cart.reduce((sum, i) => sum + i.quantity, 0), [cart])
+
+  const value = useMemo(() => ({
+    cart, addToCart, removeFromCart, updateCartQuantity, clearCart,
+    cartTotal, cartCount, orders, placeOrder,
+  }), [cart, addToCart, removeFromCart, updateCartQuantity, clearCart, cartTotal, cartCount, orders, placeOrder])
 
   return (
-    <CustomerContext.Provider
-      value={{
-        cart, addToCart, removeFromCart, updateCartQuantity, clearCart,
-        cartTotal, cartCount, orders, placeOrder,
-      }}
-    >
+    <CustomerContext.Provider value={value}>
       {children}
     </CustomerContext.Provider>
   )
