@@ -48,6 +48,7 @@ export const useVerifyPayment = () => {
 
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["payments"] })
+            qc.invalidateQueries({ queryKey: ["orders"] })
         }
     })
 }

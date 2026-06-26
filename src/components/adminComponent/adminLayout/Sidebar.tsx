@@ -23,10 +23,11 @@ type Props = {
     setCollapsed: (v: boolean) => void
     setMobileOpen: (v: boolean) => void
     onLogout: () => void
+    badges?: Record<string, number>
 }
 
 export function Sidebar(props: Props) {
-    const { navigation, user, collapsed, mobileOpen, setCollapsed, setMobileOpen, onLogout } = props
+    const { navigation, user, collapsed, mobileOpen, setCollapsed, setMobileOpen, onLogout, badges = {} } = props
     const pathname = usePathname()
 
     function handleNavClick() {
@@ -104,7 +105,15 @@ export function Sidebar(props: Props) {
                                     isActive ? "text-brand-blue" : "text-white/50"
                                 )} />
                                 {!collapsed && (
-                                    <span className="truncate">{item.name}</span>
+                                    <span className="truncate flex-1">{item.name}</span>
+                                )}
+                                {badges[item.href] > 0 && (
+                                    <span className={cn(
+                                        "rounded-full bg-brand-orange text-white text-[10px] font-bold leading-none flex items-center justify-center shrink-0",
+                                        collapsed ? "absolute -top-1 -right-1 size-4" : "size-5"
+                                    )}>
+                                        {badges[item.href] > 99 ? "99+" : badges[item.href]}
+                                    </span>
                                 )}
                             </Link>
                         )

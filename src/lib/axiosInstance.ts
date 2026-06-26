@@ -4,7 +4,6 @@ const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
   timeout: 30000,
-  headers: { "Content-Type": "application/json" },
 })
 
 let isRefreshing = false

@@ -35,6 +35,14 @@ const PAYMENT_STATUS = {
     REJECTED: { label: "ຖືກປະຕິເສດ",  color: "bg-rose-50 text-rose-600 border-rose-200" },
 } as const
 
+const DELIVERY_STATUS = {
+    PENDING:    { label: "ລໍຖ້າຈັດສົ່ງ",    color: "bg-gray-50 text-gray-500 border-gray-200",          icon: Package },
+    PROCESSING: { label: "ກຳລັງກຽມສົ່ງ",   color: "bg-violet-50 text-violet-700 border-violet-200",    icon: Package },
+    SHIPPED:    { label: "ກຳລັງຈັດສົ່ງ",    color: "bg-blue-50 text-blue-700 border-blue-200",          icon: Truck },
+    DELIVERED:  { label: "ສົ່ງເຖິງແລ້ວ",    color: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: CheckCircle2 },
+    CANCELLED:  { label: "ຍົກເລີກການສົ່ງ",  color: "bg-rose-50 text-rose-600 border-rose-200",          icon: XCircle },
+} as const
+
 // ────────────────────────────────────────────────────────────
 // Skeleton
 // ────────────────────────────────────────────────────────────
@@ -221,6 +229,18 @@ function OrderCard({ order, onOpenUpload }: OrderCardProps) {
                             {PAYMENT_STATUS[payment.status as keyof typeof PAYMENT_STATUS]?.label ?? payment.status}
                         </Badge>
                     )}
+
+                    {/* Delivery status */}
+                    {delivery && (() => {
+                        const cfg = DELIVERY_STATUS[delivery.status as keyof typeof DELIVERY_STATUS]
+                        const DeliveryIcon = cfg?.icon ?? Truck
+                        return (
+                            <Badge className={`${cfg?.color ?? "bg-gray-100 text-gray-600"} border flex items-center gap-1 text-[11px] font-medium shadow-none px-2 py-0.5`}>
+                                <DeliveryIcon className="size-3" />
+                                {cfg?.label ?? delivery.status}
+                            </Badge>
+                        )
+                    })()}
                 </div>
             </div>
 
@@ -257,16 +277,31 @@ function OrderCard({ order, onOpenUpload }: OrderCardProps) {
             </div>
 
             {/* Delivery info */}
-            {delivery?.address && (
-                <div className="px-6 py-3 bg-gray-50/60 border-t border-gray-100 flex items-start gap-2">
-                    <MapPin className="size-3.5 text-gray-400 mt-0.5 shrink-0" />
-                    <p className="text-xs text-gray-500">
-                        {[
-                            delivery.address.branch?.branch_name,
-                            delivery.address.district?.district_name,
-                            delivery.address.province?.province_name,
-                        ].filter(Boolean).join(", ")}
-                    </p>
+            {delivery && (
+                <div className="px-6 py-3 bg-gray-50/60 border-t border-gray-100 space-y-1.5">
+                    {delivery.address && (
+                        <div className="flex items-start gap-2">
+                            <MapPin className="size-3.5 text-gray-400 mt-0.5 shrink-0" />
+                            <p className="text-xs text-gray-500">
+                                {[
+                                    delivery.address.branch?.branch_name,
+                                    delivery.address.district?.district_name,
+                                    delivery.address.province?.province_name,
+                                ].filter(Boolean).join(", ")}
+                            </p>
+                        </div>
+                    )}
+                    {delivery.tracking_number && (
+                        <div className="flex items-center gap-2">
+                            <Truck className="size-3.5 text-gray-400 shrink-0" />
+                            <p className="text-xs text-gray-500">
+                                ໝາຍເລກຕິດຕາມ: <span className="font-mono font-semibold text-gray-700">{delivery.tracking_number}</span>
+                            </p>
+                        </div>
+                    )}
+                    {delivery.provider && (
+                        <p className="text-[11px] text-gray-400 pl-5">{delivery.provider}</p>
+                    )}
                 </div>
             )}
 

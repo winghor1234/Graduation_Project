@@ -49,6 +49,7 @@ export const useUpdateDelivery = () => {
 
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["deliveries"] })
+            qc.invalidateQueries({ queryKey: ["orders"] })
         }
     })
 }

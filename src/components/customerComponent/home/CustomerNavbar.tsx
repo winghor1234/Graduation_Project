@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Menu, Package, ShoppingBag, X } from "lucide-react"
+import { Home, Menu, Package, ShoppingBag, User, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
@@ -13,6 +13,7 @@ const NAV_LINKS = [
     { href: "/home",          label: "ໜ້າຫຼັກ",          icon: Home },
     { href: "/shop",          label: "ຮ້ານຄ້າ",           icon: ShoppingBag },
     { href: "/order-history", label: "ປະຫວັດການສັ່ງຊື້", icon: Package },
+    { href: "/profile",       label: "ໂປຣໄຟລ໌",           icon: User },
 ] as const
 
 function isActive(pathname: string, href: string) {

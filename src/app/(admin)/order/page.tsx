@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useDataTable } from "@/hooks/useDataTable"
 import { useGetOrders } from "@/app/features/hooks/Order"
 import { AppPagination } from "@/components/AppPagination"
@@ -14,11 +14,17 @@ import { OrderTable } from "@/components/adminComponent/order/OrderTable"
 export default function UnifiedOrderPage() {
     const table = useDataTable()
     const { data, isLoading } = useGetOrders(table.params)
-    const [selected, setSelected] = useState<Order | undefined>()
+    const [selectedId, setSelectedId] = useState<string | null>(null)
     const [open, setOpen] = useState(false)
 
+    // derive from fresh query data — auto-updates when query refetches
+    const selected = useMemo(
+        () => data?.data.find(o => o.order_id === selectedId),
+        [data, selectedId]
+    )
+
     const handleView = (order: Order) => {
-        setSelected(order)
+        setSelectedId(order.order_id)
         setOpen(true)
     }
 

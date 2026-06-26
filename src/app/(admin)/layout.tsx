@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 
 import { useAuthMe, useEmployeeLogout } from "../features/hooks/Auth"
+import { useGetPendingOrderCount } from "../features/hooks/Order"
 import { Sidebar } from "@/components/adminComponent/adminLayout/Sidebar"
 import { Header } from "@/components/adminComponent/adminLayout/Header"
 
@@ -27,6 +28,7 @@ const navigation = [
     { name: "ຈັດການສາຂາ",         href: "/location",  icon: Store,          roles: ["ADMIN"] },
     { name: "ລາຍງານ",            href: "/report",    icon: BarChart3,      roles: ["ADMIN"] },
     { name: "ຕັ້ງຄ່າ",            href: "/setting",   icon: Settings,       roles: ["ADMIN"] },
+    { name: "ໂປຣໄຟລ໌",           href: "/account",   icon: UserCog,        roles: ["ADMIN", "STAFF"] },
 ] as const
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -34,6 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const pathname = usePathname()
     const { user, isLoading } = useAuthMe()
     const { mutate: logout } = useEmployeeLogout()
+    const { data: pendingCount = 0 } = useGetPendingOrderCount()
     const [collapsed, setCollapsed] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -57,6 +60,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 setCollapsed={setCollapsed}
                 setMobileOpen={setMobileOpen}
                 onLogout={() => { if (confirm("ຕ້ອງການອອກຈາກລະບົບ?")) logout() }}
+                badges={{ "/order": pendingCount }}
             />
 
             {/* Mobile overlay */}

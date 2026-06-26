@@ -7,7 +7,7 @@ import {
     BadRequestError, errorResponse, ForbiddenError,
     NotFoundError, successResponse, UnauthorizedError,
 } from "@/utils/response"
-import { Prisma } from "@prisma/client"
+import { OrderStatus, Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
 import { UpdateOrderStatusInput } from "./order.type"
 
@@ -31,15 +31,17 @@ export const orderController = {
             const { page, limit, skip } = getPaginationParams(req)
             const search  = getSearchParam(req)
             const orderBy = getSortingParams(req)
+            const status  = req.nextUrl.searchParams.get("status") as OrderStatus | null
 
-            const where: Prisma.OrderWhereInput = search
-                ? {
+            const where: Prisma.OrderWhereInput = {
+                ...(status ? { status } : {}),
+                ...(search ? {
                     OR: [
                         { customer: { customer_name: { contains: search, mode: "insensitive" } } },
                         { order_code: { contains: search, mode: "insensitive" } },
                     ],
-                }
-                : {}
+                } : {}),
+            }
 
             const [orders, total] = await Promise.all([
                 orderService.getOrders({ where, skip, take: limit, orderBy }),
@@ -49,7 +51,7 @@ export const orderController = {
             const meta = getPaginationMeta(total, page, limit)
             return successResponse({ data: orders, meta }, "Get orders successfully", 200)
         } catch (error) {
-            return handleError(error)   // ✅ ແກ້ — ກ່ອນບໍ່ມີ fallback return
+            return handleError(error)
         }
     },
 

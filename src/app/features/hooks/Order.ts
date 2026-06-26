@@ -15,6 +15,18 @@ export const useGetOrders = (params?: UseGetParams) => {
     })
 }
 
+export const useGetPendingOrderCount = () => {
+    return useQuery({
+        queryKey: ["orders-pending-count"],
+        queryFn:  async () => {
+            const res = await orderApi.getAll({ status: "WAITING_PAYMENT", page: 1, page_size: 1 })
+            return res.meta.total
+        },
+        refetchInterval: 30_000,
+        staleTime:       20_000,
+    })
+}
+
 export const useGetAllOrders = () => {
     return useQuery({
         queryKey: ["orders"],

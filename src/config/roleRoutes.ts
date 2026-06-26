@@ -18,6 +18,7 @@ export const roleRoutes = {
         "/api/order",
         "/api/category",
         "/api/promotion",
+        "/api/customer",
     ]
 
 };
