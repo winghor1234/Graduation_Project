@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { SlidersHorizontal, X } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
+import { cn } from "@/lib/utils"
 import { ALL_CATEGORY_ID } from "./constants"
 import { CategoryItem } from "./shop.types"
 
@@ -105,13 +106,15 @@ export function FilterPanel({
                                 step={Math.max(1, Math.round((priceBounds.max - priceBounds.min) / 100))}
                                 value={priceRange}
                                 onValueChange={v => setPriceRange(v as [number, number])}
-                                className="py-2 cursor-pointer
-                                    **:data-[slot=slider-track]:bg-gray-200
-                                    **:data-[slot=slider-range]:bg-gray-900
-                                    **:data-[slot=slider-thumb]:bg-white
-                                    **:data-[slot=slider-thumb]:border-2
-                                    **:data-[slot=slider-thumb]:border-gray-900
-                                    **:data-[slot=slider-thumb]:shadow-sm"
+                                className={cn(
+                                    "py-2 cursor-pointer",
+                                    "**:data-[slot=slider-track]:bg-gray-200!",
+                                    "**:data-[slot=slider-range]:bg-gray-900!",
+                                    "**:data-[slot=slider-thumb]:bg-white!",
+                                    "**:data-[slot=slider-thumb]:border-2!",
+                                    "**:data-[slot=slider-thumb]:border-gray-900!",
+                                    "**:data-[slot=slider-thumb]:shadow-sm!",
+                                )}
                             />
                         </>
                     )

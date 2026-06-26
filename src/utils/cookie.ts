@@ -19,8 +19,8 @@ export function setAuthCookies({ response, accessToken, refreshToken }: AuthCook
         secure: isProd,
         sameSite: "strict",
         path: "/",
-        // maxAge: 60 * 15 // 15 minutes
-        maxAge: 60 * 2 // 2 minutes
+        maxAge: 60 * 30 // 30 minutes
+        // maxAge: 60 * 2 // 2 minutes
     });
 
     response.cookies.set("refresh_token", refreshToken, {
@@ -93,7 +93,7 @@ export function generateAccessToken(userId: string, role: string): string {
             ACCESS_TOKEN_SECRET,
             {
                 // expiresIn: "15m",
-                expiresIn: "2m",
+                expiresIn: "15m",
                 algorithm: 'HS256'
             }
         );
