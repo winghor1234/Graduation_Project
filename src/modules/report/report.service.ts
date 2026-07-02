@@ -525,4 +525,81 @@ export class ReportService {
                 throw new Error("Invalid report type");
         }
     }
+
+    // =========================
+    // FINANCIAL REPORT (monthly breakdown)
+    // =========================
+    async getFinancialReport(
+        period?: ReportPeriod,
+        startDate?: string,
+        endDate?: string
+    ) {
+        const dateFilter = this.buildDateFilter(period, startDate, endDate);
+
+        const [sales, purchases] = await Promise.all([
+            this.prisma.sale.findMany({
+                where: dateFilter ? { sale_date: dateFilter } : undefined,
+                select: { sale_date: true, total_amount: true },
+            }),
+            this.prisma.purchaseOrder.findMany({
+                where: dateFilter ? { purchase_date: dateFilter } : undefined,
+                select: { purchase_date: true, total_amount: true },
+            }),
+        ]);
+
+        // Group sales by YYYY-MM
+        const revenueByMonth: Record<string, { total: number; count: number }> = {};
+        for (const s of sales) {
+            const key = new Date(s.sale_date).toISOString().slice(0, 7);
+            if (!revenueByMonth[key]) revenueByMonth[key] = { total: 0, count: 0 };
+            revenueByMonth[key].total += Number(s.total_amount);
+            revenueByMonth[key].count += 1;
+        }
+
+        // Group purchases by YYYY-MM
+        const expensesByMonth: Record<string, number> = {};
+        for (const p of purchases) {
+            const key = new Date(p.purchase_date).toISOString().slice(0, 7);
+            expensesByMonth[key] = (expensesByMonth[key] ?? 0) + Number(p.total_amount);
+        }
+
+        // Merge all months
+        const allMonths = new Set([
+            ...Object.keys(revenueByMonth),
+            ...Object.keys(expensesByMonth),
+        ]);
+
+        const monthly = Array.from(allMonths)
+            .sort()
+            .map((month) => {
+                const revenue = revenueByMonth[month]?.total ?? 0;
+                const cost = expensesByMonth[month] ?? 0;
+                return {
+                    month,
+                    revenue,
+                    cost,
+                    profit: revenue - cost,
+                    saleCount: revenueByMonth[month]?.count ?? 0,
+                };
+            });
+
+        const totalRevenue = sales.reduce((s, r) => s + Number(r.total_amount), 0);
+        const totalCost = purchases.reduce((s, p) => s + Number(p.total_amount), 0);
+        const totalProfit = totalRevenue - totalCost;
+
+        return {
+            summary: {
+                totalRevenue,
+                totalCost,
+                totalProfit,
+                profitMargin: totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0,
+                saleCount: sales.length,
+                purchaseCount: purchases.length,
+                monthCount: monthly.length,
+                avgMonthlyRevenue: monthly.length > 0 ? totalRevenue / monthly.length : 0,
+                avgMonthlyCost: monthly.length > 0 ? totalCost / monthly.length : 0,
+            },
+            monthly,
+        };
+    }
 }

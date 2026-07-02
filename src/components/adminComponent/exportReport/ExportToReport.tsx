@@ -362,8 +362,133 @@ export const handleSaleExcelExport = (sales: Sale[]) => {
 // sale quantity end
 
 
-// revenue start
+// ===== FINANCIAL MONTHLY REPORTS (revenue / profit / expenses) =====
 
+import { MonthlyFinancial } from "@/app/features/api/Financial";
+
+function fmtMonth(yyyyMM: string) {
+    const [y, m] = yyyyMM.split("-");
+    return new Date(Number(y), Number(m) - 1, 1).toLocaleDateString("lo-LA", { month: "short", year: "2-digit" });
+}
+
+export const handleRevenueMonthlyPDFExport = (monthly: MonthlyFinancial[]) => {
+    handlePDFExport({
+        title: "ລາຍງານລາຍຮັບ",
+        fileName: "revenue-report",
+        columns: [
+            { header: "ເດືອນ", key: "month" },
+            { header: "ລາຍຮັບ", key: "revenue" },
+            { header: "ຈຳນວນຂາຍ", key: "saleCount" },
+        ],
+        data: monthly.map((m) => ({
+            month: fmtMonth(m.month),
+            revenue: formatCurrency(m.revenue),
+            saleCount: m.saleCount,
+        })),
+    });
+};
+
+export const handleRevenueMonthlyExcelExport = (monthly: MonthlyFinancial[]) => {
+    handleExcelExport({
+        title: "ລາຍງານລາຍຮັບ",
+        fileName: "revenue-report",
+        sheetName: "Revenue",
+        columns: [
+            { header: "ເດືອນ", key: "month" },
+            { header: "ລາຍຮັບ", key: "revenue" },
+            { header: "ຈຳນວນຂາຍ", key: "saleCount" },
+        ],
+        data: monthly.map((m) => ({
+            month: fmtMonth(m.month),
+            revenue: m.revenue,
+            saleCount: m.saleCount,
+        })),
+    });
+};
+
+export const handleProfitMonthlyPDFExport = (monthly: MonthlyFinancial[]) => {
+    handlePDFExport({
+        title: "ລາຍງານກຳໄລ",
+        fileName: "profit-report",
+        columns: [
+            { header: "ເດືອນ", key: "month" },
+            { header: "ລາຍຮັບ", key: "revenue" },
+            { header: "ຕົ້ນທຶນ", key: "cost" },
+            { header: "ກຳໄລ", key: "profit" },
+            { header: "ອັດຕາ%", key: "margin" },
+        ],
+        data: monthly.map((m) => ({
+            month: fmtMonth(m.month),
+            revenue: formatCurrency(m.revenue),
+            cost: formatCurrency(m.cost),
+            profit: formatCurrency(m.profit),
+            margin: m.revenue > 0 ? `${(m.profit / m.revenue * 100).toFixed(1)}%` : "0%",
+        })),
+    });
+};
+
+export const handleProfitMonthlyExcelExport = (monthly: MonthlyFinancial[]) => {
+    handleExcelExport({
+        title: "ລາຍງານກຳໄລ",
+        fileName: "profit-report",
+        sheetName: "Profit",
+        columns: [
+            { header: "ເດືອນ", key: "month" },
+            { header: "ລາຍຮັບ", key: "revenue" },
+            { header: "ຕົ້ນທຶນ", key: "cost" },
+            { header: "ກຳໄລ", key: "profit" },
+            { header: "ອັດຕາ%", key: "margin" },
+        ],
+        data: monthly.map((m) => ({
+            month: fmtMonth(m.month),
+            revenue: m.revenue,
+            cost: m.cost,
+            profit: m.profit,
+            margin: m.revenue > 0 ? `${(m.profit / m.revenue * 100).toFixed(1)}%` : "0%",
+        })),
+    });
+};
+
+export const handleExpensesMonthlyPDFExport = (monthly: MonthlyFinancial[]) => {
+    handlePDFExport({
+        title: "ລາຍງານລາຍຈ່າຍ",
+        fileName: "expenses-report",
+        columns: [
+            { header: "ເດືອນ", key: "month" },
+            { header: "ລາຍຈ່າຍ", key: "cost" },
+            { header: "ລາຍຮັບ", key: "revenue" },
+            { header: "ສະຖານະ", key: "status" },
+        ],
+        data: monthly.map((m) => ({
+            month: fmtMonth(m.month),
+            cost: formatCurrency(m.cost),
+            revenue: formatCurrency(m.revenue),
+            status: m.profit >= 0 ? "ກຳໄລ" : "ຂາດທຶນ",
+        })),
+    });
+};
+
+export const handleExpensesMonthlyExcelExport = (monthly: MonthlyFinancial[]) => {
+    handleExcelExport({
+        title: "ລາຍງານລາຍຈ່າຍ",
+        fileName: "expenses-report",
+        sheetName: "Expenses",
+        columns: [
+            { header: "ເດືອນ", key: "month" },
+            { header: "ລາຍຈ່າຍ", key: "cost" },
+            { header: "ລາຍຮັບ", key: "revenue" },
+            { header: "ສະຖານະ", key: "status" },
+        ],
+        data: monthly.map((m) => ({
+            month: fmtMonth(m.month),
+            cost: m.cost,
+            revenue: m.revenue,
+            status: m.profit >= 0 ? "ກຳໄລ" : "ຂາດທຶນ",
+        })),
+    });
+};
+
+// revenue start (old — kept for compatibility)
 
 export const handleRevenuePDFExport = (sales: Sale[]) => {
     handlePDFExport({

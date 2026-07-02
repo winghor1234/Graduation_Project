@@ -1,66 +1,89 @@
+"use client"
+
 import { Order } from "@/modules/order/order.type"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { cn } from "@/lib/utils"
-import { theme } from "@/styles/theme"
+import { formatDate } from "@/utils/FormatDate"
+import Link from "next/link"
+import { ShoppingBag } from "lucide-react"
 
 type Props = {
     orders: Order[]
 }
 
-function getStatusStyle(status: string) {
-    const map: Record<string, string> = {
-        PENDING:   "bg-yellow-50 text-yellow-700 border border-yellow-200",
-        CONFIRMED: "bg-brand-blue-soft text-brand-blue border border-brand-blue/30",
-        DELIVERED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-        CANCELLED: "bg-red-50 text-red-600 border border-red-200",
-        PAID:      "bg-emerald-50 text-emerald-700 border border-emerald-200",
-    }
-    return map[status] ?? "bg-gray-100 text-gray-600 border border-gray-200"
-}
-
-const statusLabel: Record<string, string> = {
-    PENDING:   "ລໍຖ້າ",
-    CONFIRMED: "ຢືນຢັນ",
-    DELIVERED: "ສົ່ງສຳເລັດ",
-    CANCELLED: "ຍົກເລີກ",
-    PAID:      "ຊຳລະແລ້ວ",
+const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
+    PENDING:   { bg: "bg-amber-50 border border-amber-200",   text: "text-amber-700",   label: "ລໍຖ້າ" },
+    CONFIRMED: { bg: "bg-blue-50 border border-blue-200",     text: "text-blue-700",    label: "ຢືນຢັນ" },
+    DELIVERED: { bg: "bg-emerald-50 border border-emerald-200", text: "text-emerald-700", label: "ສົ່ງສຳເລັດ" },
+    CANCELLED: { bg: "bg-red-50 border border-red-200",       text: "text-red-600",     label: "ຍົກເລີກ" },
+    PAID:      { bg: "bg-emerald-50 border border-emerald-200", text: "text-emerald-700", label: "ຊຳລະແລ້ວ" },
 }
 
 export function RecentOrders({ orders }: Props) {
     return (
-        <div className={cn("p-5 rounded-2xl", theme.card)}>
-            <div className="flex items-center justify-between mb-4">
-                <h3 className={cn("font-semibold text-sm", theme.text)}>ລາຍການສັ່ງຊື້ຫຼ້າສຸດ</h3>
-                <span className={cn("text-xs", theme.subText)}>{orders?.length ?? 0} ລາຍການ</span>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <ShoppingBag size={15} className="text-blue-600" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-800">ລາຍການສັ່ງຊື້ຫຼ້າສຸດ</h3>
+                        <p className="text-[11px] text-gray-400">{orders?.length ?? 0} ລາຍການ</p>
+                    </div>
+                </div>
+                <Link
+                    href="/order"
+                    className="text-xs text-blue-500 hover:text-blue-600 hover:underline transition"
+                >
+                    ເບິ່ງທັງໝົດ →
+                </Link>
             </div>
 
+            {/* Table */}
             {!orders?.length ? (
-                <p className={cn("text-sm text-center py-8", theme.subText)}>ຍັງບໍ່ມີລາຍການສັ່ງຊື້</p>
+                <div className="flex flex-col items-center justify-center py-16 gap-2 text-gray-400">
+                    <ShoppingBag size={28} className="text-gray-200" />
+                    <span className="text-sm">ຍັງບໍ່ມີລາຍການສັ່ງຊື້</span>
+                </div>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm min-w-125">
+                    <table className="w-full text-sm">
                         <thead>
-                            <tr className="text-left border-b border-admin-border">
-                                <th className={cn("pb-2 text-xs font-medium", theme.subText)}>ລະຫັດອໍເດີ້</th>
-                                <th className={cn("pb-2 text-xs font-medium", theme.subText)}>ລູກຄ້າ</th>
-                                <th className={cn("pb-2 text-xs font-medium", theme.subText)}>ລວມທັງໝົດ</th>
-                                <th className={cn("pb-2 text-xs font-medium", theme.subText)}>ສະຖານະ</th>
+                            <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+                                <th className="text-left px-6 py-3 font-medium">ລະຫັດ</th>
+                                <th className="text-left px-6 py-3 font-medium">ລູກຄ້າ</th>
+                                <th className="text-right px-6 py-3 font-medium">ຍອດລວມ</th>
+                                <th className="text-center px-6 py-3 font-medium">ສະຖານະ</th>
+                                <th className="text-right px-6 py-3 font-medium">ວັນທີ</th>
                             </tr>
                         </thead>
-
-                        <tbody>
-                            {orders.map((o, i) => (
-                                <tr key={i} className="border-b border-admin-border/50 hover:bg-admin-bg transition-colors">
-                                    <td className={cn("py-3 font-mono text-xs", theme.text)}>{o?.order_code}</td>
-                                    <td className={cn("py-3", theme.text)}>{o?.customer?.customer_name}</td>
-                                    <td className={cn("py-3 font-semibold", theme.primary)}>{formatCurrency(o.total_amount ?? 0)}</td>
-                                    <td className="py-3">
-                                        <span className={cn("px-2.5 py-1 rounded-lg text-xs font-medium", getStatusStyle(o.status))}>
-                                            {statusLabel[o.status] ?? o.status}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
+                        <tbody className="divide-y divide-gray-50">
+                            {orders.map((o, i) => {
+                                const s = STATUS_STYLE[o.status] ?? { bg: "bg-gray-100 border border-gray-200", text: "text-gray-600", label: o.status }
+                                return (
+                                    <tr key={i} className="hover:bg-gray-50/70 transition-colors">
+                                        <td className="px-6 py-3.5 font-mono text-xs text-gray-600">
+                                            {o.order_code}
+                                        </td>
+                                        <td className="px-6 py-3.5 text-gray-800 font-medium">
+                                            {o.customer?.customer_name ?? "—"}
+                                        </td>
+                                        <td className="px-6 py-3.5 text-right font-semibold text-blue-600">
+                                            {formatCurrency(o.total_amount ?? 0)}
+                                        </td>
+                                        <td className="px-6 py-3.5 text-center">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.bg} ${s.text}`}>
+                                                {s.label}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-3.5 text-right text-xs text-gray-400">
+                                            {formatDate(o.order_date)}
+                                        </td>
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </table>
                 </div>
