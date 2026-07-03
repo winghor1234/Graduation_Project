@@ -174,7 +174,7 @@ export default function ExpensesPage() {
                                         tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
                                     />
                                     <Tooltip
-                                        formatter={(v: number) => [formatCurrency(v), "ລາຍຈ່າຍ"]}
+                                        formatter={(v) => [formatCurrency(Number(v)), "ລາຍຈ່າຍ"]}
                                         contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }}
                                     />
                                     <Bar dataKey="ລາຍຈ່າຍ" radius={[4, 4, 0, 0]}>

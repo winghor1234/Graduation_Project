@@ -3,7 +3,18 @@
 import Link from "next/link"
 import { ArrowRight, ShoppingBag } from "lucide-react"
 
-export function HomeHero() {
+type Props = {
+    totalProducts: number
+    totalCategories: number
+    isLoading?: boolean
+}
+
+export function HomeHero({ totalProducts, totalCategories, isLoading }: Props) {
+    const stats = [
+        { value: `${totalProducts}+`, label: "ສິນຄ້າ" },
+        { value: `${totalCategories}+`, label: "ໝວດໝູ່" },
+    ]
+
     return (
         <section className="relative h-160 lg:h-185 overflow-hidden bg-brand-black">
             {/* Background image */}
@@ -27,7 +38,7 @@ export function HomeHero() {
                     {/* Badge */}
                     <span className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-brand-orange bg-brand-orange/10 border border-brand-orange/25 px-4 py-1.5 rounded-full">
                         <span className="size-1.5 rounded-full bg-brand-orange animate-pulse" />
-                        ຄໍເລັກຊັ່ນໃໝ່ 2025
+                        ຄໍເລັກຊັ່ນໃໝ່ {new Date().getFullYear()}
                     </span>
 
                     {/* Headline */}
@@ -58,13 +69,15 @@ export function HomeHero() {
 
                     {/* Stats */}
                     <div className="flex items-center gap-8 pt-4 border-t border-brand-white/10">
-                        {[
-                            { value: "500+", label: "ສິນຄ້າ" },
-                            { value: "50+", label: "ຍີ່ຫໍ້" },
-                            { value: "99%", label: "ພໍໃຈ" },
-                        ].map((s) => (
+                        {stats.map((s) => (
                             <div key={s.label}>
-                                <p className="text-2xl font-extrabold text-brand-white">{s.value}</p>
+                                <p className="text-2xl font-extrabold text-brand-white">
+                                    {isLoading ? (
+                                        <span className="inline-block h-6 w-10 rounded bg-brand-white/15 animate-pulse" />
+                                    ) : (
+                                        s.value
+                                    )}
+                                </p>
                                 <p className="text-xs text-brand-muted mt-0.5">{s.label}</p>
                             </div>
                         ))}

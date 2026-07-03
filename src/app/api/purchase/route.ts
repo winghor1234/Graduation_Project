@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     // 3. ถ้ามาแบบ URL เปล่าๆ ไม่มีเงื่อนไขอะไรเลย ให้ดึงทั้งหมด
     // (เอา req ออกหาก getAllProducts ใน Controller ของคุณไม่ได้ประกาศรับไว้)
-    return purchaseController.getAllPurchases(req);
+    return purchaseController.getAllPurchases();
 }
 
 export async function POST(req: NextRequest) {

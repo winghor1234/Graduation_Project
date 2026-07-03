@@ -117,9 +117,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     <p className="text-6xl">📦</p>
                     <h1 className="text-2xl font-bold text-gray-900">ບໍ່ພົບສິນຄ້ານີ້</h1>
                     <p className="text-gray-400">ສິນຄ້ານີ້ອາດຖືກລຶບຫຼືບໍ່ມີຢູ່ໃນລະບົບ</p>
-                    <Link href="/shop">
-                        <Button className="rounded-xl mt-2">ກັບໄປໜ້າຮ້ານ</Button>
-                    </Link>
+                    <Button asChild className="rounded-xl mt-2">
+                        <Link href="/shop">ກັບໄປໜ້າຮ້ານ</Link>
+                    </Button>
                 </div>
             </div>
         )

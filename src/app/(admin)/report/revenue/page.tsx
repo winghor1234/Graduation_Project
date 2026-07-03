@@ -172,7 +172,7 @@ export default function RevenuePage() {
                                         tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
                                     />
                                     <Tooltip
-                                        formatter={(v: number) => [formatCurrency(v), "ລາຍຮັບ"]}
+                                        formatter={(v) => [formatCurrency(Number(v)), "ລາຍຮັບ"]}
                                         contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }}
                                     />
                                     <Bar dataKey="ລາຍຮັບ" fill="#3b82f6" radius={[4, 4, 0, 0]} />

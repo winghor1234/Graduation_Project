@@ -1,4 +1,5 @@
-import { CreatePurchaseOrderInput, PurchaseOrder, UpdatePurchaseOrderInput } from "@/modules/purchase/purchase.type"
+import { CreatePurchaseOrderInput, UpdatePurchaseOrderInput } from "@/modules/purchase/purchase.type"
+import { PurchaseOrder } from "@/components/adminComponent/purchase/PurchaseType"
 import { UseGetParams } from "../types"
 import axiosInstance from "@/lib/axiosInstance"
 

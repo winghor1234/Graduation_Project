@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma"
 import { MonthlyRevenueRaw } from "../report/report.type"
 import { calculateGrowthPercent } from "@/utils/metrics"
+import { unstable_cache } from "next/cache"
 
-export const dashboardService = {
-    async getDashboardData() {
+const getDashboardDataCached = unstable_cache(
+    async () => {
         const now = new Date()
 
         const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -11,6 +12,8 @@ export const dashboardService = {
 
         const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
         const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+        const startOfChartRange = new Date(now.getFullYear(), now.getMonth() - 11, 1)
 
         const [
             revenueResult,
@@ -33,10 +36,11 @@ export const dashboardService = {
             }),
 
             prisma.$queryRaw<MonthlyRevenueRaw[]>`
-        SELECT 
+        SELECT
           DATE_TRUNC('month', sale_date) AS month,
           SUM(total_amount) AS revenue
         FROM "Sale"
+        WHERE sale_date >= ${startOfChartRange}
         GROUP BY month
         ORDER BY month ASC
       `,
@@ -148,5 +152,11 @@ export const dashboardService = {
             lastMonthOrder,
             percent
         }
-    }
+    },
+    ["dashboard-data"],
+    { revalidate: 60, tags: ["dashboard"] }
+)
+
+export const dashboardService = {
+    getDashboardData: getDashboardDataCached
 }

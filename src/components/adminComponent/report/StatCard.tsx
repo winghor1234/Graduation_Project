@@ -7,7 +7,7 @@ type Color = "blue" | "green" | "red" | "purple" | "amber"
 
 type Props = {
     title: string
-    value: number
+    value: number | string
     prefix?: string
     growth?: number
     sub?: string
@@ -59,7 +59,7 @@ export default function StatCard({ title, value, prefix, growth, sub, icon, colo
             <div className="space-y-0.5">
                 <p className="text-[11px] font-medium text-admin-muted uppercase tracking-wide">{title}</p>
                 <h2 className="text-2xl font-bold text-admin-text leading-tight">
-                    {formatCurrency(value)}
+                    {typeof value === "number" ? formatCurrency(value) : value}
                 </h2>
                 {sub && <p className="text-[11px] text-admin-muted">{sub}</p>}
             </div>

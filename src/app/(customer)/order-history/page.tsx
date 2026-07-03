@@ -395,11 +395,9 @@ export default function OrderHistoryPage() {
                     <p className="text-sm text-gray-400 leading-relaxed">
                         ທ່ານຍັງບໍ່ໄດ້ສັ່ງຊື້ສິນຄ້າ — ເລີ່ມຊື້ເພື່ອເບິ່ງປະຫວັດໄດ້ທີ່ນີ້
                     </p>
-                    <Link href="/shop">
-                        <Button className="h-11 px-8 rounded-xl bg-gray-900 hover:bg-gray-700 text-white font-bold mt-2">
-                            ໄປໜ້າຮ້ານ
-                        </Button>
-                    </Link>
+                    <Button asChild className="h-11 px-8 rounded-xl bg-gray-900 hover:bg-gray-700 text-white font-bold mt-2">
+                        <Link href="/shop">ໄປໜ້າຮ້ານ</Link>
+                    </Button>
                 </div>
             </div>
         )

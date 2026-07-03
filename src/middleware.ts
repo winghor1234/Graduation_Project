@@ -4,6 +4,12 @@ import { JwtPayload } from "./types/jwt";
 import { apiLimiter } from "./utils/rateLimiter";
 import { jwtVerify } from "jose";
 
+/* ✅ ອ່ານຂໍ້ມູນສາທາລະນະ — ບໍ່ຕ້ອງ login (browsing storefront) */
+const PUBLIC_READ_ROUTES = [
+    "/api/product",
+    "/api/category",
+    "/api/promotion/active",
+];
 
 export async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
@@ -12,6 +18,7 @@ export async function middleware(req: NextRequest) {
     if (pathname.startsWith("/api/auth")) {
         return NextResponse.next();
     }
+
     try {
         const ip = req.headers.get("x-forwarded-for") || "unknown"
         await apiLimiter.consume(ip)
@@ -22,6 +29,13 @@ export async function middleware(req: NextRequest) {
         )
     }
 
+    /* ✅ allow anonymous browsing of public catalog data (GET only) */
+    if (
+        req.method === "GET" &&
+        PUBLIC_READ_ROUTES.some((route) => pathname.startsWith(route))
+    ) {
+        return NextResponse.next();
+    }
 
     const token = req.cookies.get("access_token")?.value;
     if (!token) {

@@ -39,12 +39,13 @@ export function ShopProductGrid({
     return (
         <div className="space-y-8">
             <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10 transition-opacity duration-200 ${isFetching ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
-                {items.map(product => (
+                {items.map((product, index) => (
                     <ProductCard
                         key={product.product_id}
                         product={product}
                         onPickVariant={onPickVariant}
                         promotion={promotionMap.get(product.product_id) ?? null}
+                        priority={index < 3}
                     />
                 ))}
             </div>

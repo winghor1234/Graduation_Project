@@ -199,7 +199,7 @@
 
 import { Card } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { PurchaseOrder } from "@/modules/purchase/purchase.type"
+import { PurchaseOrder } from "./PurchaseType"
 import { formatDate } from "@/utils/FormatDate"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { CheckCircle2, Clock, FileDown, Phone, Send } from "lucide-react"

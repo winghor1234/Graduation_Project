@@ -42,7 +42,7 @@ export const customerService = {
             include: {
                 orders: true,
                 sales: true,
-                points: true
+                point_transactions: true
             }
         })
 

@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 // import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,8 +18,8 @@ export default function VerifyOTPPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
-  const { mutate: verifyOtp, isPending } = useEmployeeResendOTP();
-  const { mutate: resendOtp, isPending: isResending } = useEmployeeVerifyOtp();
+  const { mutate: verifyOtp, isPending } = useEmployeeVerifyOtp();
+  const { mutate: resendOtp, isPending: isResending } = useEmployeeResendOTP();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [resendTimer, setResendTimer] = useState(60);
@@ -140,14 +141,13 @@ export default function VerifyOTPPage() {
             : "ສົ່ງ OTP ອີກຄັ້ງ"}
         </button>
 
-        <button
-          type="button"
-          onClick={() => router.push("/forgot-password")}
+        <Link
+          href="/forgot-password"
           className="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-gray-900 w-full py-2"
         >
           <ArrowLeft className="h-4 w-4" />
           ກັບຄືນ
-        </button>
+        </Link>
 
       </form>
     </>

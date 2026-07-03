@@ -52,22 +52,23 @@ export function HomeFeaturedProducts({ products, isLoading, onPickVariant }: Pro
                             ບໍ່ມີສິນຄ້າໃນຂະນະນີ້
                         </p>
                     ) : (
-                        products.map(product => (
+                        products.map((product, index) => (
                             <ProductCard
                                 key={product.product_id}
                                 product={product}
                                 onPickVariant={onPickVariant}
+                                priority={index < 4}
                             />
                         ))
                     )}
                 </div>
 
                 <div className="mt-10 text-center sm:hidden">
-                    <Link href="/shop">
-                        <Button variant="outline" className="rounded-xl gap-2 h-11 px-6">
+                    <Button asChild variant="outline" className="rounded-xl gap-2 h-11 px-6">
+                        <Link href="/shop">
                             ເບິ່ງສິນຄ້າທັງໝົດ <ArrowRight className="size-4" />
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
                 </div>
             </div>
         </section>

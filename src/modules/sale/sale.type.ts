@@ -1,6 +1,7 @@
 import { Customer } from "../customer/customer.type"
 import { Employee } from "../employee/employee.type"
 import { Product, ProductVariant } from "../product/product.types"
+import { Refund } from "../refund/refund.type"
 
 export type SaleDetail = {
     sale_detail_id: string
@@ -30,6 +31,7 @@ export type Sale = {
     customer?: Customer
 
     sale_details?: SaleDetail[]
+    refund?: Refund
 
     createdAt: string
     updatedAt: string

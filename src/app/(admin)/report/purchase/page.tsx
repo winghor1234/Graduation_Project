@@ -86,7 +86,7 @@ export default function PurchaseReportPage() {
                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                             <XAxis dataKey="ເດືອນ" tick={{ fontSize: 11, fill: "#9ca3af" }} tickLine={false} axisLine={false} />
                             <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
-                            <Tooltip formatter={(v: number) => [formatCurrency(v), "ຍອດ"]} contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }} />
+                            <Tooltip formatter={(v) => [formatCurrency(Number(v)), "ຍອດ"]} contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }} />
                             <Bar dataKey="ຍອດ" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>

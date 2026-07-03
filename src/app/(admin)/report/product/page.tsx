@@ -108,7 +108,7 @@ export default function ProductReportPage() {
                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                             <XAxis dataKey="ໝວດ" tick={{ fontSize: 11, fill: "#9ca3af" }} tickLine={false} axisLine={false} />
                             <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} tickLine={false} axisLine={false} />
-                            <Tooltip formatter={(v: number) => [v, "ຈຳນວນສາງ"]} contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }} />
+                            <Tooltip formatter={(v) => [Number(v), "ຈຳນວນສາງ"]} contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }} />
                             <Bar dataKey="ສາງ" fill="#22c55e" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>

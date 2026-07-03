@@ -68,7 +68,7 @@ export const employeeService = {
         return prisma.employee.update({
             where: { employee_id: id },
             data: {
-                is_active: false
+                isActive: false
             }
         })
 

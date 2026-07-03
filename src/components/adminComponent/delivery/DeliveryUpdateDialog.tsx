@@ -1,72 +1,85 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Eye, Pencil } from "lucide-react"
-import { Delivery } from "@/modules/delivery/delivery.type"
-import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Delivery, UpdateDeliveryInput } from "@/modules/delivery/delivery.type"
+import { DeliveryStatus } from "@prisma/client"
+import { useState } from "react"
 
 type Props = {
-    data: Delivery[]
-    isLoading: boolean
-    onView: (d: Delivery) => void
-    onEdit: (d: Delivery) => void
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    delivery?: Delivery
+    onSubmit: (data: UpdateDeliveryInput) => void
 }
 
-export function DeliveryTable({ data, isLoading, onView, onEdit }: Props) {
+export function DeliveryUpdateDialog({ open, onOpenChange, delivery, onSubmit }: Props) {
 
-    if (isLoading) return <Card className="p-6 text-center">ກຳລັງໂຫຼດຂໍ້ມູນ...</Card>
+    const [status, setStatus] = useState<DeliveryStatus>("PENDING")
+    const [trackingNumber, setTrackingNumber] = useState("")
+
+    const handleOpenChange = (v: boolean) => {
+        if (v && delivery) {
+            setStatus(delivery.status)
+            setTrackingNumber(delivery.tracking_number ?? "")
+        }
+        onOpenChange(v)
+    }
+
+    if (!delivery) return null
 
     return (
-        <Card>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
+            <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle>ອັບເດດການຈັດສົ່ງ</DialogTitle>
+                </DialogHeader>
 
-            <Table>
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>ສະຖານະ</Label>
+                        <Select
+                            value={status}
+                            onValueChange={(value: DeliveryStatus) => setStatus(value)}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="ເລືອກສະຖານະ" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="PENDING">ລໍຖ້າດຳເນີນການ</SelectItem>
+                                <SelectItem value="PROCESSING">ກຳລັງດຳເນີນການ</SelectItem>
+                                <SelectItem value="SHIPPED">ກຳລັງຈັດສົ່ງ</SelectItem>
+                                <SelectItem value="DELIVERED">ຈັດສົ່ງສຳເລັດ</SelectItem>
+                                <SelectItem value="CANCELLED">ຍົກເລີກແລ້ວ</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
 
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>ອໍເດີ້</TableHead>
-                        <TableHead>ສະຖານະ</TableHead>
-                        <TableHead>ຜູ້ຂົນສົ່ງ</TableHead>
-                        <TableHead>ເລກຕິດຕາມພັດສະດຸ</TableHead>
-                        <TableHead className="text-right">ການຈັດການ</TableHead>
-                    </TableRow>
-                </TableHeader>
+                    <div className="space-y-2">
+                        <Label>ເລກຕິດຕາມພັດສະດຸ</Label>
+                        <Input
+                            value={trackingNumber}
+                            onChange={(e) => setTrackingNumber(e.target.value)}
+                            placeholder="ເລກຕິດຕາມພັດສະດຸ (ຖ້າມີ)"
+                        />
+                    </div>
 
-                <TableBody>
-                    {data.map(d => (
-                        <TableRow key={d.delivery_id}>
-
-                            <TableCell>{d.order_id}</TableCell>
-
-                            <TableCell>
-                                <Badge>{d.status}</Badge>
-                            </TableCell>
-
-                            <TableCell>{d.provider}</TableCell>
-
-                            <TableCell>
-                                {d.tracking_number || "-"}
-                            </TableCell>
-
-                            <TableCell className="text-right flex justify-end gap-2">
-
-                                <Button size="icon" onClick={() => onView(d)}>
-                                    <Eye className="w-4 h-4" />
-                                </Button>
-
-                                <Button size="icon" onClick={() => onEdit(d)}>
-                                    <Pencil className="w-4 h-4" />
-                                </Button>
-
-                            </TableCell>
-
-                        </TableRow>
-                    ))}
-                </TableBody>
-
-            </Table>
-
-        </Card>
+                    <Button
+                        className="w-full"
+                        onClick={() =>
+                            onSubmit({
+                                status,
+                                tracking_number: trackingNumber || undefined,
+                            })
+                        }
+                    >
+                        ບັນທຶກ
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
     )
 }

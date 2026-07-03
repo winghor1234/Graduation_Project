@@ -1,3 +1,5 @@
+"use client"
+
 import { useCreateProvince, useDeleteProvince, useGetProvinces, useUpdateProvince } from "@/app/features/hooks/Location"
 import { AppPagination } from "@/components/AppPagination"
 import { ProvinceDetailDialog } from "@/components/adminComponent/location/province/ProvinceDetailDialog"

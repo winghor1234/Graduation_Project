@@ -19,8 +19,8 @@ export default function POSPage() {
     const table = useDataTable()
     const router = useRouter()
 
-    const { data: products = [] } = useGetAllProducts()
-    const productsData = products.items ?? []
+    const { data: products } = useGetAllProducts()
+    const productsData = products?.items ?? []
     const { data: customersData } = useGetCustomers(table.params)
     const customers = customersData?.data ?? []
 

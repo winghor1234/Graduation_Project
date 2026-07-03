@@ -35,6 +35,7 @@ export type UseGetParams = {
     search?: string
     orderBy?: string
     order?: "asc" | "desc"
+    status?: string
 }
 
 

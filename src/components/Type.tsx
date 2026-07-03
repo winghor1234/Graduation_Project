@@ -4,7 +4,7 @@ export type PropsTable = {
   table: {
     search: string
     setSearch: (value: string) => void
-    setSort: (field: string, order: Order) => void 
+    setSort: (field: string, order?: Order) => void
   }
   onAdd: () => void
 }

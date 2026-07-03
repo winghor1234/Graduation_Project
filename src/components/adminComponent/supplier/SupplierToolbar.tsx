@@ -11,8 +11,7 @@ import { PropsTable } from "../../Type"
 export function SupplierToolbar({ table, onAdd }: PropsTable) {
 
     const setSort = (field: string, order: "asc" | "desc") => {
-        table.setSort(field)
-        table.setOrder(order)
+        table.setSort(field, order)
     }
 
     return (

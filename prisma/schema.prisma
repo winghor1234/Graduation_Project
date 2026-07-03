@@ -401,6 +401,7 @@ model Order {
   @@index([customer_id])
   @@index([status])
   @@index([order_date])
+  @@index([createdAt])
 }
 
 

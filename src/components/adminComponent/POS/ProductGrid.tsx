@@ -128,7 +128,7 @@ export default function ProductGrid({ products, onAdd }: Props) {
     return (
         <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {products.map(p => {
+                {products.map((p, index) => {
 
                     // ✅ ລາຄາ min/max ຈາກ variants
                     const prices = p.variants?.map(v => v.sale_price) ?? []
@@ -163,6 +163,7 @@ export default function ProductGrid({ products, onAdd }: Props) {
                                         fill
                                         sizes="200px"
                                         className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                        priority={index < 12}
                                     />
                                 ) : (
                                     <div className="flex h-full items-center justify-center text-xs text-admin-muted">

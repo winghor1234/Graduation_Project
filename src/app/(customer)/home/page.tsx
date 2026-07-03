@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { useGetAllProducts } from "@/app/features/hooks/Product"
 import { useGetAllCategories } from "@/app/features/hooks/Category"
+import { useGetAllPromotions } from "@/app/features/hooks/promotion"
 import { CategoryItem, ProductListItem } from "@/components/customerComponent/shop/shop.types"
 import { VariantPickerDialog } from "@/components/customerComponent/shop/VariantPickerDialog"
 import { HomeHero } from "@/components/customerComponent/home/HomeHero"
@@ -20,6 +21,8 @@ export default function HomePage() {
 
     const { data: categoriesData, isLoading: isLoadingCategories } = useGetAllCategories()
 
+    const { data: promotions, isLoading: isLoadingPromotions } = useGetAllPromotions()
+
     const [pickerProduct, setPickerProduct] = useState<ProductListItem | null>(null)
 
     const featuredProducts = useMemo(
@@ -31,9 +34,15 @@ export default function HomePage() {
         [categoriesData]
     )
 
+    const activePromotion = promotions?.[0]
+
     return (
         <div className="min-h-screen bg-white">
-            <HomeHero />
+            <HomeHero
+                totalProducts={featuredData?.meta.total ?? 0}
+                totalCategories={categories.length}
+                isLoading={isLoadingProducts || isLoadingCategories}
+            />
 
             <HomeFeaturedProducts
                 products={featuredProducts}
@@ -46,7 +55,10 @@ export default function HomePage() {
                 isLoading={isLoadingCategories}
             />
 
-            <HomePromoBanner />
+            <HomePromoBanner
+                promotion={activePromotion}
+                isLoading={isLoadingPromotions}
+            />
 
             <VariantPickerDialog
                 product={pickerProduct}

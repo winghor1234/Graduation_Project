@@ -10,22 +10,7 @@ import { BackButton } from "@/utils/BackButton"
 import jsPDF from "jspdf"
 import autoTable, { RowInput } from "jspdf-autotable"
 import { generateInvoiceCode } from "@/utils/generateCode"
-
-// -----------------------------------------------------------------
-// ‼️ ສຳຄັນ: jsPDF ບໍ່ມີຟອນພາສາລາວມາໃນຕົວ (default font = Helvetica)
-// ຕ້ອງ embed ຟອນລາວ (ແນະນຳ Noto Sans Lao) ກ່ອນຈຶ່ງຈະພິມຕົວອັກສອນລາວ
-// ອອກໃນ PDF ໄດ້ຖືກຕ້ອງ. ວິທີສ້າງ base64 font:
-//
-// 1. ໂຫຼດຟອນ .ttf (ເຊັ່ນ NotoSansLao-Regular.ttf)
-// 2. ໃຊ້ jsPDF Fontconverter: https://rawgit.com/MrRio/jsPDF/master/fontconverter/fontconverter.html
-//    ຫຼື script: node -e "console.log(require('fs').readFileSync('font.ttf').toString('base64'))"
-// 3. ເອົາຜົນ base64 ມາວາງໃນໄຟລ໌ lib/fonts/NotoSansLao.ts ດັ່ງຕົວຢ່າງ:
-//      export const NotoSansLaoBase64 = "AAEAAAAR..." // (string ຍາວຫຼາຍ)
-// 4. import ມາໃຊ້ດັ່ງລຸ່ມນີ້
-//
-// ຖ້າຍັງບໍ່ມີໄຟລ໌ font, ໃຫ້ comment ສ່ວນ embed font ໄວ້ກ່ອນ —
-// ແຕ່ໃຫ້ຮູ້ໄວ້ວ່າ exportPDF ຈະບໍ່ສະແດງຕົວອັກສອນລາວຖືກຕ້ອງ.
-// -----------------------------------------------------------------
+import { NotoSansLaoBase64 } from "@/lib/fonts/NotoSansLao"
 
 // ປະກາດ type ໃຫ້ jsPDF instance ທີ່ມີ lastAutoTable (ແທນການໃຊ້ `as any`)
 type jsPDFWithAutoTable = jsPDF & {

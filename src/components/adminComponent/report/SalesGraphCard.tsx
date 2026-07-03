@@ -166,7 +166,7 @@ export default function SalesGraphCard(_props: Props) {
                                     tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
                                 />
                                 <Tooltip
-                                    formatter={(v: number, name: string) => [formatCurrency(v), name]}
+                                    formatter={(v, name) => [formatCurrency(Number(v)), name]}
                                     contentStyle={{
                                         borderRadius: 10,
                                         border: "1px solid #e5e7eb",

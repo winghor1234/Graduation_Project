@@ -3,7 +3,7 @@ import { Store } from "lucide-react";
 
 interface AuthLayoutProps {
     children: ReactNode;
-    title: string;
+    title?: string;
     subtitle?: string;
 }
 
@@ -24,10 +24,12 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
 
                 {/* Card */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                    <div className="mb-6">
-                        <h2 className="font-bold mb-2">{title}</h2>
-                        {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
-                    </div>
+                    {title && (
+                        <div className="mb-6">
+                            <h2 className="font-bold mb-2">{title}</h2>
+                            {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+                        </div>
+                    )}
                     {children}
                 </div>
 

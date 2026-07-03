@@ -8,9 +8,11 @@ import { NextRequest } from "next/server"
 // }
 
 // app/api/refund/[id]/route.ts
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
-    return refundController.getRefund(params.id)
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
+    return refundController.getRefund(id)
 }
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
-    return refundController.deleteRefund(params.id)
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
+    return refundController.deleteRefund(id)
 }

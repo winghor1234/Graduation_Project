@@ -32,6 +32,8 @@ export const saleService = {
                         product: true,
                     },
                 },
+
+                refund: true,
             },
         })
     },

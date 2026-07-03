@@ -122,6 +122,11 @@ export default function CheckoutPage() {
         }
     }, [userData, router])
 
+    // ⚡ Prefetch the order-history page — the guaranteed next stop after a successful order
+    useEffect(() => {
+        router.prefetch("/order-history")
+    }, [router])
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) setValue("paymentSlip", file, { shouldValidate: true })
@@ -160,7 +165,7 @@ export default function CheckoutPage() {
             onSuccess: () => {
                 clearCart()
                 toast.success("ສັ່ງຊື້ສິນຄ້າສຳເລັດແລ້ວ!")
-                router.push("/products")
+                router.push("/order-history")
             },
             onError: (err) => {
                 toast.error(err?.message || "ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່")
@@ -182,12 +187,12 @@ export default function CheckoutPage() {
         <div className="min-h-screen bg-gray-50 py-10">
             <div className="container mx-auto px-4 max-w-6xl">
 
-                <Link href="/cart">
-                    <Button variant="ghost" className="mb-6 -ml-2 text-gray-500 hover:text-gray-900 hover:bg-gray-200 rounded-xl">
+                <Button asChild variant="ghost" className="mb-6 -ml-2 text-gray-500 hover:text-gray-900 hover:bg-gray-200 rounded-xl">
+                    <Link href="/cart">
                         <ArrowLeft className="size-4 mr-2" />
                         ກັບໄປກະຕ່າ
-                    </Button>
-                </Link>
+                    </Link>
+                </Button>
 
                 <div className="mb-8">
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">ຊຳລະເງິນ</h1>

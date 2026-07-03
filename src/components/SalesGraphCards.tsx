@@ -113,7 +113,7 @@ export default function SalesGraphCard({ data }: Props) {
         ],
     }), [data])
 
-    const options: ChartOptions<"bar"> = useMemo(() => ({
+    const options: ChartOptions<"bar" | "line"> = useMemo(() => ({
         responsive: true,
         maintainAspectRatio: false,
         resizeDelay: 0,
@@ -223,7 +223,7 @@ export default function SalesGraphCard({ data }: Props) {
 
             {/* Chart */}
             <div className="relative h-[300px] w-full min-w-0">
-                <Chart type="bar" data={chartData} options={options} />
+                <Chart<"bar" | "line"> type="bar" data={chartData} options={options} />
             </div>
 
             {/* Legend */}

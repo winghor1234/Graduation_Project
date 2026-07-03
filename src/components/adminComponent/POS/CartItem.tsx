@@ -19,9 +19,9 @@ export default function CartItem({ item, onUpdate, onRemove }: Props) {
             <div className="flex items-center gap-2 flex-1">
 
                 <div className="w-10 h-10 bg-gray-100 rounded overflow-hidden">
-                    {item.images.length > 0 ? (
+                    {item.image_url ? (
                         <Image
-                            src={item.images[0].image_url}
+                            src={item.image_url}
                             alt={item.product_name}
                             width={40}
                             height={40}

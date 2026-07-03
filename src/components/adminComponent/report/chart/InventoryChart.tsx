@@ -75,7 +75,7 @@ export default function InventoryChart({ data }: Props) {
         ],
     }), [data])
 
-    const options: ChartOptions<"bar"> = useMemo(() => ({
+    const options: ChartOptions<"bar" | "line"> = useMemo(() => ({
         responsive: true,
         maintainAspectRatio: false,
         resizeDelay: 0,
@@ -125,7 +125,7 @@ export default function InventoryChart({ data }: Props) {
                 <span className="text-[11px] text-admin-muted">Received</span>
             </div>
             <div className="relative h-[300px] w-full min-w-0">
-                <Chart type="bar" data={chartData} options={options} />
+                <Chart<"bar" | "line"> type="bar" data={chartData} options={options} />
             </div>
             <ChartLegend items={LEGEND_ITEMS} />
         </>

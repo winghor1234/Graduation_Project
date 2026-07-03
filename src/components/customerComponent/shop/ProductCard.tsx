@@ -14,9 +14,10 @@ type Props = {
     product: ProductListItem
     onPickVariant: (product: ProductListItem) => void
     promotion?: Promotion | null
+    priority?: boolean
 }
 
-export function ProductCard({ product, onPickVariant, promotion = null }: Props) {
+export function ProductCard({ product, onPickVariant, promotion = null, priority = false }: Props) {
     const { addToCart } = useCustomer()
 
     const totalStock = useMemo(
@@ -67,6 +68,7 @@ export function ProductCard({ product, onPickVariant, promotion = null }: Props)
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        priority={priority}
                     />
 
                     {/* Out of stock overlay */}
