@@ -90,7 +90,7 @@ export default function DashboardPage() {
                     variant="orange"
                 />
                 <StatCard
-                    title="ກຳໄລສຸດທິ"
+                    title="ກຳໄລ"
                     value={formatCurrency(d?.summary?.profit ?? 0)}
                     icon={TrendingUp}
                     variant="green"

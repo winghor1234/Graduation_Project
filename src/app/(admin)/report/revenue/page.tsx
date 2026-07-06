@@ -80,7 +80,7 @@ export default function RevenuePage() {
                                     : "bg-white border text-gray-600 hover:bg-gray-50"
                             }`}
                         >
-                            {p === "WEEK" ? "ສັບດາ" : p === "MONTH" ? "ເດືອນ" : p === "YEAR" ? "ປີ" : "ກຳນົດເອງ"}
+                            {p === "WEEK" ? "ອາທິດ" : p === "MONTH" ? "ເດືອນ" : p === "YEAR" ? "ປີ" : "ກຳນົດເອງ"}
                         </button>
                     ))}
                 </div>

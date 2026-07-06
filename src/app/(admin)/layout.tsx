@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const pathname = usePathname()
     const { user, isLoading } = useAuthMe()
     const { mutate: logout } = useEmployeeLogout()
-    const { data: pendingCount = 0 } = useGetPendingOrderCount()
+    const { data: pendingCount = 0 } = useGetPendingOrderCount({ enabled: !isLoading && !!user })
     const [collapsed, setCollapsed] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)
 

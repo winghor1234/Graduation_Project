@@ -122,7 +122,11 @@ export const AuthApi = {
             return res.data
         } catch (err: unknown) {
             if (isAxiosError(err)) {
-                if (err.response?.status === 401) {
+                // 401 = no access token
+                // 400 = interceptor tried /auth/refresh but got "Refresh token missing"
+                // Both mean user is not authenticated → return null, don't throw
+                const status = err.response?.status
+                if (status === 401 || status === 400 || status === 403) {
                     return null
                 }
             }

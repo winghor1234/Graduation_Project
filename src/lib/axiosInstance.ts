@@ -25,8 +25,12 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // Don't retry refresh endpoint to avoid infinite loop
-    if (originalRequest.url?.includes("/auth/refresh")) {
+    // Don't retry these auth endpoints — they are either the refresh itself,
+    // or an intentional "am I logged in?" check that should fail fast
+    if (
+      originalRequest.url?.includes("/auth/refresh") ||
+      originalRequest.url?.includes("/auth/me")
+    ) {
       return Promise.reject(error)
     }
 

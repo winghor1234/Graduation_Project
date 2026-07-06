@@ -111,7 +111,7 @@ export default function ImportReportPage() {
                         {(["WEEK", "MONTH", "YEAR", "CUSTOM"] as Period[]).map(p => (
                             <button key={p} onClick={() => report.setPeriod(p as any)}
                                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${report.period === p ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-                                {p === "WEEK" ? "ສັບດາ" : p === "MONTH" ? "ເດືອນ" : p === "YEAR" ? "ປີ" : "ກຳນົດເອງ"}
+                                {p === "WEEK" ? "ອາທິດ" : p === "MONTH" ? "ເດືອນ" : p === "YEAR" ? "ປີ" : "ກຳນົດເອງ"}
                             </button>
                         ))}
                     </div>

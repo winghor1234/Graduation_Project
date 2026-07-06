@@ -63,7 +63,7 @@ export default function ProfitPage() {
                         ← ກັບຄືນ
                     </Link>
                     <h1 className="text-2xl font-bold text-gray-800">ລາຍງານກຳໄລ</h1>
-                    <p className="text-sm text-gray-500 mt-1">ລາຍຮັບ, ຕົ້ນທຶນ ແລະ ກຳໄລສຸດທິ</p>
+                    <p className="text-sm text-gray-500 mt-1">ລາຍຮັບ, ຕົ້ນທຶນ ແລະ ກຳໄລ</p>
                 </div>
 
                 {/* Period filter + Export */}
@@ -80,7 +80,7 @@ export default function ProfitPage() {
                                     : "bg-white border text-gray-600 hover:bg-gray-50"
                             }`}
                         >
-                            {p === "WEEK" ? "ສັບດາ" : p === "MONTH" ? "ເດືອນ" : p === "YEAR" ? "ປີ" : "ກຳນົດເອງ"}
+                            {p === "WEEK" ? "ອາທິດ" : p === "MONTH" ? "ເດືອນ" : p === "YEAR" ? "ປີ" : "ກຳນົດເອງ"}
                         </button>
                     ))}
                 </div>
