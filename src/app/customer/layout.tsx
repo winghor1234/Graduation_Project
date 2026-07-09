@@ -10,8 +10,7 @@ export const metadata = {
 
 const FOOTER_LINKS = {
     ຮ້ານຄ້າ: [
-        { label: "ສິນຄ້າທັງໝົດ", href: "/customer/shop" },
-        { label: "ໜ້າຫຼັກ",       href: "/customer/home" },
+        { label: "ສິນຄ້າທັງໝົດ", href: "/customer/home" },
         { label: "ກະຕ່າສິນຄ້າ",   href: "/customer/cart" },
     ],
     ລູກຄ້າ: [

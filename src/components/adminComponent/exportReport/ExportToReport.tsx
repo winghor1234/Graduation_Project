@@ -6,7 +6,7 @@ import { Product } from "../products/ProductType";
 import { PurchaseOrder } from "../purchase/PurchaseType";
 import { Import } from "../import/ImportType";
 import { formatDate } from "@/utils/FormatDate";
-import { Sale } from "@/app/(admin)/report/saleQuantity/page";
+import { Sale } from "@/app/admin/report/saleQuantity/page";
 
 // product start
 

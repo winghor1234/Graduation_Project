@@ -24,12 +24,12 @@ export default function CartPage() {
     // ⚡ Prefetch หน้า checkout ทันทีที่เข้าหน้า cart
     // เพราะ router.push() ไม่ prefetch ให้เอง (ต่างจาก <Link>)
     useEffect(() => {
-        router.prefetch("/checkout")
+        router.prefetch("/customer/checkout")
     }, [router])
 
     // ⚡ Prefetch หน้า shop ตอนเมาส์ชี้ / นิ้วแตะ
     const prefetchShop = () => {
-        router.prefetch("/shop")
+        router.prefetch("/customer/home")
         // 💡 ถ้าหน้า /shop ใช้ React Query ดึงสินค้า เปิดคอมเมนต์นี้
         //    เพื่อโหลด "ข้อมูล" ล่วงหน้าด้วย (ต้องมี QueryClientProvider):
         //
@@ -60,7 +60,7 @@ export default function CartPage() {
                         className="bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 rounded-xl gap-2 shadow-md active:scale-[0.98] transition-all"
                     >
                         <Link
-                            href="/customer/shop"
+                            href="/customer/home"
                             onMouseEnter={prefetchShop}
                             onTouchStart={prefetchShop}
                         >
@@ -205,7 +205,7 @@ export default function CartPage() {
                                     className="w-full rounded-xl border-gray-300 text-gray-700 hover:text-brand-orange hover:border-brand-orange"
                                 >
                                     <Link
-                                        href="/customer/shop"
+                                        href="/customer/home"
                                         onMouseEnter={prefetchShop}
                                         onTouchStart={prefetchShop}
                                         className="text-white"

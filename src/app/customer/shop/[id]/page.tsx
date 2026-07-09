@@ -118,7 +118,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     <h1 className="text-2xl font-bold text-gray-900">ບໍ່ພົບສິນຄ້ານີ້</h1>
                     <p className="text-gray-400">ສິນຄ້ານີ້ອາດຖືກລຶບຫຼືບໍ່ມີຢູ່ໃນລະບົບ</p>
                     <Button asChild className="rounded-xl mt-2">
-                        <Link href="/customer/shop">ກັບໄປໜ້າຮ້ານ</Link>
+                        <Link href="/customer/home">ກັບໄປໜ້າຮ້ານ</Link>
                     </Button>
                 </div>
             </div>
@@ -177,7 +177,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
                 {/* Back + Breadcrumb */}
                 <div className="flex items-center gap-2 mb-10 text-sm text-gray-400">
-                    <Link href="/customer/shop" className="flex items-center gap-1.5 hover:text-gray-900 transition-colors font-medium">
+                    <Link href="/customer/home" className="flex items-center gap-1.5 hover:text-gray-900 transition-colors font-medium">
                         <ArrowLeft className="size-4" />
                         ໜ້າຮ້ານ
                     </Link>

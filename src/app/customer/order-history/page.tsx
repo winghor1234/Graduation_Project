@@ -396,7 +396,7 @@ export default function OrderHistoryPage() {
                         ທ່ານຍັງບໍ່ໄດ້ສັ່ງຊື້ສິນຄ້າ — ເລີ່ມຊື້ເພື່ອເບິ່ງປະຫວັດໄດ້ທີ່ນີ້
                     </p>
                     <Button asChild className="h-11 px-8 rounded-xl bg-gray-900 hover:bg-gray-700 text-white font-bold mt-2">
-                        <Link href="/customer/shop">ໄປໜ້າຮ້ານ</Link>
+                        <Link href="/customer/home">ໄປໜ້າຮ້ານ</Link>
                     </Button>
                 </div>
             </div>

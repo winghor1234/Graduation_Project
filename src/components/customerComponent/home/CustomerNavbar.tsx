@@ -3,15 +3,14 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Menu, Package, ShoppingBag, User, X } from "lucide-react"
+import { Home, Menu, Package, User, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import NavbarActions from "./NavbarActions"
 
 const NAV_LINKS = [
-    { href: "/customer/home",          label: "ໜ້າຫຼັກ",          icon: Home },
-    { href: "/customer/shop",          label: "ຮ້ານຄ້າ",           icon: ShoppingBag },
+    { href: "/customer/home",          label: "ໜ້າຮ້ານ",          icon: Home },
     { href: "/customer/order-history", label: "ປະຫວັດການສັ່ງຊື້", icon: Package },
     { href: "/customer/profile",       label: "ໂປຣໄຟລ໌",           icon: User },
 ] as const
