@@ -6,9 +6,10 @@ import { jwtVerify } from "jose";
 
 /* ✅ ອ່ານຂໍ້ມູນສາທາລະນະ — ບໍ່ຕ້ອງ login (browsing storefront) */
 const PUBLIC_READ_ROUTES = [
-    "/api/product",
+    "/api/shop",
     "/api/category",
     "/api/promotion/active",
+    "/api/product"
 ];
 
 export async function middleware(req: NextRequest) {
