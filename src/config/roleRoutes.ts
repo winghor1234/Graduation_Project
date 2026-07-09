@@ -19,6 +19,7 @@ export const roleRoutes = {
         "/api/category",
         "/api/promotion",
         "/api/customer",
+        "/api/notification",
     ]
 
 };
