@@ -49,7 +49,7 @@ export function Sidebar(props: Props) {
                 collapsed ? "justify-center" : "justify-between"
             )}>
                 {!collapsed && (
-                    <Link href="/dashboard" className="flex items-center gap-2.5 min-w-0">
+                    <Link href="/admin/dashboard" className="flex items-center gap-2.5 min-w-0">
                         <div className="size-8 rounded-xl bg-brand-orange flex items-center justify-center shrink-0">
                             <Store className="size-4 text-white" />
                         </div>

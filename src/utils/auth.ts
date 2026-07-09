@@ -8,12 +8,12 @@ export const isAdmin = (role?: string) => {
 export function getRedirectPath(role: Role | undefined) {
   switch (role) {
     case "ADMIN":
-      return "/dashboard"
+      return "/admin/dashboard"
 
     case "STAFF":
-      return "/order"
+      return "/admin/order"
 
     default:
-      return "/home"
+      return "/customer/home"
   }
 }

@@ -34,7 +34,7 @@ export function RecentOrders({ orders }: Props) {
                     </div>
                 </div>
                 <Link
-                    href="/order"
+                    href="/admin/order"
                     className="text-xs text-blue-500 hover:text-blue-600 hover:underline transition"
                 >
                     ເບິ່ງທັງໝົດ →

@@ -10,14 +10,14 @@ import { cn } from "@/lib/utils"
 import NavbarActions from "./NavbarActions"
 
 const NAV_LINKS = [
-    { href: "/home",          label: "ໜ້າຫຼັກ",          icon: Home },
-    { href: "/shop",          label: "ຮ້ານຄ້າ",           icon: ShoppingBag },
-    { href: "/order-history", label: "ປະຫວັດການສັ່ງຊື້", icon: Package },
-    { href: "/profile",       label: "ໂປຣໄຟລ໌",           icon: User },
+    { href: "/customer/home",          label: "ໜ້າຫຼັກ",          icon: Home },
+    { href: "/customer/shop",          label: "ຮ້ານຄ້າ",           icon: ShoppingBag },
+    { href: "/customer/order-history", label: "ປະຫວັດການສັ່ງຊື້", icon: Package },
+    { href: "/customer/profile",       label: "ໂປຣໄຟລ໌",           icon: User },
 ] as const
 
 function isActive(pathname: string, href: string) {
-    return pathname === href || (href !== "/home" && pathname.startsWith(href + "/"))
+    return pathname === href || (href !== "/customer/home" && pathname.startsWith(href + "/"))
 }
 
 export function CustomerNavbar() {
@@ -44,7 +44,7 @@ export function CustomerNavbar() {
             <div className="container mx-auto px-6 max-w-7xl h-16 flex items-center gap-8">
 
                 {/* Logo */}
-                <Link href="/home" className="flex items-baseline gap-0 shrink-0 group">
+                <Link href="/customer/home" className="flex items-baseline gap-0 shrink-0 group">
                     <span className="text-xl font-extrabold tracking-tight text-brand-white transition-opacity group-hover:opacity-90">
                         SPORT
                     </span>
@@ -101,7 +101,7 @@ export function CustomerNavbar() {
                     <div className="flex flex-col h-full">
                         {/* Sheet header */}
                         <div className="flex items-center justify-between px-6 py-5 border-b border-brand-divider">
-                            <Link href="/home" onClick={() => setMobileOpen(false)} className="flex items-baseline gap-0">
+                            <Link href="/customer/home" onClick={() => setMobileOpen(false)} className="flex items-baseline gap-0">
                                 <span className="text-lg font-extrabold tracking-tight text-brand-white">SPORT</span>
                                 <span className="text-lg font-extrabold tracking-tight text-brand-orange">PRO</span>
                             </Link>

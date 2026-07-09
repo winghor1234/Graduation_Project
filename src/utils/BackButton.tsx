@@ -11,7 +11,7 @@ export function BackButton() {
         if (window.history.length > 1) {
             router.back()
         } else {
-            router.push("/pos") // fallback
+            router.push("/admin/POS") // fallback
         }
     }
 

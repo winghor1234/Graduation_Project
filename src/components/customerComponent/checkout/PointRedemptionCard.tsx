@@ -1,6 +1,6 @@
 "use client"
 
-import { Star, Lock, Minus, Plus } from "lucide-react"
+import { Minus, Plus } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/utils/FormatCurrency"
 
@@ -19,139 +19,106 @@ export function PointRedemptionCard({
     onChangePoints, canUse, minPoints, pointsPerKip,
 }: Props) {
     const pointsValue = pointsToUse * pointsPerKip
-
     const clamp = (v: number) => Math.max(0, Math.min(v, maxRedeemPoints))
 
     const handleInput = (raw: string) => {
         const n = parseInt(raw, 10)
-        if (isNaN(n)) { onChangePoints(0); return }
-        onChangePoints(clamp(n))
+        onChangePoints(isNaN(n) ? 0 : clamp(n))
     }
 
     const step10 = (dir: 1 | -1) => onChangePoints(clamp(pointsToUse + dir * 10))
 
     return (
-        <Card className="border border-gray-200 bg-white shadow-sm rounded-2xl">
+        <Card className="border border-gray-200 bg-white shadow-sm rounded-xl">
             <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2.5 text-gray-900 text-base">
-                    <div className="size-8 rounded-xl bg-amber-50 flex items-center justify-center">
-                        <Star className="size-4 text-amber-500 fill-amber-400" />
-                    </div>
-                    ໃຊ້ຄະແນນສ່ວນຫຼຸດ
-                </CardTitle>
+                <CardTitle className="text-gray-900 text-base font-semibold">ໃຊ້ຄະແນນສ່ວນຫຼຸດ</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
 
-                {/* Balance info */}
-                <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5">
-                        <p className="text-[11px] text-amber-600 mb-0.5">ຄະແນນທີ່ມີ</p>
-                        <p className="text-lg font-extrabold text-amber-700">
-                            {customerPoints.toLocaleString()}
-                        </p>
-                        <p className="text-[11px] text-amber-500">≈ {formatCurrency(customerPoints * pointsPerKip)}</p>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="border border-gray-200 rounded-lg px-3 py-2.5">
+                        <p className="text-xs text-gray-500 mb-1">ຄະແນນທີ່ມີ</p>
+                        <p className="font-bold text-gray-900">{customerPoints.toLocaleString()}</p>
+                        <p className="text-xs text-gray-400">≈ {formatCurrency(customerPoints * pointsPerKip)}</p>
                     </div>
-                    <div className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
-                        <p className="text-[11px] text-gray-500 mb-0.5">ໃຊ້ໄດ້ສູງສຸດ (30%)</p>
-                        <p className="text-lg font-extrabold text-gray-700">
-                            {maxRedeemPoints.toLocaleString()}
-                        </p>
-                        <p className="text-[11px] text-gray-400">≈ {formatCurrency(maxRedeemPoints * pointsPerKip)}</p>
+                    <div className="border border-gray-200 rounded-lg px-3 py-2.5">
+                        <p className="text-xs text-gray-500 mb-1">ໃຊ້ໄດ້ສູງສຸດ (30%)</p>
+                        <p className="font-bold text-gray-900">{maxRedeemPoints.toLocaleString()}</p>
+                        <p className="text-xs text-gray-400">≈ {formatCurrency(maxRedeemPoints * pointsPerKip)}</p>
                     </div>
                 </div>
 
                 {canUse ? (
                     <>
-                        {/* Input row */}
                         <div>
-                            <p className="text-sm font-semibold text-gray-700 mb-2">
-                                ພິມຈຳນວນຄະແນນທີ່ຢາກໃຊ້
-                            </p>
+                            <p className="text-sm text-gray-700 mb-2 font-medium">ຈຳນວນຄະແນນທີ່ຢາກໃຊ້</p>
                             <div className="flex items-center gap-2">
                                 <button
                                     type="button"
                                     onClick={() => step10(-1)}
                                     disabled={pointsToUse === 0}
-                                    className="size-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    className="size-9 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <Minus className="size-4" />
                                 </button>
-
-                                <div className="flex-1 relative">
-                                    <input
-                                        type="number"
-                                        min={0}
-                                        max={maxRedeemPoints}
-                                        value={pointsToUse === 0 ? "" : pointsToUse}
-                                        onChange={e => handleInput(e.target.value)}
-                                        placeholder="0"
-                                        className="w-full h-10 text-center text-lg font-bold text-gray-900 border border-gray-200 rounded-xl focus:border-amber-400 focus:ring-2 focus:ring-amber-200 focus:outline-none transition-colors"
-                                    />
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">
-                                        ຄະແນນ
-                                    </span>
-                                </div>
-
+                                <input
+                                    type="number"
+                                    min={0}
+                                    max={maxRedeemPoints}
+                                    value={pointsToUse === 0 ? "" : pointsToUse}
+                                    onChange={e => handleInput(e.target.value)}
+                                    placeholder="0"
+                                    className="flex-1 h-9 text-center text-sm font-semibold text-gray-900 border border-gray-200 rounded-lg focus:border-orange-400 focus:ring-1 focus:ring-orange-300 focus:outline-none transition-colors"
+                                />
                                 <button
                                     type="button"
                                     onClick={() => step10(1)}
                                     disabled={pointsToUse >= maxRedeemPoints}
-                                    className="size-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    className="size-9 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <Plus className="size-4" />
                                 </button>
                             </div>
 
-                            {/* Quick picks */}
                             <div className="flex gap-2 mt-2">
-                                {[0, Math.floor(maxRedeemPoints * 0.25), Math.floor(maxRedeemPoints * 0.5), maxRedeemPoints]
-                                    .filter((v, i, arr) => arr.indexOf(v) === i && v <= maxRedeemPoints)
+                                {[0, Math.floor(maxRedeemPoints * 0.5), maxRedeemPoints]
+                                    .filter((v, i, arr) => arr.indexOf(v) === i)
                                     .map(v => (
                                         <button
                                             key={v}
                                             type="button"
                                             onClick={() => onChangePoints(v)}
-                                            className={`flex-1 h-7 text-xs rounded-lg border font-semibold transition-colors ${
+                                            className={`flex-1 h-7 text-xs rounded-lg border font-medium transition-colors ${
                                                 pointsToUse === v
-                                                    ? "bg-amber-400 border-amber-400 text-white"
-                                                    : "border-gray-200 text-gray-500 hover:border-amber-300 hover:text-amber-600"
+                                                    ? "bg-orange-500 border-orange-500 text-white"
+                                                    : "border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-500"
                                             }`}
                                         >
-                                            {v === 0 ? "ບໍ່ໃຊ້" : v === maxRedeemPoints ? "ສູງສຸດ" : v}
+                                            {v === 0 ? "ບໍ່ໃຊ້" : v === maxRedeemPoints ? "ສູງສຸດ" : `${v}`}
                                         </button>
                                     ))
                                 }
                             </div>
                         </div>
 
-                        {/* Result */}
-                        <div className={`flex items-center justify-between rounded-xl px-4 py-2.5 transition-colors ${
-                            pointsToUse > 0
-                                ? "bg-amber-50 border border-amber-200"
-                                : "bg-gray-50 border border-gray-100"
-                        }`}>
-                            <p className={`text-sm font-semibold ${pointsToUse > 0 ? "text-amber-700" : "text-gray-400"}`}>
-                                {pointsToUse > 0 ? `ໃຊ້ ${pointsToUse} ຄະແນນ` : "ຍັງບໍ່ໄດ້ເລືອກ"}
-                            </p>
-                            <p className={`text-sm font-extrabold ${pointsToUse > 0 ? "text-amber-700" : "text-gray-400"}`}>
-                                {pointsToUse > 0 ? `-${formatCurrency(pointsValue)}` : "—"}
-                            </p>
-                        </div>
+                        {pointsToUse > 0 && (
+                            <div className="flex justify-between text-sm border border-gray-200 rounded-lg px-3 py-2.5">
+                                <span className="text-gray-600">ໃຊ້ {pointsToUse} ຄະແນນ</span>
+                                <span className="font-semibold text-orange-500">-{formatCurrency(pointsValue)}</span>
+                            </div>
+                        )}
                     </>
                 ) : (
-                    <div className="flex items-center gap-2.5 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
-                        <Lock className="size-4 text-gray-400 shrink-0" />
-                        <p className="text-sm text-gray-500">
-                            ຕ້ອງມີຢ່າງໜ້ອຍ {minPoints} ຄະແນນ ຈຶ່ງໃຊ້ໄດ້
-                            {customerPoints > 0 && (
-                                <span className="text-gray-400 text-xs"> (ຕ້ອງການອີກ {minPoints - customerPoints} ຄະແນນ)</span>
-                            )}
-                        </p>
-                    </div>
+                    <p className="text-sm text-gray-500 border border-gray-200 rounded-lg px-3 py-2.5">
+                        ຕ້ອງມີຢ່າງໜ້ອຍ {minPoints} ຄະແນນ ຈຶ່ງໃຊ້ໄດ້
+                        {customerPoints > 0 && (
+                            <span className="text-gray-400"> (ຕ້ອງການອີກ {minPoints - customerPoints} ຄະແນນ)</span>
+                        )}
+                    </p>
                 )}
 
                 <p className="text-[11px] text-gray-400 text-center">
-                    1 ຄະແນນ = {formatCurrency(pointsPerKip)} · ໄດ້ຮັບ 1 ຄະແນນທຸກ 10,000₭ ທີ່ຊື້
+                    1 ຄະແນນ = {formatCurrency(pointsPerKip)} · ຮັບ 1 ຄະແນນທຸກ 10,000₭ ທີ່ຊື້
                 </p>
             </CardContent>
         </Card>

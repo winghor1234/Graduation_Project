@@ -25,7 +25,7 @@ export default function NavbarActions() {
 
     // ⚡ Cart icon is visible on every page — prefetch it eagerly on mount
     useEffect(() => {
-        router.prefetch("/cart")
+        router.prefetch("/customer/cart")
     }, [router])
 
     return (
@@ -37,7 +37,7 @@ export default function NavbarActions() {
                 size="icon"
                 className="relative size-9 rounded-xl text-brand-muted hover:text-brand-white hover:bg-brand-card-dark transition-theme"
             >
-                <Link href="/cart">
+                <Link href="/customer/cart">
                     <ShoppingCart className="size-5" />
                     {cartCount > 0 && (
                         <Badge className="absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center p-0 text-[10px] bg-brand-orange hover:bg-brand-orange border-2 border-brand-black text-white font-bold">
@@ -65,9 +65,9 @@ export default function NavbarActions() {
                     <DropdownMenuItem
                         asChild
                         className="rounded-lg cursor-pointer text-brand-muted hover:text-brand-white focus:bg-brand-black focus:text-brand-white"
-                        onMouseEnter={() => router.prefetch("/order-history")}
+                        onMouseEnter={() => router.prefetch("/customer/order-history")}
                     >
-                        <Link href="/order-history">ປະຫວັດການສັ່ງຊື້</Link>
+                        <Link href="/customer/order-history">ປະຫວັດການສັ່ງຊື້</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-brand-divider" />
                     <DropdownMenuItem

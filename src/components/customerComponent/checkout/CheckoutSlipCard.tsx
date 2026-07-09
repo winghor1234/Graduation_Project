@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { Upload, CheckCircle, ImageIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 type Props = {
@@ -12,14 +11,9 @@ type Props = {
 
 export function CheckoutSlipCard({ previewUrl, onFileChange, error }: Props) {
     return (
-        <Card className="border border-gray-200 bg-white shadow-sm rounded-2xl">
-            <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2.5 text-gray-900 text-base">
-                    <div className="size-8 rounded-xl bg-emerald-50 flex items-center justify-center">
-                        <Upload className="size-4 text-emerald-600" />
-                    </div>
-                    ອັບໂຫຼດສະລິບໂອນເງິນ
-                </CardTitle>
+        <Card className="border border-gray-200 bg-white shadow-sm rounded-xl">
+            <CardHeader className="pb-3">
+                <CardTitle className="text-gray-900 text-base font-semibold">ອັບໂຫຼດສະລິບໂອນເງິນ</CardTitle>
             </CardHeader>
             <CardContent>
                 <input
@@ -28,37 +22,24 @@ export function CheckoutSlipCard({ previewUrl, onFileChange, error }: Props) {
                 />
                 <label
                     htmlFor="payment-slip"
-                    className="cursor-pointer block border-2 border-dashed border-gray-200 hover:border-brand-orange/50 rounded-xl transition-all duration-200 bg-gray-50 hover:bg-orange-50/30"
+                    className="cursor-pointer block border-2 border-dashed border-gray-200 hover:border-orange-400 rounded-xl transition-colors bg-gray-50 hover:bg-gray-50"
                 >
                     {previewUrl ? (
-                        <div className="p-5 space-y-3 text-center">
-                            <div className="max-w-xs mx-auto relative h-64 border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
-                                <Image src={previewUrl} alt="Payment slip preview" fill className="object-contain" />
+                        <div className="p-4 text-center space-y-2">
+                            <div className="max-w-xs mx-auto relative h-56 rounded-lg overflow-hidden bg-white border border-gray-200">
+                                <Image src={previewUrl} alt="Payment slip" fill className="object-contain" />
                             </div>
-                            <p className="text-sm font-medium text-emerald-600 flex items-center justify-center gap-1.5">
-                                <CheckCircle className="size-4" />
-                                ແນບຫຼັກຖານສຳເລັດແລ້ວ
-                            </p>
-                            <span className="inline-block text-xs text-gray-500 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-100 transition-colors">
-                                ກົດເພື່ອປ່ຽນຮູບພາບ
-                            </span>
+                            <p className="text-xs text-green-600 font-medium">ແນບຫຼັກຖານສຳເລັດ · ກົດເພື່ອປ່ຽນ</p>
                         </div>
                     ) : (
-                        <div className="py-10 text-center px-6">
-                            <div className="size-14 rounded-2xl bg-white border border-gray-200 shadow-sm flex items-center justify-center mx-auto mb-4">
-                                <ImageIcon className="size-6 text-gray-400" />
-                            </div>
-                            <p className="text-base font-semibold text-gray-700 mb-1.5">
-                                ກົດເພື່ອເລືອກໄຟລ໌ສະລິບ
-                            </p>
-                            <p className="text-xs text-gray-400">PNG, JPG ຂະໜາດສູງສຸດ 10MB</p>
+                        <div className="py-10 text-center">
+                            <p className="text-sm font-medium text-gray-600 mb-1">ກົດເພື່ອເລືອກໄຟລ໌ສະລິບ</p>
+                            <p className="text-xs text-gray-400">PNG, JPG · ສູງສຸດ 10MB</p>
                         </div>
                     )}
                 </label>
                 {error && (
-                    <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                        <span>⚠</span> {error}
-                    </p>
+                    <p className="text-xs text-red-500 mt-2">{error}</p>
                 )}
             </CardContent>
         </Card>

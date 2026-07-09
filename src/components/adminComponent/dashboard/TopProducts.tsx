@@ -28,7 +28,7 @@ export function TopProducts({ products = [] }: Props) {
                     <p className="text-xs text-gray-400 mt-0.5">Top {products.length} ສິນຄ້າຂາຍດີ</p>
                 </div>
                 <Link
-                    href="/report/product"
+                    href="/admin/report/product"
                     className="text-xs text-blue-500 hover:text-blue-600 hover:underline transition"
                 >
                     ເບິ່ງທັງໝົດ →

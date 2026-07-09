@@ -615,4 +615,20 @@ enum DeliveryStatus {
   CANCELLED
 }
 
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Expense {
+  expense_id   String   @id @default(uuid())
+  amount       Int
+  reason       String
+  note         String?
+  expense_date DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 

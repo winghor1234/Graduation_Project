@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, ShoppingBag } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 type Props = {
     totalProducts: number
@@ -10,83 +10,60 @@ type Props = {
 }
 
 export function HomeHero({ totalProducts, totalCategories, isLoading }: Props) {
-    const stats = [
-        { value: `${totalProducts}+`, label: "ສິນຄ້າ" },
-        { value: `${totalCategories}+`, label: "ໝວດໝູ່" },
-    ]
-
     return (
-        <section className="relative h-160 lg:h-185 overflow-hidden bg-brand-black">
-            {/* Background image */}
+        <section className="relative h-115 lg:h-135 overflow-hidden bg-gray-950">
             <div
-                className="absolute inset-0 bg-cover bg-center"
+                className="absolute inset-0 bg-cover bg-center opacity-35"
                 style={{
                     backgroundImage:
                         "url(https://images.unsplash.com/photo-1556906781-9a412961a28c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920)",
                 }}
             />
-            {/* Gradient overlays */}
-            <div className="absolute inset-0 bg-linear-to-r from-brand-black/96 via-brand-black/75 to-brand-black/20" />
-            <div className="absolute inset-0 bg-linear-to-t from-brand-black/60 via-transparent to-transparent" />
-
-            {/* Ambient glow */}
-            <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-brand-orange/8 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-r from-gray-950/95 via-gray-950/70 to-transparent" />
 
             <div className="relative container mx-auto px-6 max-w-7xl h-full flex items-center">
-                <div className="max-w-xl space-y-8">
+                <div className="max-w-lg space-y-6">
 
-                    {/* Badge */}
-                    <span className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-brand-orange bg-brand-orange/10 border border-brand-orange/25 px-4 py-1.5 rounded-full">
-                        <span className="size-1.5 rounded-full bg-brand-orange animate-pulse" />
-                        ຄໍເລັກຊັ່ນໃໝ່ {new Date().getFullYear()}
-                    </span>
-
-                    {/* Headline */}
-                    <h1 className="text-5xl lg:text-7xl font-extrabold text-brand-white leading-[1.05] tracking-tight">
+                    <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
                         ເຄື່ອງກີລາ<br />
-                        <span className="text-brand-orange">ຊັ້ນສູງ</span>
+                        <span className="text-orange-400">ຊັ້ນສູງ</span>
                     </h1>
 
-                    {/* Sub */}
-                    <p className="text-lg text-brand-muted leading-relaxed font-light max-w-md">
-                        ສຳລັບນັກກີລາທີ່ຕ້ອງການທັງຄຸນນະພາບ,<br />
-                        ຄວາມສະດວກສະບາຍ ແລະ ສໄຕລ໌ທີ່ທັນສະໄໝ
+                    <p className="text-gray-400 text-base leading-relaxed">
+                        ສຳລັບນັກກີລາທີ່ຕ້ອງການທັງຄຸນນະພາບ, ຄວາມສະດວກສະບາຍ ແລະ ສໄຕລ໌ທີ່ທັນສະໄໝ
                     </p>
 
-                    {/* CTAs */}
-                    <div className="flex flex-wrap gap-4 pt-2">
-                        <Link href="/shop">
-                            <button className="inline-flex items-center gap-2 h-13 px-8 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold rounded-xl transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] shadow-lg shadow-brand-orange/25 text-sm">
-                                ເລືອກຊື້ສິນຄ້າ <ArrowRight className="size-4" />
-                            </button>
-                        </Link>
-                        <Link href="/shop">
-                            <button className="inline-flex items-center gap-2 h-13 px-8 text-brand-white font-semibold rounded-xl border border-brand-white/20 bg-brand-white/5 hover:bg-brand-white/12 transition-all duration-200 text-sm">
-                                <ShoppingBag className="size-4" /> ໝວດໝູ່ທັງໝົດ
-                            </button>
+                    <div className="flex gap-3 pt-1">
+                        <Link
+                            href="/customer/shop"
+                            className="inline-flex items-center gap-2 h-11 px-6 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors text-sm"
+                        >
+                            ເລືອກຊື້ສິນຄ້າ <ArrowRight className="size-4" />
                         </Link>
                     </div>
 
-                    {/* Stats */}
-                    <div className="flex items-center gap-8 pt-4 border-t border-brand-white/10">
-                        {stats.map((s) => (
-                            <div key={s.label}>
-                                <p className="text-2xl font-extrabold text-brand-white">
-                                    {isLoading ? (
-                                        <span className="inline-block h-6 w-10 rounded bg-brand-white/15 animate-pulse" />
-                                    ) : (
-                                        s.value
-                                    )}
-                                </p>
-                                <p className="text-xs text-brand-muted mt-0.5">{s.label}</p>
-                            </div>
-                        ))}
+                    <div className="flex gap-10 pt-2 border-t border-white/10">
+                        <div>
+                            <p className="text-2xl font-bold text-white">
+                                {isLoading
+                                    ? <span className="inline-block h-6 w-10 rounded bg-white/10" />
+                                    : `${totalProducts}+`
+                                }
+                            </p>
+                            <p className="text-xs text-gray-500 mt-0.5">ສິນຄ້າ</p>
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-white">
+                                {isLoading
+                                    ? <span className="inline-block h-6 w-10 rounded bg-white/10" />
+                                    : `${totalCategories}+`
+                                }
+                            </p>
+                            <p className="text-xs text-gray-500 mt-0.5">ໝວດໝູ່</p>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            {/* Bottom fade to page bg */}
-            <div className="absolute bottom-0 inset-x-0 h-24 bg-linear-to-t from-brand-black to-transparent" />
         </section>
     )
 }

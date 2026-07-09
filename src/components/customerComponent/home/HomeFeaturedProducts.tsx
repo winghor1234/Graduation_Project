@@ -8,11 +8,11 @@ import { ProductListItem } from "@/components/customerComponent/shop/shop.types"
 
 function FeaturedSkeleton() {
     return (
-        <div className="space-y-3 animate-pulse">
-            <div className="aspect-square bg-gray-100 rounded-2xl" />
-            <div className="h-4 bg-gray-100 rounded-lg w-3/4" />
-            <div className="h-3 bg-gray-100 rounded-lg w-1/2" />
-            <div className="h-9 bg-gray-100 rounded-xl" />
+        <div className="space-y-3">
+            <div className="aspect-square bg-gray-100 rounded-xl" />
+            <div className="h-4 bg-gray-100 rounded w-3/4" />
+            <div className="h-3 bg-gray-100 rounded w-1/2" />
+            <div className="h-9 bg-gray-100 rounded-lg" />
         </div>
     )
 }
@@ -25,26 +25,20 @@ type Props = {
 
 export function HomeFeaturedProducts({ products, isLoading, onPickVariant }: Props) {
     return (
-        <section className="py-20 bg-white">
+        <section className="py-16 bg-white">
             <div className="container mx-auto px-6 max-w-7xl">
 
-                <div className="flex items-end justify-between mb-10">
-                    <div>
-                        <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-amber-500 mb-2">SportPro</p>
-                        <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900">
-                            ສິນຄ້າແນະນຳ
-                        </h2>
-                    </div>
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900">ສິນຄ້າແນະນຳ</h2>
                     <Link
-                        href="/shop"
-                        className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-gray-400 hover:text-gray-900 transition-colors group"
+                        href="/customer/shop"
+                        className="hidden sm:flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-orange-500 transition-colors"
                     >
-                        ເບິ່ງທັງໝົດ
-                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                        ເບິ່ງທັງໝົດ <ArrowRight className="size-4" />
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                     {isLoading ? (
                         Array.from({ length: 4 }).map((_, i) => <FeaturedSkeleton key={i} />)
                     ) : products.length === 0 ? (
@@ -63,9 +57,9 @@ export function HomeFeaturedProducts({ products, isLoading, onPickVariant }: Pro
                     )}
                 </div>
 
-                <div className="mt-10 text-center sm:hidden">
-                    <Button asChild variant="outline" className="rounded-xl gap-2 h-11 px-6">
-                        <Link href="/shop">
+                <div className="mt-8 text-center sm:hidden">
+                    <Button asChild variant="outline" className="rounded-lg gap-2 h-10 px-5 text-sm">
+                        <Link href="/customer/shop">
                             ເບິ່ງສິນຄ້າທັງໝົດ <ArrowRight className="size-4" />
                         </Link>
                     </Button>

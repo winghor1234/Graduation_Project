@@ -9,7 +9,8 @@ const PUBLIC_READ_ROUTES = [
     "/api/shop",
     "/api/category",
     "/api/promotion/active",
-    "/api/product"
+    "/api/product",
+    "/api/setting",
 ];
 
 export async function middleware(req: NextRequest) {

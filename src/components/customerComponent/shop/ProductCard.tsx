@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ShoppingCart, Tag } from "lucide-react"
+import { ShoppingCart } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { ProductListItem } from "./shop.types"
 import { useCustomer } from "@/components/customerComponent/CustomerContext"
@@ -27,11 +27,6 @@ export function ProductCard({ product, onPickVariant, promotion = null, priority
     const isOutOfStock = totalStock <= 0
     const hasMultipleVariants = (product.variants?.length ?? 0) > 1
     const isLowStock = !isOutOfStock && totalStock <= 5
-    const isNew = useMemo(() => {
-        if (!product.createdAt) return false
-        return Date.now() - new Date(product.createdAt).getTime() < 1000 * 60 * 60 * 24 * 14
-    }, [product.createdAt])
-
     const discountedPrice = promotion
         ? Math.max(0, product.min_price - promotion.discount_value)
         : null
@@ -57,123 +52,83 @@ export function ProductCard({ product, onPickVariant, promotion = null, priority
     }
 
     return (
-        <div className="group relative flex flex-col bg-brand-card-dark rounded-2xl overflow-hidden border border-brand-divider hover:border-brand-orange/50 transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,107,0,0.12)]">
+        <div className="group flex flex-col bg-brand-card-dark rounded-xl overflow-hidden border border-brand-divider hover:border-brand-orange/50 transition-colors">
 
-            <Link href={`/shop/${product.product_id}`} className="block">
+            <Link href={`/customer/shop/${product.product_id}`} className="block">
                 {/* Image */}
-                <div className="aspect-square relative overflow-hidden bg-brand-black">
+                <div className="aspect-[4/3] relative overflow-hidden bg-brand-black">
                     <Image
                         src={product.images?.[0]?.image_url || "/placeholder.png"}
                         alt={product.product_name}
                         fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                         priority={priority}
                     />
 
-                    {/* Out of stock overlay */}
                     {isOutOfStock && (
-                        <div className="absolute inset-0 bg-brand-black/70 flex items-center justify-center backdrop-blur-[2px]">
-                            <span className="text-xs font-bold text-brand-muted bg-brand-card-dark border border-brand-divider px-3 py-1.5 rounded-full">
-                                ສິນຄ້າໝົດແລ້ວ
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                            <span className="text-[11px] font-bold text-white bg-black/70 px-3 py-1 rounded-full">
+                                ສິນຄ້າໝົດ
                             </span>
                         </div>
                     )}
 
-                    {/* Badges — top-left */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-                        {isNew && !isOutOfStock && (
-                            <span className="text-[10px] font-extrabold tracking-wider text-brand-black bg-brand-gold px-2 py-0.5 rounded-md">
-                                NEW
-                            </span>
-                        )}
+                    {/* Badges */}
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
                         {isLowStock && (
-                            <span className="text-[10px] font-bold text-white bg-brand-orange px-2 py-0.5 rounded-md">
+                            <span className="text-[10px] font-bold text-white bg-brand-orange px-1.5 py-0.5 rounded">
                                 ໃກ້ໝົດ
                             </span>
                         )}
                         {promotion && !isOutOfStock && (
-                            <span className="text-[10px] font-extrabold text-white bg-emerald-500 px-2 py-0.5 rounded-md flex items-center gap-1">
-                                <Tag className="size-2.5" />
-                                SALE
+                            <span className="text-[10px] font-bold text-white bg-emerald-500 px-1.5 py-0.5 rounded">
+                                -{formatCurrency(promotion.discount_value)}
                             </span>
                         )}
                     </div>
-
-                    {/* Promotion discount tag — top-right */}
-                    {promotion && !isOutOfStock && (
-                        <div className="absolute top-3 right-3">
-                            <span className="text-[10px] font-extrabold text-white bg-brand-orange/90 backdrop-blur-sm px-2 py-0.5 rounded-md">
-                                -{formatCurrency(promotion.discount_value)}
-                            </span>
-                        </div>
-                    )}
                 </div>
 
                 {/* Info */}
-                <div className="p-4 space-y-2">
-                    <h3 className="font-bold text-sm text-brand-white leading-snug line-clamp-2 min-h-10">
+                <div className="p-3 space-y-1.5">
+                    <h3 className="text-sm font-semibold text-brand-white line-clamp-2 leading-snug min-h-[2.5rem]">
                         {product.product_name}
                     </h3>
-                    <p className="text-xs text-brand-muted line-clamp-2 min-h-8 leading-relaxed">
-                        {product.description || "ເຄື່ອງກີລາຊັ້ນສູງ ອອກແບບດ້ວຍວັດສະດຸທີ່ທັນສະໄໝ"}
-                    </p>
 
-                    {/* Promotion name banner */}
-                    {promotion && !isOutOfStock && (
-                        <div className="flex items-center gap-1.5 bg-emerald-900/30 border border-emerald-700/40 rounded-lg px-2 py-1">
-                            <Tag className="size-3 text-emerald-400 shrink-0" />
-                            <span className="text-[10px] text-emerald-300 font-semibold truncate">
-                                {promotion.promotion_name}
-                            </span>
-                        </div>
-                    )}
-
-                    <div className="flex items-end justify-between pt-1">
+                    <div className="flex items-center justify-between">
                         <div>
                             {promotion && discountedPrice !== null ? (
                                 <>
-                                    <span className="text-xs text-brand-muted line-through">
+                                    <span className="text-[11px] text-brand-muted line-through">
                                         {formatCurrency(product.min_price)}
                                     </span>
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="text-lg font-extrabold text-emerald-400">
-                                            {formatCurrency(discountedPrice)}
-                                        </span>
-                                    </div>
+                                    <p className="text-base font-bold text-emerald-400">
+                                        {formatCurrency(discountedPrice)}
+                                    </p>
                                 </>
                             ) : (
-                                <>
-                                    {product.min_price !== product.max_price && (
-                                        <p className="text-[10px] text-brand-muted mb-0.5">ເລີ່ມຕົ້ນ</p>
-                                    )}
-                                    <span className="text-lg font-extrabold text-brand-orange">
-                                        {formatCurrency(product.min_price)}
-                                    </span>
-                                </>
+                                <p className="text-base font-bold text-brand-orange">
+                                    {formatCurrency(product.min_price)}
+                                </p>
                             )}
                         </div>
                         {!isOutOfStock && (
-                            <span className="text-[10px] text-brand-muted font-medium">
-                                {totalStock} ອັນ
-                            </span>
+                            <span className="text-[10px] text-brand-muted">{totalStock} ອັນ</span>
                         )}
                     </div>
                 </div>
             </Link>
 
-            {/* Add to cart button */}
-            <div className="px-4 pb-4">
+            {/* Add to cart */}
+            <div className="px-3 pb-3 mt-auto">
                 <button
                     disabled={isOutOfStock}
                     onClick={handleAddToCart}
-                    className="w-full h-10 flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover disabled:bg-brand-divider disabled:text-brand-muted disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-all duration-200 active:scale-[0.98]"
+                    className="w-full h-9 flex items-center justify-center gap-1.5 bg-brand-orange hover:bg-brand-orange-hover disabled:bg-brand-divider disabled:text-brand-muted disabled:cursor-not-allowed text-white text-xs font-bold rounded-lg transition-colors"
                 >
-                    {isOutOfStock ? (
-                        "ສິນຄ້າໝົດ"
-                    ) : (
+                    {isOutOfStock ? "ສິນຄ້າໝົດ" : (
                         <>
-                            <ShoppingCart className="size-4" />
+                            <ShoppingCart className="size-3.5" />
                             {hasMultipleVariants ? "ເລືອກຕົວເລືອກ" : "ເພີ່ມໃສ່ກະຕ່າ"}
                         </>
                     )}

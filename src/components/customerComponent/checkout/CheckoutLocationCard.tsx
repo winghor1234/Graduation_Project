@@ -23,12 +23,10 @@ export function CheckoutLocationCard({
     selectedProvinceData, selectedDistrictData,
 }: Props) {
     return (
-        <Card className="border border-gray-200 bg-white shadow-sm rounded-2xl">
-            <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2.5 text-gray-900 text-base">
-                    <div className="size-8 rounded-xl bg-orange-50 flex items-center justify-center">
-                        <MapPin className="size-4 text-brand-orange" />
-                    </div>
+        <Card className="border border-gray-200 bg-white shadow-sm rounded-xl">
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-gray-900 text-base font-semibold">
+                    <MapPin className="size-4 text-gray-400" />
                     ທີ່ຢູ່ ແລະ ສາຂາຮັບເຄື່ອງ
                 </CardTitle>
             </CardHeader>
