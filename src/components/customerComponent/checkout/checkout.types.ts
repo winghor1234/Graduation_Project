@@ -18,6 +18,10 @@ export type District = Province["districts"][number]
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 export const checkoutSchema = z.object({
+    // ✅ ສະເພາະ guest (ບໍ່ login) — ຄວາມຈຳເປັນຖືກກວດຢູ່ໜ້າ form ດ້ວຍ isAuthenticated
+    customer_name: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().optional(),
     province_id: z.string().min(1, "ກະລຸນາເລືອກແຂວງ"),
     district_id: z.string().min(1, "ກະລຸນາເລືອກເມືອງ"),
     branch_id: z.string().min(1, "ກະລຸນາເລືອກສາຂາ"),

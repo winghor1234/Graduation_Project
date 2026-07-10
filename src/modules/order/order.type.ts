@@ -59,6 +59,13 @@ export type UpdateOrderStatusInput = {
     status: OrderStatus
 }
 
+// ✅ /api/order (POST) ຕອບກັບ { order, payment, delivery } — ບໍ່ແມ່ນ Order ດຽວໆ
+export type CreateOrderResult = {
+    order:    Order
+    payment:  Payment
+    delivery: Delivery
+}
+
 export type UploadPaymentSlipInput = {
     order_id: string
     file:     File

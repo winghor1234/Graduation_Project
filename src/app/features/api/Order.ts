@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance"
-import { Order, CreateOrderInput, UpdateOrderStatusInput } from "@/modules/order/order.type"
+import { Order, CreateOrderInput, CreateOrderResult, UpdateOrderStatusInput } from "@/modules/order/order.type"
 import { UseGetParams } from "../types"
 
 export const orderApi = {
@@ -27,7 +27,7 @@ export const orderApi = {
         return res.data.data
     },
 
-    create: async (data: FormData): Promise<Order> => {
+    create: async (data: FormData): Promise<CreateOrderResult> => {
         const res = await axiosInstance.post("/order", data)
         // ✅ ບໍ່ set headers ມືອດ – axios ຈະ auto-detect FormData ແລະ set boundary ເອງ
         return res.data.data   // ✅ ແກ້ — ລຶບ .data ຊ້ຳອອກ

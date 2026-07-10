@@ -11,7 +11,11 @@ const PUBLIC_READ_ROUTES = [
     "/api/promotion/active",
     "/api/product",
     "/api/setting",
+    "/api/location",
 ];
+
+/* ✅ Guest checkout — ສ້າງອໍເດີ້ໄດ້ໂດຍບໍ່ຕ້ອງ login (exact path + method match ເທົ່ານັ້ນ) */
+const PUBLIC_POST_ROUTES = ["/api/order"];
 
 export async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
@@ -36,6 +40,11 @@ export async function middleware(req: NextRequest) {
         req.method === "GET" &&
         PUBLIC_READ_ROUTES.some((route) => pathname.startsWith(route))
     ) {
+        return NextResponse.next();
+    }
+
+    /* ✅ allow anonymous guest checkout (exact path, POST only — GET/PUT/DELETE on the same path stay protected) */
+    if (req.method === "POST" && PUBLIC_POST_ROUTES.includes(pathname)) {
         return NextResponse.next();
     }
 

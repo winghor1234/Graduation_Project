@@ -1,8 +1,11 @@
+import crypto from "crypto"
 import { prisma } from "@/lib/prisma"
+import { Prisma as PrismaNS } from "@prisma/client"
 import { OrderStatus, Prisma, PaymentStatus, DeliveryStatus, PaymentMethod } from "@prisma/client"
 import { BadRequestError, NotFoundError } from "@/utils/response"
 import { generateOrderCode } from "@/utils/generateCode"
 import { convertFileToBase64, uploadMultipleImages, deleteImages } from "@/utils/cloudinary"
+import { hashPassword } from "@/utils/password"
 
 type OrderDetailInput = {
     product_id: string
@@ -72,7 +75,10 @@ export const orderService = {
 
     async createOrder(formData: FormData) {
 
-        const customer_id   = formData.get("customer_id") as string
+        let customer_id     = formData.get("customer_id") as string | null
+        const guestName      = formData.get("customer_name") as string | null
+        const guestPhone     = formData.get("phone") as string | null
+        const guestEmail     = formData.get("email") as string | null
         const method        = formData.get("method") as string
         const amount        = Number(formData.get("amount"))
         const province_id   = formData.get("province_id") as string
@@ -82,7 +88,12 @@ export const orderService = {
         const file           = formData.get("file") as File | null
         const points_used    = Number(formData.get("points_used") ?? 0)
 
-        if (!customer_id) throw new BadRequestError("customer_id is required")
+        // ✅ Guest checkout — ບໍ່ login/register, ແຕ່ຕ້ອງປ້ອນຂໍ້ມູນລູກຄ້າ
+        if (!customer_id) {
+            if (!guestName?.trim() || !guestPhone?.trim() || !guestEmail?.trim()) {
+                throw new BadRequestError("ກະລຸນາປ້ອນຊື່, ເບີໂທ ແລະ ອີເມວ ສຳລັບການສັ່ງຊື້ແບບບໍ່ເຂົ້າສູ່ລະບົບ")
+            }
+        }
         if (!order_details?.length) throw new BadRequestError("Order must have at least one item")
 
         let slip_url:  string | undefined
@@ -96,6 +107,40 @@ export const orderService = {
         }
 
         return prisma.$transaction(async (tx) => {
+
+            // ✅ ຊອກຫາ customer ຈາກເບີໂທເກົ່າ (guest ທີ່ເຄີຍສັ່ງມາກ່ອນ) ຫຼືສ້າງໃໝ່
+            if (!customer_id) {
+                const existing = await tx.customer.findUnique({
+                    where:  { phone: guestPhone! },
+                    select: { customer_id: true },
+                })
+
+                if (existing) {
+                    customer_id = existing.customer_id
+                } else {
+                    try {
+                        const randomPassword = crypto.randomBytes(16).toString("hex")
+                        const created = await tx.customer.create({
+                            data: {
+                                customer_name: guestName!,
+                                phone:         guestPhone!,
+                                email:         guestEmail!,
+                                password:      await hashPassword(randomPassword),
+                                isActive:      true,
+                            },
+                            select: { customer_id: true },
+                        })
+                        customer_id = created.customer_id
+                    } catch (err) {
+                        if (err instanceof PrismaNS.PrismaClientKnownRequestError && err.code === "P2002") {
+                            throw new BadRequestError("ອີເມວ ຫຼື ເບີໂທນີ້ຖືກໃຊ້ໄປແລ້ວ ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອສັ່ງຊື້")
+                        }
+                        throw err
+                    }
+                }
+            }
+
+            if (!customer_id) throw new BadRequestError("Failed to resolve customer for this order")
 
             const variantIds = order_details.map(i => i.variant_id)
 
