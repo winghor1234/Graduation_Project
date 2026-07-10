@@ -208,6 +208,20 @@ enum PromotionStatus {
 
 
 
+model Notification {
+  notification_id String   @id @default(uuid())
+  customer_id     String
+  title           String
+  message         String
+  is_read         Boolean  @default(false)
+  order_id        String?
+  createdAt       DateTime @default(now())
+
+  customer Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
+
+  @@index([customer_id])
+}
+
 model Customer {
   customer_id   String   @id @default(uuid())
   customer_name String
@@ -233,6 +247,7 @@ model Customer {
   sales              Sale[]
   RefreshTokens      RefreshToken[]
   point_transactions PointTransaction[]
+  notifications      Notification[]
 
   @@index([email])
   @@index([phone])

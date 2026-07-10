@@ -6,6 +6,7 @@ import { BadRequestError, NotFoundError } from "@/utils/response"
 import { generateOrderCode } from "@/utils/generateCode"
 import { convertFileToBase64, uploadMultipleImages, deleteImages } from "@/utils/cloudinary"
 import { hashPassword } from "@/utils/password"
+import { notificationService } from "@/modules/notification/notification.service"
 
 type OrderDetailInput = {
     product_id: string
@@ -322,11 +323,24 @@ export const orderService = {
                 }
             }
 
-            return tx.order.update({
+            const updated = await tx.order.update({
                 where:   { order_id: orderId },
                 data:    { status },
                 include: orderInclude,
             })
+
+            // ✅ ສ້າງ notification ໃຫ້ລູກຄ້າທຸກຄັ້ງທີ່ status ປ່ຽນ
+            if (order.customer_id) {
+                await notificationService.createOrderStatusNotification(
+                    order.customer_id,
+                    orderId,
+                    order.order_code,
+                    status,
+                    tx as unknown as typeof prisma
+                )
+            }
+
+            return updated
         })
     },
 

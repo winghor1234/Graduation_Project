@@ -37,7 +37,7 @@ export const orderApi = {
         id:   string,
         data: UpdateOrderStatusInput
     ): Promise<Order> => {
-        const res = await axiosInstance.put(`/order/${id}`, data)
+        const res = await axiosInstance.patch(`/order/${id}`, data)
         return res.data.data
     },
 

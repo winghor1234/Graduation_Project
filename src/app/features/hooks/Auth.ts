@@ -118,16 +118,39 @@ export const useEmployeeRefresh = () => {
 
 
 
-// Customer 
+// Customer
+export const useCustomerRegister = () => {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: AuthApi.customerRegister,
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ["me"] }) },
+    })
+}
+
+export const useCustomerForgotPassword = () =>
+    useMutation({ mutationFn: AuthApi.customerForgotPassword })
+
+export const useCustomerVerifyOtp = () =>
+    useMutation({ mutationFn: AuthApi.customerVerifyOtp })
+
+export const useCustomerResendOtp = () =>
+    useMutation({ mutationFn: AuthApi.customerResendOtp })
+
+export const useCustomerResetPassword = () => {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: AuthApi.customerResetPassword,
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ["me"] }) },
+    })
+}
+
 export const useCustomerLogout = () => {
     const qc = useQueryClient()
-
     return useMutation({
         mutationFn: AuthApi.customerLogout,
         onSuccess: () => {
             qc.removeQueries({ queryKey: ["me"] })
             window.location.href = "/login"
-
         },
     })
 }

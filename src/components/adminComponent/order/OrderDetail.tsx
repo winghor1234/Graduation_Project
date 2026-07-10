@@ -4,7 +4,24 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Order } from "@/modules/order/order.type"
 import { formatDate } from "@/utils/FormatDate"
 import Image from "next/image"
-import {  BadgeComponent } from "../StatusComponent"
+import { BadgeComponent } from "../StatusComponent"
+import { useUpdateOrderStatus } from "@/app/features/hooks/Order"
+import { toast } from "sonner"
+import { OrderStatus } from "@prisma/client"
+
+const NEXT_STATUSES: Partial<Record<OrderStatus, { status: OrderStatus; label: string; className: string }[]>> = {
+    WAITING_PAYMENT: [
+        { status: "PAID",      label: "ຢືນຢັນການຊຳລະ", className: "bg-emerald-500 hover:bg-emerald-600 text-white" },
+        { status: "CANCELLED", label: "ຍົກເລີກ",         className: "bg-red-500 hover:bg-red-600 text-white" },
+    ],
+    PAID: [
+        { status: "SHIPPED",   label: "ສົ່ງອອກ",   className: "bg-blue-500 hover:bg-blue-600 text-white" },
+        { status: "CANCELLED", label: "ຍົກເລີກ",   className: "bg-red-500 hover:bg-red-600 text-white" },
+    ],
+    SHIPPED: [
+        { status: "COMPLETED", label: "ສຳເລັດ", className: "bg-emerald-500 hover:bg-emerald-600 text-white" },
+    ],
+}
 
 type Props = {
     open: boolean
@@ -17,7 +34,25 @@ type Props = {
 
 
 export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
+    const { mutate: updateStatus, isPending } = useUpdateOrderStatus()
+
     if (!data) return null
+
+    const nextStatuses = NEXT_STATUSES[data.status] ?? []
+
+    const handleUpdateStatus = (status: OrderStatus) => {
+        if (!confirm(`ຢືນຢັນການປ່ຽນສະຖານະເປັນ "${status}"?`)) return
+        updateStatus(
+            { id: data.order_id, data: { status } },
+            {
+                onSuccess: () => {
+                    toast.success("ອັບເດດສະຖານະສຳເລັດ — ລູກຄ້າໄດ້ຮັບການແຈ້ງເຕືອນແລ້ວ")
+                    onOpenChange(false)
+                },
+                onError: () => toast.error("ເກີດຂໍ້ຜິດພາດ"),
+            }
+        )
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,6 +126,23 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
                     </div>
 
                 </div>
+
+                {/* Status actions */}
+                {nextStatuses.length > 0 && (
+                    <div className="mt-5 pt-4 border-t flex items-center gap-3 flex-wrap">
+                        <span className="text-sm text-gray-500 font-medium">ອັບເດດສະຖານະ:</span>
+                        {nextStatuses.map(({ status, label, className }) => (
+                            <button
+                                key={status}
+                                disabled={isPending}
+                                onClick={() => handleUpdateStatus(status)}
+                                className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 ${className}`}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
             </DialogContent>
         </Dialog>
