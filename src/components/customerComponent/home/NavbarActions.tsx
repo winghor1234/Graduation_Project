@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useCustomer } from "../CustomerContext"
 import { useCustomerLogout, useAuthMe } from "@/app/features/hooks/Auth"
-import { useGetNotifications, useMarkAllNotificationsRead, useMarkNotificationRead } from "@/app/features/hooks/Notification"
+import { useGetNotifications, useMarkAllNotificationsRead, useMarkNotificationRead, useNotificationStream } from "@/app/features/hooks/Notification"
 
 function timeAgo(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime()
@@ -39,6 +39,8 @@ export default function NavbarActions() {
     const { data: notifData } = useGetNotifications({ enabled: isLoggedIn })
     const { mutate: markRead } = useMarkNotificationRead()
     const { mutate: markAllRead } = useMarkAllNotificationsRead()
+
+    useNotificationStream(isLoggedIn)
 
     const notifications = notifData?.data ?? []
     const unreadCount = notifData?.unread ?? 0

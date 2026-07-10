@@ -2,10 +2,11 @@ import { prisma } from "@/lib/prisma"
 import { OrderStatus } from "@prisma/client"
 
 const STATUS_LABELS: Record<string, { title: string; message: (code: string) => string }> = {
-    PAID:      { title: "ຢືນຢັນການຊຳລະ",  message: (c) => `ອໍເດີ້ #${c} ຢືນຢັນການຊຳລະແລ້ວ ຂອງທ່ານກຳລັງຖືກດຳເນີນການ` },
-    SHIPPED:   { title: "ສິນຄ້າຖືກສົ່ງອອກ",  message: (c) => `ອໍເດີ້ #${c} ຖືກສົ່ງອອກແລ້ວ ກະລຸນາລໍຖ້າຮັບສິນຄ້າ` },
-    COMPLETED: { title: "ສຳເລັດ",           message: (c) => `ອໍເດີ້ #${c} ສຳເລັດ ຂອບໃຈທີ່ໃຊ້ບໍລິການ` },
-    CANCELLED: { title: "ອໍເດີ້ຖືກຍົກເລີກ",  message: (c) => `ອໍເດີ້ #${c} ຖືກຍົກເລີກ ກະລຸນາຕິດຕໍ່ເຮົາຖ້າມີຂໍ້ສົງໄສ` },
+    WAITING_PAYMENT: { title: "ລໍຖ້າການຊຳລະ",    message: (c) => `ອໍເດີ້ #${c} ກຳລັງລໍຖ້າການຊຳລະ ກະລຸນາຊຳລະພາຍໃນເວລາທີ່ກຳນົດ` },
+    PAID:            { title: "ຢືນຢັນການຊຳລະ",    message: (c) => `ອໍເດີ້ #${c} ຢືນຢັນການຊຳລະແລ້ວ ຂອງທ່ານກຳລັງຖືກດຳເນີນການ` },
+    SHIPPED:         { title: "ສິນຄ້າຖືກສົ່ງອອກ",  message: (c) => `ອໍເດີ້ #${c} ຖືກສົ່ງອອກແລ້ວ ກະລຸນາລໍຖ້າຮັບສິນຄ້າ` },
+    COMPLETED:       { title: "ສຳເລັດ",            message: (c) => `ອໍເດີ້ #${c} ສຳເລັດແລ້ວ ຂອບໃຈທີ່ໃຊ້ບໍລິການ` },
+    CANCELLED:       { title: "ອໍເດີ້ຖືກຍົກເລີກ",  message: (c) => `ອໍເດີ້ #${c} ຖືກຍົກເລີກ ກະລຸນາຕິດຕໍ່ເຮົາຖ້າມີຂໍ້ສົງໄສ` },
 }
 
 export const notificationService = {

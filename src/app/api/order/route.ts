@@ -1,27 +1,21 @@
-
 import { orderController } from "@/modules/order/order.controller"
 import { NextRequest } from "next/server"
-
-// export async function GET(req: NextRequest) {
-//     return orderController.getOrders(req)
-// }
+import { verifyAccessToken } from "@/utils/jwt"
 
 export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
+    // Customer: return only their own orders
+    try {
+        const payload = verifyAccessToken(req)
+        if (payload.role === "CUSTOMER") {
+            return orderController.getMyOrders(req)
+        }
+    } catch { /* not authenticated or not customer — fall through to admin path */ }
 
-    // 1. ดึง Query Params ที่คิดว่าจะใช้ตรวจสอบออกมาดูตรงๆ
-    const search = searchParams.get("search");
-    const page = searchParams.get("page");
-
-    // 2. เช็คเงื่อนไข: ถ้ามีการส่งฟิลเตอร์ ค้นหา หรือจำกัดหน้าเพจเข้ามา
-    if (search || page) {
-        // ส่ง req ไปให้ getProducts จัดการแกะ params ด้านในต่อ
+    const { searchParams } = new URL(req.url)
+    if (searchParams.get("search") || searchParams.get("page")) {
         return orderController.getOrders(req)
     }
-
-    // 3. ถ้ามาแบบ URL เปล่าๆ ไม่มีเงื่อนไขอะไรเลย ให้ดึงทั้งหมด
-    // (เอา req ออกหาก getAllProducts ใน Controller ของคุณไม่ได้ประกาศรับไว้)
-    return orderController.getAllOrders(req);
+    return orderController.getAllOrders(req)
 }
 
 export async function POST(req: NextRequest) {

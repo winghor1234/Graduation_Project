@@ -32,6 +32,7 @@ export function PaymentVerifyDialog({
     }
 
     const order = payment?.order
+    console.log("order : ",order)
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>

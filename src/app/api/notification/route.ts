@@ -13,13 +13,16 @@ function getCustomerId(req: NextRequest): string | null {
 
 export async function GET(req: NextRequest) {
     const customerId = getCustomerId(req)
+    console.log("[NOTIF API] GET — customerId =", customerId)
     if (!customerId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
 
     try {
         const notifications = await notificationService.getForCustomer(customerId)
         const unread = await notificationService.countUnread(customerId)
+        console.log("[NOTIF API] found", notifications.length, "rows, unread =", unread)
         return NextResponse.json({ data: notifications, unread })
-    } catch {
+    } catch (err) {
+        console.error("[NOTIF API] DB error:", err)
         return NextResponse.json({ message: "Internal server error" }, { status: 500 })
     }
 }

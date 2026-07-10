@@ -7,6 +7,7 @@ import { generateOrderCode } from "@/utils/generateCode"
 import { convertFileToBase64, uploadMultipleImages, deleteImages } from "@/utils/cloudinary"
 import { hashPassword } from "@/utils/password"
 import { notificationService } from "@/modules/notification/notification.service"
+import { notificationEmitter } from "@/lib/notificationEmitter"
 
 type OrderDetailInput = {
     product_id: string
@@ -29,7 +30,16 @@ const orderInclude = {
             variant: true,
         },
     },
-    payment:  true,
+    payment:  {
+        include: {
+            order: {
+                include: {
+                    customer: true,
+                    order_details: true,
+                },
+            },
+        },
+    },
     delivery: {
         include: {
             address: {
@@ -59,6 +69,14 @@ export const orderService = {
 
     async getAllOrders() {   // ✅ ແກ້ typo ຈາກ gerAllOrders
         return prisma.order.findMany({
+            include: orderInclude,
+            orderBy: { createdAt: "desc" },
+        })
+    },
+
+    async getMyOrders(customerId: string) {
+        return prisma.order.findMany({
+            where:   { customer_id: customerId },
             include: orderInclude,
             orderBy: { createdAt: "desc" },
         })
@@ -260,7 +278,9 @@ export const orderService = {
 
     // ✅ ໃໝ່ — update status (admin verify payment, ship, complete, cancel)
     async updateOrderStatus(orderId: string, status: OrderStatus) {
-        return prisma.$transaction(async (tx) => {
+        let notifyCustomerId: string | null = null
+
+        const result = await prisma.$transaction(async (tx) => {
 
             const order = await tx.order.findUnique({
                 where:   { order_id: orderId },
@@ -330,6 +350,7 @@ export const orderService = {
             })
 
             // ✅ ສ້າງ notification ໃຫ້ລູກຄ້າທຸກຄັ້ງທີ່ status ປ່ຽນ
+            console.log("[NOTIF] order.customer_id =", order.customer_id, "| status =", status)
             if (order.customer_id) {
                 await notificationService.createOrderStatusNotification(
                     order.customer_id,
@@ -338,10 +359,22 @@ export const orderService = {
                     status,
                     tx as unknown as typeof prisma
                 )
+                notifyCustomerId = order.customer_id
+                console.log("[NOTIF] notification created for", order.customer_id)
+            } else {
+                console.log("[NOTIF] ⚠️  order.customer_id is null/empty — notification skipped")
             }
 
             return updated
         })
+
+        // Emit ຫຼັງ transaction commit ສຳເລັດ — ກັນ race condition
+        if (notifyCustomerId) {
+            console.log("[NOTIF] emitting SSE for", notifyCustomerId)
+            notificationEmitter.emit("notification", { customerId: notifyCustomerId })
+        }
+
+        return result
     },
 
     // ✅ ໃໝ່ — re-upload payment slip

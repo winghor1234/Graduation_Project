@@ -10,6 +10,7 @@ import {
 import { OrderStatus, Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
 import { UpdateOrderStatusInput } from "./order.type"
+import { verifyAccessToken } from "@/utils/jwt"
 
 const handleError = (error: unknown) => {
     if (
@@ -59,6 +60,16 @@ export const orderController = {
         try {
             const orders = await orderService.getAllOrders()  // ✅ ແກ້ typo
             return successResponse(orders, "Get all orders successfully", 200)
+        } catch (error) {
+            return handleError(error)
+        }
+    },
+
+    async getMyOrders(req: NextRequest) {
+        try {
+            const payload = verifyAccessToken(req)
+            const orders = await orderService.getMyOrders(payload.userId)
+            return successResponse(orders, "Get my orders successfully", 200)
         } catch (error) {
             return handleError(error)
         }

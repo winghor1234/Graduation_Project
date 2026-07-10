@@ -81,6 +81,27 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
                     </div>
                 </div>
 
+                {/* CUSTOMER INFO */}
+                {data.customer && (
+                    <div className="border rounded-lg p-4 mt-4 space-y-2 bg-gray-50">
+                        <h3 className="font-semibold text-sm">ຂໍ້ມູນລູກຄ້າ</h3>
+                        <div className="grid sm:grid-cols-3 gap-2 text-sm">
+                            <div>
+                                <p className="text-gray-500 text-xs">ຊື່</p>
+                                <p className="font-medium">{data.customer.customer_name}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 text-xs">ເບີໂທ</p>
+                                <p className="font-medium">{data.customer.phone}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 text-xs">ອີເມວ</p>
+                                <p className="font-medium">{data.customer.email}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* PAYMENT + DELIVERY GRID */}
                 <div className="grid md:grid-cols-2 gap-6 mt-5">
 
