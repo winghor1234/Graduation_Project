@@ -3,6 +3,8 @@ import { BadRequestError, NotFoundError } from "@/utils/response"
 import { CreateDeliveryInput, UpdateDeliveryInput } from "./delivery.type"
 import { DeliveryStatus, Prisma } from "@prisma/client"
 import { generateTrackingCode } from "@/utils/generateCode"
+import { notificationService } from "@/modules/notification/notification.service"
+import { notificationEmitter } from "@/lib/notificationEmitter"
 
 export const deliveryService = {
 
@@ -139,18 +141,35 @@ export const deliveryService = {
     },
 
     async updateDelivery(id: string, data: UpdateDeliveryInput) {
-
         const delivery = await prisma.delivery.findUnique({
-            where: { delivery_id: id }
+            where:   { delivery_id: id },
+            include: { order: { select: { customer_id: true, order_code: true, order_id: true } } },
         })
-        // console.log(data)
+
         if (!delivery) throw new NotFoundError("Delivery not found")
-        // if (data.status === DeliveryStatus.SHIPPED) {
-        //     throw new BadRequestError("Tracking number required before shipping")
-        // }
-        return prisma.delivery.update({
+
+        const updated = await prisma.delivery.update({
             where: { delivery_id: id },
-            data
+            data,
         })
+
+        // Send notification + SSE after DB update
+        const { customer_id, order_code, order_id } = delivery.order
+        console.log("[DELIVERY NOTIF] status =", data.status, "| customer_id =", customer_id)
+
+        if (customer_id) {
+            await notificationService.createDeliveryStatusNotification(
+                customer_id,
+                order_id,
+                order_code,
+                data.status
+            )
+            console.log("[DELIVERY NOTIF] emitting SSE for", customer_id)
+            notificationEmitter.emit("notification", { customerId: customer_id })
+        } else {
+            console.log("[DELIVERY NOTIF] ⚠️  order.customer_id is null — notification skipped")
+        }
+
+        return updated
     }
 }

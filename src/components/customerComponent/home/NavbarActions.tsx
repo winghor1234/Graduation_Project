@@ -118,7 +118,7 @@ export default function NavbarActions() {
                                         onClick={() => {
                                             if (!n.is_read) markRead(n.notification_id)
                                             setNotifOpen(false)
-                                            router.push("/customer/order-history")
+                                            router.push(n.order_id ? `/customer/order-history/${n.order_id}` : "/customer/order-history")
                                         }}
                                         className={`w-full text-left px-4 py-3 hover:bg-brand-black/40 transition-colors ${
                                             !n.is_read ? "bg-brand-orange/5" : ""

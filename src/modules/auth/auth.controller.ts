@@ -195,19 +195,16 @@ export const authController = {
     },
 
     async customerLogout(req: NextRequest): Promise<NextResponse> {
+        // Try DB cleanup — but always clear cookies regardless
         try {
-            const payload = verifyAccessToken(req);
-            await authService.customerLogout(payload.userId);
-            const response = successResponse(null, "Logout successful", 200);
-            clearAuthCookies(response);
-            return response;
-        } catch (error) {
-            console.log(error)
-            if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-                return errorResponse(error.message, error.statusCode);
-            }
-            return errorResponse("Internal Server Error", 500)
+            const payload = verifyAccessToken(req)
+            await authService.customerLogout(payload.userId)
+        } catch {
+            // Token expired or missing — still proceed to clear cookies
         }
+        const response = successResponse(null, "Logout successful", 200)
+        clearAuthCookies(response)
+        return response
     },
 
 

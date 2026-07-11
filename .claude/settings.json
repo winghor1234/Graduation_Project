@@ -9,14 +9,16 @@
       "Bash(grep -rn 'shop/\\\\${\\\\|shop/\\\\`' \"c:/Users/boysheme/Desktop/Graduation_Project/src\" --include=\"*.tsx\")",
       "Bash(mkdir -p \"/c/Users/boysheme/Desktop/Graduation_Project/src/app/api/expense/[id]\")",
       "Bash(mkdir -p \"/c/Users/boysheme/Desktop/Graduation_Project/src/app/api/notification/[id]\")",
-      "Bash(mkdir -p \"c:/Users/boysheme/Desktop/Graduation_Project/src/app/api/notification/stream\")"
+      "Bash(mkdir -p \"c:/Users/boysheme/Desktop/Graduation_Project/src/app/api/notification/stream\")",
+      "Bash(mkdir -p \"c:/Users/boysheme/Desktop/Graduation_Project/src/app/customer/order-history/[id]\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\boysheme\\Desktop\\Graduation_Project\\src\\app\\(admin)",
       "c:\\Users\\boysheme\\Desktop\\Graduation_Project\\src\\app\\customer\\shop\\[id]",
       "C:\\Users\\boysheme\\Desktop\\Graduation_Project\\src\\app\\api\\expense",
       "C:\\Users\\boysheme\\Desktop\\Graduation_Project\\src\\app\\api\\notification",
-      "c:\\Users\\boysheme\\Desktop\\Graduation_Project\\src\\app\\api\\notification"
+      "c:\\Users\\boysheme\\Desktop\\Graduation_Project\\src\\app\\api\\notification",
+      "c:\\Users\\boysheme\\Desktop\\Graduation_Project\\src\\app\\customer\\order-history"
     ]
   }
 }

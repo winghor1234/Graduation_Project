@@ -146,11 +146,13 @@ export const useCustomerResetPassword = () => {
 
 export const useCustomerLogout = () => {
     const qc = useQueryClient()
+    const redirect = () => {
+        qc.removeQueries({ queryKey: ["me"] })
+        window.location.href = "/login"
+    }
     return useMutation({
         mutationFn: AuthApi.customerLogout,
-        onSuccess: () => {
-            qc.removeQueries({ queryKey: ["me"] })
-            window.location.href = "/login"
-        },
+        onSuccess: redirect,
+        onError:   redirect,   // ຖ້າ server fail ກໍຍັງ redirect ໄປ login
     })
 }

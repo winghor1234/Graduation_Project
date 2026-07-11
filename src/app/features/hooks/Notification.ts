@@ -9,7 +9,7 @@ export const useGetNotifications = (options?: { enabled?: boolean }) => {
         queryKey:        ["notifications"],
         queryFn:         notificationApi.getAll,
         enabled:         options?.enabled ?? true,
-        refetchInterval: 60_000,
+        refetchInterval: 30_000,
         staleTime:       20_000,
         retry:           false,
     })
@@ -19,12 +19,31 @@ export const useNotificationStream = (enabled: boolean) => {
     const qc = useQueryClient()
     useEffect(() => {
         if (!enabled) return
+
         const url = `${process.env.NEXT_PUBLIC_API_URL}/notification/stream`
-        const es = new EventSource(url, { withCredentials: true })
-        es.onmessage = () => {
-            qc.invalidateQueries({ queryKey: ["notifications"] })
+        let es: EventSource
+        let reconnectTimer: ReturnType<typeof setTimeout>
+
+        const connect = () => {
+            es = new EventSource(url, { withCredentials: true })
+
+            es.onmessage = () => {
+                qc.invalidateQueries({ queryKey: ["notifications"] })
+            }
+
+            es.onerror = () => {
+                es.close()
+                // reconnect after 5s if connection drops
+                reconnectTimer = setTimeout(connect, 5_000)
+            }
         }
-        return () => es.close()
+
+        connect()
+
+        return () => {
+            clearTimeout(reconnectTimer)
+            es?.close()
+        }
     }, [enabled, qc])
 }
 

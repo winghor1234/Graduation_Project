@@ -1,12 +1,19 @@
 import { prisma } from "@/lib/prisma"
-import { OrderStatus } from "@prisma/client"
+import { DeliveryStatus, OrderStatus } from "@prisma/client"
 
-const STATUS_LABELS: Record<string, { title: string; message: (code: string) => string }> = {
+const ORDER_STATUS_LABELS: Record<string, { title: string; message: (code: string) => string }> = {
     WAITING_PAYMENT: { title: "ລໍຖ້າການຊຳລະ",    message: (c) => `ອໍເດີ້ #${c} ກຳລັງລໍຖ້າການຊຳລະ ກະລຸນາຊຳລະພາຍໃນເວລາທີ່ກຳນົດ` },
     PAID:            { title: "ຢືນຢັນການຊຳລະ",    message: (c) => `ອໍເດີ້ #${c} ຢືນຢັນການຊຳລະແລ້ວ ຂອງທ່ານກຳລັງຖືກດຳເນີນການ` },
     SHIPPED:         { title: "ສິນຄ້າຖືກສົ່ງອອກ",  message: (c) => `ອໍເດີ້ #${c} ຖືກສົ່ງອອກແລ້ວ ກະລຸນາລໍຖ້າຮັບສິນຄ້າ` },
     COMPLETED:       { title: "ສຳເລັດ",            message: (c) => `ອໍເດີ້ #${c} ສຳເລັດແລ້ວ ຂອບໃຈທີ່ໃຊ້ບໍລິການ` },
     CANCELLED:       { title: "ອໍເດີ້ຖືກຍົກເລີກ",  message: (c) => `ອໍເດີ້ #${c} ຖືກຍົກເລີກ ກະລຸນາຕິດຕໍ່ເຮົາຖ້າມີຂໍ້ສົງໄສ` },
+}
+
+const DELIVERY_STATUS_LABELS: Record<string, { title: string; message: (code: string) => string }> = {
+    PROCESSING: { title: "ກຳລັງກຽມຈັດສົ່ງ",  message: (c) => `ອໍເດີ້ #${c} ກຳລັງຖືກກຽມຈັດສົ່ງ ກະລຸນາລໍຖ້າ` },
+    SHIPPED:    { title: "ສິນຄ້າກຳລັງຖືກສົ່ງ", message: (c) => `ອໍເດີ້ #${c} ກຳລັງຖືກຈັດສົ່ງ ກະລຸນາລໍຮັບທີ່ສາຂາ` },
+    DELIVERED:  { title: "ສົ່ງເຖິງແລ້ວ",        message: (c) => `ອໍເດີ້ #${c} ສົ່ງເຖິງສາຂາແລ້ວ ກະລຸນາໄປຮັບສິນຄ້າ` },
+    CANCELLED:  { title: "ຍົກເລີກການຈັດສົ່ງ",   message: (c) => `ອໍເດີ້ #${c} ຖືກຍົກເລີກການຈັດສົ່ງ ກະລຸນາຕິດຕໍ່ເຮົາ` },
 }
 
 export const notificationService = {
@@ -17,9 +24,27 @@ export const notificationService = {
         status: OrderStatus,
         tx: typeof prisma
     ) {
-        const label = STATUS_LABELS[status]
+        const label = ORDER_STATUS_LABELS[status]
         if (!label || !customerId) return
         await (tx as typeof prisma).notification.create({
+            data: {
+                customer_id: customerId,
+                order_id:    orderId,
+                title:       label.title,
+                message:     label.message(orderCode),
+            },
+        })
+    },
+
+    async createDeliveryStatusNotification(
+        customerId: string,
+        orderId: string,
+        orderCode: string,
+        status: DeliveryStatus
+    ) {
+        const label = DELIVERY_STATUS_LABELS[status]
+        if (!label || !customerId) return
+        await prisma.notification.create({
             data: {
                 customer_id: customerId,
                 order_id:    orderId,

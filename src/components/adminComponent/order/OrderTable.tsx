@@ -34,10 +34,10 @@ export function OrderTable({ data, isLoading, onView }: Props) {
     const [selectedPayment, setSelectedPayment] = useState<Payment | undefined>()
     const [selectedDelivery, setSelectedDelivery] = useState<Delivery | undefined>()
 
-    const handleVerify = (payment: Payment) => {
-        setSelectedPayment(payment)
-        setOpenDialog(true)
-    }
+    // const handleVerify = (payment: Payment) => {
+    //     setSelectedPayment(payment)
+    //     setOpenDialog(true)
+    // }
 
     const handleSubmitVerify = (status: "VERIFIED" | "REJECTED") => {
         if (!selectedPayment) return
@@ -50,10 +50,10 @@ export function OrderTable({ data, isLoading, onView }: Props) {
         )
     }
 
-    const handleUpdateDeliveryDialog = (delivery: Delivery) => {
-        setSelectedDelivery(delivery)
-        setOpenDeliveryDialog(true)
-    }
+    // const handleUpdateDeliveryDialog = (delivery: Delivery) => {
+    //     setSelectedDelivery(delivery)
+    //     setOpenDeliveryDialog(true)
+    // }
 
     const handleUpdateDelivery = (status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED") => {
         if (!selectedDelivery?.delivery_id) return
@@ -146,7 +146,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                                 <Eye className="size-3" />
                                                 ເບິ່ງ
                                             </Button>
-                                            <Button
+                                            {/* <Button
                                                 size="sm"
                                                 className={cn(
                                                     "h-7 px-2 text-xs",
@@ -156,14 +156,14 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                                             ? "bg-red-500 hover:bg-red-600 text-white"
                                                             : "bg-emerald-500 hover:bg-emerald-600 text-white"
                                                 )}
-                                                onClick={() => o.payment && handleVerify(o.payment)}
+                                                // onClick={() => o.payment && handleVerify(o.payment)}
                                                 disabled={o.payment?.status !== "PENDING" || !o.payment}
                                             >
                                                 {o.payment?.status === "PENDING" ? "ກວດສອບ"
                                                     : o.payment?.status === "REJECTED" ? "ປະຕິເສດ"
                                                     : "ຢືນຢັນແລ້ວ"}
-                                            </Button>
-                                            <Button
+                                            </Button> */}
+                                            {/* <Button
                                                 size="sm"
                                                 variant="outline"
                                                 className="h-7 px-2 text-xs border-admin-border"
@@ -171,7 +171,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                                 disabled={!o.delivery}
                                             >
                                                 <BadgeComponent status={o.delivery?.status} />
-                                            </Button>
+                                            </Button> */}
                                         </div>
                                     </TableCell>
                                 </TableRow>
