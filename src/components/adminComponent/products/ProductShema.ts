@@ -1,12 +1,13 @@
 import { z } from "zod"
 
 export const variantSchema = z.object({
+  variant_id:     z.string().optional(),   // present when editing an existing variant
   sku:            z.string().min(1, "ກະລຸນາໃສ່ SKU"),
   color:          z.string().min(1, "ກະລຸນາໃສ່ສີ"),
   size:           z.string().min(1, "ກະລຸນາໃສ່ຂະໜາດ"),
   purchase_price: z.number().min(0),
   sale_price:     z.number().min(0),
-  stock_qty:      z.number().min(0),  // ✅ ເອົາ .default(0) ອອກ — ໃຫ້ required ເລີຍ
+  stock_qty:      z.number().min(0),
 })
 
 export const productSchema = z.object({

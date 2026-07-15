@@ -7,7 +7,7 @@ import { useGetAllProducts, useGetPriceRange } from "@/app/features/hooks/Produc
 import { useGetAllCategories } from "@/app/features/hooks/Category"
 import { useGetAllPromotions } from "@/app/features/hooks/promotion"
 import { Promotion } from "@/modules/promotion/promotion.types"
-import { ALL_CATEGORY_ID, PAGE_SIZE } from "@/components/customerComponent/shop/constants"
+import { PAGE_SIZE } from "@/components/customerComponent/shop/constants"
 import { CategoryItem, ProductListItem, SortBy } from "@/components/customerComponent/shop/shop.types"
 import { FilterPanel } from "@/components/customerComponent/shop/FilterPanel"
 import { MobileFilterDrawer } from "@/components/customerComponent/shop/MobileFilterDrawer"
@@ -21,44 +21,63 @@ export default function HomePage() {
     const searchParams = useSearchParams()
 
     const [searchInput, setSearchInput] = useState("")
-    const [categoryId, setCategoryId] = useState(searchParams.get("category") || ALL_CATEGORY_ID)
+    const [categoryIds, setCategoryIds] = useState<string[]>(
+        searchParams.get("category") ? [searchParams.get("category")!] : []
+    )
     const [sortBy, setSortBy] = useState<SortBy>("featured")
     const [page, setPage] = useState(1)
     const [userPriceRange, setUserPriceRange] = useState<[number, number] | null>(null)
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [pickerProduct, setPickerProduct] = useState<ProductListItem | null>(null)
+    const [selectedSizes, setSelectedSizes] = useState<string[]>([])
+    const [selectedColors, setSelectedColors] = useState<string[]>([])
 
     const debouncedSearch = useDebouncedValue(searchInput)
     const { data: priceBounds } = useGetPriceRange()
+
     const { data, isLoading, isFetching, isError, refetch } = useGetAllProducts(
         useMemo(() => ({
-            category_id: categoryId === ALL_CATEGORY_ID ? undefined : categoryId,
-            search: debouncedSearch || undefined,
-            min_price: userPriceRange && priceBounds && userPriceRange[0] > priceBounds.min ? userPriceRange[0] : undefined,
-            max_price: userPriceRange && priceBounds && userPriceRange[1] < priceBounds.max ? userPriceRange[1] : undefined,
-            sort_by: sortBy,
+            category_ids: categoryIds.length > 0 ? categoryIds : undefined,
+            search:       debouncedSearch || undefined,
+            min_price:    userPriceRange && priceBounds && userPriceRange[0] > priceBounds.min ? userPriceRange[0] : undefined,
+            max_price:    userPriceRange && priceBounds && userPriceRange[1] < priceBounds.max ? userPriceRange[1] : undefined,
+            sort_by:      sortBy,
             page,
-            page_size: PAGE_SIZE,
-        }), [categoryId, debouncedSearch, userPriceRange, priceBounds, sortBy, page])
+            page_size:    PAGE_SIZE,
+        }), [categoryIds, debouncedSearch, userPriceRange, priceBounds, sortBy, page])
     )
+
     const { data: categories, isLoading: isLoadingCategories } = useGetAllCategories()
     const { data: allPromotions = [] } = useGetAllPromotions()
 
-    // Derive effective price range — no useEffect needed
     const priceRange: [number, number] = userPriceRange ?? [priceBounds?.min ?? 0, priceBounds?.max ?? 0]
+    const rawItems = useMemo(() => (data?.items ?? []) as ProductListItem[], [data])
+    const meta = data?.meta
 
-    const items = useMemo(() => (data?.items ?? []) as ProductListItem[], [data])
-    const meta  = data?.meta
+    // Collect unique colors from current page for the swatch filter
+    const availableColors = useMemo(() => {
+        const seen = new Set<string>()
+        rawItems.forEach(p => p.variants?.forEach(v => { if (v.color) seen.add(v.color) }))
+        return Array.from(seen)
+    }, [rawItems])
 
-    // Build promotion map once — product_id → active Promotion
+    // Client-side size + color filter
+    const items = useMemo(() => {
+        let result = rawItems
+        if (selectedSizes.length > 0)
+            result = result.filter(p => p.variants?.some(v => selectedSizes.includes(v.size)))
+        if (selectedColors.length > 0)
+            result = result.filter(p => p.variants?.some(v => v.color && selectedColors.includes(v.color)))
+        return result
+    }, [rawItems, selectedSizes, selectedColors])
+
+    // Promotion map
     const promotionMap = useMemo(() => {
         const now = new Date()
         const map = new Map<string, Promotion>()
-        const activePromos = allPromotions.filter(p => {
-            if (p.status !== "ACTIVE") return false
-            return new Date(p.start_date) <= now && new Date(p.end_date) >= now
-        })
-        // product-specific promotions first
+        const activePromos = allPromotions.filter(p =>
+            p.status === "ACTIVE" && new Date(p.start_date) <= now && new Date(p.end_date) >= now
+        )
         for (const p of activePromos) {
             if (p.promotion_products?.length) {
                 for (const pp of p.promotion_products) {
@@ -66,89 +85,117 @@ export default function HomePage() {
                 }
             }
         }
-        // store-wide promotion fills remaining products
         const storeWide = activePromos.find(p => !p.promotion_products?.length)
         if (storeWide) {
-            for (const item of items) {
+            for (const item of rawItems) {
                 if (!map.has(item.product_id)) map.set(item.product_id, storeWide)
             }
         }
         return map
-    }, [allPromotions, items])
+    }, [allPromotions, rawItems])
 
-    const activeCategory = (categories as CategoryItem[] | undefined)
-        ?.find(c => c.category_id === categoryId)
+    // Active categories (for chips + heading)
+    const allCategories = categories as CategoryItem[] | undefined
+    const activeCategories = useMemo(
+        () => (allCategories ?? []).filter(c => categoryIds.includes(c.category_id)),
+        [allCategories, categoryIds]
+    )
 
     const isFiltered =
-        categoryId !== ALL_CATEGORY_ID ||
+        categoryIds.length > 0 ||
         debouncedSearch !== "" ||
-        userPriceRange !== null
+        userPriceRange !== null ||
+        selectedSizes.length > 0 ||
+        selectedColors.length > 0
 
-    // Handlers always reset page alongside the filter change
-    const handleCategoryChange = (id: string) => { setCategoryId(id); setPage(1) }
+    // Toggle a category in/out of the selected set
+    const handleCategoryToggle = (id: string) => {
+        setCategoryIds(prev =>
+            prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+        )
+        setPage(1)
+    }
+
     const handleSearchChange = (v: string) => { setSearchInput(v); setPage(1) }
-    const handleSortChange = (v: SortBy) => { setSortBy(v); setPage(1) }
-    const handlePriceChange = (v: [number, number]) => { setUserPriceRange(v); setPage(1) }
-    const handleRemovePrice = () => { setUserPriceRange(null); setPage(1) }
+    const handleSortChange   = (v: SortBy) => { setSortBy(v); setPage(1) }
+    const handlePriceChange  = (v: [number, number]) => { setUserPriceRange(v); setPage(1) }
+    const handleRemovePrice  = () => { setUserPriceRange(null); setPage(1) }
 
     const resetFilters = () => {
-        setCategoryId(ALL_CATEGORY_ID)
+        setCategoryIds([])
         setSearchInput("")
         setSortBy("featured")
         setUserPriceRange(null)
+        setSelectedSizes([])
+        setSelectedColors([])
         setPage(1)
     }
 
     const panelProps = {
-        categories: categories as CategoryItem[] | undefined,
+        categories:         allCategories,
         isLoadingCategories,
-        categoryId,
-        setCategoryId: handleCategoryChange,
+        categoryIds,
+        onCategoryToggle:   handleCategoryToggle,
         priceBounds,
         priceRange,
-        setPriceRange: handlePriceChange,
-        isFiltered: !!isFiltered,
-        onReset: resetFilters,
+        setPriceRange:      handlePriceChange,
+        isFiltered:         !!isFiltered,
+        onReset:            resetFilters,
+        availableColors,
+        selectedSizes,
+        onSizesChange:      setSelectedSizes,
+        selectedColors,
+        onColorsChange:     setSelectedColors,
     }
 
-    return (
-        <div className="min-h-screen bg-[#f8f9fa]">
-            <div className="container mx-auto px-6 max-w-7xl py-10">
+    const headingLabel =
+        activeCategories.length === 1
+            ? activeCategories[0].category_name
+            : activeCategories.length > 1
+                ? `${activeCategories.length} ໝວດໝູ່`
+                : "ສິນຄ້າທັງໝົດ"
 
-                {/* Header */}
-                <div className="flex flex-col gap-1 mb-8">
-                    <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">ສິນຄ້າທັງໝົດ</h1>
-                    <p className="text-sm text-gray-400">
-                        {meta ? `ພົບ ${meta.total} ລາຍການ` : "ກຳລັງໂຫຼດ..."}
-                    </p>
+    return (
+        <div className="min-h-screen bg-brand-black">
+            <div className="container mx-auto px-4 md:px-8 max-w-7xl py-8 md:py-12">
+
+                {/* ── Page header ── */}
+                <div className="flex items-end justify-between mb-8 gap-4">
+                    <div>
+                        <p className="text-[10px] tracking-[0.22em] uppercase text-brand-muted mb-1 font-medium">SportPro</p>
+                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-brand-white leading-none">
+                            {headingLabel}
+                        </h1>
+                        {meta && (
+                            <p className="text-sm text-brand-muted mt-1">{meta.total} ລາຍການ</p>
+                        )}
+                    </div>
+
+                    <ShopSearchBar
+                        sortBy={sortBy}
+                        onSortChange={handleSortChange}
+                        isFiltered={!!isFiltered}
+                        onOpenDrawer={() => setDrawerOpen(true)}
+                    />
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-10 items-start">
+                {/* ── Body: sidebar + grid ── */}
+                <div className="flex gap-10 items-start">
 
-                    {/* Sidebar Filter (desktop) */}
-                    <aside className="hidden md:block w-[260px] flex-shrink-0 sticky top-6">
+                    {/* Sidebar desktop */}
+                    <aside className="hidden md:block w-48 shrink-0 sticky top-6">
                         <FilterPanel {...panelProps} />
                     </aside>
 
-                    {/* Main Content */}
-                    <div className="flex-1 w-full space-y-5">
-                        <ShopSearchBar
-                            searchInput={searchInput}
-                            onSearchChange={handleSearchChange}
-                            sortBy={sortBy}
-                            onSortChange={handleSortChange}
-                            isFiltered={!!isFiltered}
-                            onOpenDrawer={() => setDrawerOpen(true)}
-                        />
-
+                    {/* Main */}
+                    <div className="flex-1 min-w-0 space-y-6">
                         <ShopActiveFilters
                             isFiltered={!!isFiltered}
-                            categoryId={categoryId}
-                            activeCategory={activeCategory}
+                            activeCategories={activeCategories}
                             debouncedSearch={debouncedSearch}
                             priceBounds={priceBounds}
                             priceRange={priceRange}
-                            onRemoveCategory={() => handleCategoryChange(ALL_CATEGORY_ID)}
+                            onRemoveCategory={handleCategoryToggle}
                             onRemoveSearch={() => handleSearchChange("")}
                             onRemovePrice={handleRemovePrice}
                             onResetAll={resetFilters}
@@ -171,14 +218,14 @@ export default function HomePage() {
                 </div>
             </div>
 
-            {/* Mobile Filter Drawer */}
+            {/* Mobile filter drawer */}
             <MobileFilterDrawer
                 open={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
                 panelProps={panelProps}
             />
 
-            {/* Variant Picker Dialog */}
+            {/* Variant picker */}
             <VariantPickerDialog
                 product={pickerProduct}
                 open={!!pickerProduct}

@@ -5,12 +5,13 @@ import { Category } from "@/modules/category/category.type"
 // ─── Variant ───────────────────────────────────────────────
 
 export type ProductVariantInput = {
+  variant_id?: string    // present when editing an existing variant
   sku: string
   color: string
   size: string
   purchase_price: number
   sale_price: number
-  stock_qty: number  // ✅ required — ບໍ່ optional (ແກ້ Zod error ເກົ່າ)
+  stock_qty: number
 }
 
 export type ProductVariant = {

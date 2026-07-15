@@ -37,7 +37,14 @@ export const productApi = {
 
 
     getAlls: async (filters?: ProductListFilters): Promise<ProductListResponse> => {
-        const res = await axiosInstance.get("/product", { params: filters })
+        const { category_ids, ...rest } = filters ?? {}
+        const params = {
+            ...rest,
+            ...(category_ids && category_ids.length > 0
+                ? { category_ids: category_ids.join(",") }
+                : {}),
+        }
+        const res = await axiosInstance.get("/product", { params })
         return res?.data?.data
     },
 
