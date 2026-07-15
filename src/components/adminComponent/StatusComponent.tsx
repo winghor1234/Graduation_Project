@@ -21,6 +21,10 @@ export const translateStatus = (status?: string) => {
             return "ກວດສອບສຳເລັດ"
         case "REJECTED":
             return "ປະຕິເສດການກວດສອບ"
+        case "TRANSFER":
+            return "ໂອນເງິນ"
+        case "CASH":
+            return "ເງິນສົດ (COD)"
         default:
             return status ?? "ບໍ່ຮູ້ສະຖານະ"
     }
@@ -48,6 +52,10 @@ export const statusColor = (status?: string) => {
             return "bg-green-100 text-green-700"
         case "REJECTED":
             return "bg-red-100 text-red-700"
+        case "TRANSFER":
+            return "bg-purple-100 text-purple-700"
+        case "CASH":
+            return "bg-orange-100 text-orange-700"
         default:
             return "bg-gray-100 text-admin-text"
     }

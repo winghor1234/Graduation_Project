@@ -23,6 +23,7 @@ import { Promotion } from "@/modules/promotion/promotion.types"
 import { checkoutSchema, CheckoutFormData, Province } from "@/components/customerComponent/checkout/checkout.types"
 import { CheckoutCustomerInfoCard } from "@/components/customerComponent/checkout/CheckoutCustomerInfoCard"
 import { CheckoutLocationCard } from "@/components/customerComponent/checkout/CheckoutLocationCard"
+import { CheckoutMethodSelector, PaymentMethodOption } from "@/components/customerComponent/checkout/CheckoutMethodSelector"
 import { CheckoutPaymentCard } from "@/components/customerComponent/checkout/CheckoutPaymentCard"
 import { CheckoutSlipCard } from "@/components/customerComponent/checkout/CheckoutSlipCard"
 import { CheckoutOrderSummary } from "@/components/customerComponent/checkout/CheckoutOrderSummary"
@@ -68,6 +69,7 @@ export default function CartPage() {
     const isAuthenticated = !!user
 
     const [pointsToUse, setPointsToUse] = useState(0)
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOption>("TRANSFER")
 
     const {
         register, handleSubmit, setValue, control,
@@ -150,7 +152,7 @@ export default function CartPage() {
             fd.append("phone",         data.phone!.trim())
             fd.append("email",         data.email!.trim())
         }
-        fd.append("method",       "TRANSFER")
+        fd.append("method",       paymentMethod)
         fd.append("amount",       String(total))
         fd.append("province_id",  data.province_id)
         fd.append("district_id",  data.district_id)
@@ -360,12 +362,22 @@ export default function CartPage() {
                                 />
                             )}
 
-                            <CheckoutPaymentCard total={total} />
-                            <CheckoutSlipCard
-                                previewUrl={previewUrl}
-                                onFileChange={handleFileChange}
-                                error={errors.paymentSlip?.message}
-                            />
+                            <CheckoutMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
+
+                            {paymentMethod === "TRANSFER" ? (
+                                <>
+                                    <CheckoutPaymentCard total={total} />
+                                    <CheckoutSlipCard
+                                        previewUrl={previewUrl}
+                                        onFileChange={handleFileChange}
+                                        error={errors.paymentSlip?.message}
+                                    />
+                                </>
+                            ) : (
+                                <div className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                                    ທ່ານຈະຈ່າຍເງິນສົດ {formatCurrency(total)} ໃຫ້ພະນັກງານຂົນສົ່ງເມື່ອໄດ້ຮັບສິນຄ້າ
+                                </div>
+                            )}
                         </div>
 
                         {/* RIGHT: summary + submit */}

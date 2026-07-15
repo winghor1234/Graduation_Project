@@ -72,7 +72,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-admin-bg hover:bg-admin-bg border-admin-border">
-                            {["#", "ລະຫັດ", "ລູກຄ້າ", "ຍອດລວມ", "ການຊຳລະ", "ສລິບ", "ຈັດສົ່ງ", "ເລກຕິດຕາມ", ""].map((h) => (
+                            {["#", "ລະຫັດ", "ລູກຄ້າ", "ຍອດລວມ", "ວິທີຊຳລະ", "ການຊຳລະ", "ສລິບ", "ຈັດສົ່ງ", "ເລກຕິດຕາມ", ""].map((h) => (
                                 <TableHead key={h} className={theme.subText}>{h}</TableHead>
                             ))}
                         </TableRow>
@@ -80,7 +80,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                     <TableBody>
                         {[...Array(5)].map((_, i) => (
                             <TableRow key={i} className="border-admin-border">
-                                {[...Array(9)].map((__, j) => (
+                                {[...Array(10)].map((__, j) => (
                                     <TableCell key={j}><Skeleton className="h-4 w-16" /></TableCell>
                                 ))}
                             </TableRow>
@@ -102,6 +102,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                 <TableHead className={theme.subText}>ລະຫັດອໍເດີ້</TableHead>
                                 <TableHead className={theme.subText}>ລູກຄ້າ</TableHead>
                                 <TableHead className={theme.subText}>ຍອດລວມ</TableHead>
+                                <TableHead className={theme.subText}>ວິທີຊຳລະ</TableHead>
                                 <TableHead className={theme.subText}>ການຊຳລະ</TableHead>
                                 <TableHead className={theme.subText}>ສລິບ</TableHead>
                                 <TableHead className={theme.subText}>ຈັດສົ່ງ</TableHead>
@@ -119,9 +120,10 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                     <TableCell className={cn("font-mono text-xs", theme.text)}>{o.order_code}</TableCell>
                                     <TableCell className={theme.text}>{o.customer?.customer_name}</TableCell>
                                     <TableCell className={cn("font-semibold", theme.primary)}>{formatCurrency(o.total_amount ?? 0)}</TableCell>
+                                    <TableCell><BadgeComponent status={o.payment?.method} /></TableCell>
                                     <TableCell><BadgeComponent status={o.payment?.status} /></TableCell>
                                     <TableCell>
-                                        {o.payment?.slip_url && (
+                                        {o.payment?.slip_url ? (
                                             <Image
                                                 src={o.payment.slip_url}
                                                 width={40}
@@ -129,7 +131,9 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                                 alt="slip"
                                                 className="rounded-lg object-cover"
                                             />
-                                        )}
+                                        ) : o.payment?.method === "CASH" ? (
+                                            <span className={cn("text-xs", theme.subText)}>ຈ່າຍປາຍທາງ</span>
+                                        ) : null}
                                     </TableCell>
                                     <TableCell><BadgeComponent status={o.delivery?.status} /></TableCell>
                                     <TableCell className={cn("font-mono text-xs", theme.subText)}>

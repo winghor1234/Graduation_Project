@@ -29,6 +29,21 @@ const NEXT_ORDER_STATUSES: Partial<Record<OrderStatus, { status: OrderStatus; la
     ],
 }
 
+// ✅ COD — ຈ່າຍເງິນສົດຕອນສົ່ງ, ບໍ່ແມ່ນຕອນສັ່ງຊື້ — ຂ້າມຂັ້ນ "ຢືນຢັນການຊຳລະ" ປອມໆ, ສົ່ງອອກໄດ້ເລີຍ
+const NEXT_ORDER_STATUSES_COD: Partial<Record<OrderStatus, { status: OrderStatus; label: string; className: string }[]>> = {
+    WAITING_PAYMENT: [
+        { status: "SHIPPED",   label: "ສົ່ງອອກ (ຈ່າຍປາຍທາງ)", className: "bg-blue-500 hover:bg-blue-600 text-white" },
+        { status: "CANCELLED", label: "ຍົກເລີກ",               className: "bg-red-500 hover:bg-red-600 text-white" },
+    ],
+    PAID: [
+        { status: "SHIPPED",   label: "ສົ່ງອອກ", className: "bg-blue-500 hover:bg-blue-600 text-white" },
+        { status: "CANCELLED", label: "ຍົກເລີກ", className: "bg-red-500 hover:bg-red-600 text-white" },
+    ],
+    SHIPPED: [
+        { status: "COMPLETED", label: "ຢືນຢັນເກັບເງິນສົດແລ້ວ", className: "bg-emerald-500 hover:bg-emerald-600 text-white" },
+    ],
+}
+
 // ────────────────────────────────────────────────────────────
 // Delivery status transitions
 // ────────────────────────────────────────────────────────────
@@ -64,7 +79,8 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
 
     if (!data) return null
 
-    const nextOrderStatuses    = NEXT_ORDER_STATUSES[data.status] ?? []
+    const isCOD = data.payment?.method === "CASH"
+    const nextOrderStatuses = (isCOD ? NEXT_ORDER_STATUSES_COD : NEXT_ORDER_STATUSES)[data.status] ?? []
     const nextDeliveryStatuses = data.delivery
         ? (NEXT_DELIVERY_STATUSES[data.delivery.status] ?? [])
         : []
@@ -164,8 +180,11 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
                     {/* PAYMENT */}
                     <div className="border rounded-lg p-4 space-y-3">
                         <h3 className="font-semibold">ການຊຳລະເງິນ</h3>
-                        <BadgeComponent status={data.payment?.status} />
-                        {data.payment?.slip_url && (
+                        <div className="flex items-center gap-2">
+                            <BadgeComponent status={data.payment?.method} />
+                            <BadgeComponent status={data.payment?.status} />
+                        </div>
+                        {data.payment?.slip_url ? (
                             <div>
                                 <p className="text-sm text-gray-500 my-2">ຫຼັກຖານການຊຳລະ</p>
                                 <Image
@@ -176,7 +195,13 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
                                     className="rounded-lg border"
                                 />
                             </div>
-                        )}
+                        ) : data.payment?.method === "CASH" ? (
+                            <p className="text-sm text-gray-500">
+                                {data.payment?.status === "VERIFIED"
+                                    ? "ພະນັກງານຂົນສົ່ງເກັບເງິນສົດຈາກລູກຄ້າແລ້ວ"
+                                    : "ລູກຄ້າຈະຈ່າຍເງິນສົດໃຫ້ພະນັກງານຂົນສົ່ງເມື່ອໄດ້ຮັບສິນຄ້າ — ບໍ່ຕ້ອງກວດສະລິບ"}
+                            </p>
+                        ) : null}
                     </div>
 
                     {/* DELIVERY */}

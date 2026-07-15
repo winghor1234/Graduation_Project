@@ -289,9 +289,12 @@ export const orderService = {
 
             if (!order) throw new NotFoundError("Order not found")
 
+            // ✅ COD — ຈ່າຍເງິນສົດຕອນສົ່ງ, ບໍ່ແມ່ນຕອນສັ່ງຊື້ — ອະນຸຍາດໃຫ້ສົ່ງເລີຍໂດຍບໍ່ຕ້ອງ "ຢືນຢັນການຊຳລະ" ປອມໆ
+            const isCOD = order.payment?.method === "CASH"
+
             // ✅ ກວດການປ່ຽນສະຖານະທີ່ສົມເຫດສົມຜົນ
             const validTransitions: Record<OrderStatus, OrderStatus[]> = {
-                WAITING_PAYMENT: ["PAID", "CANCELLED"],
+                WAITING_PAYMENT: isCOD ? ["SHIPPED", "CANCELLED"] : ["PAID", "CANCELLED"],
                 PAID:            ["SHIPPED", "CANCELLED"],
                 SHIPPED:         ["COMPLETED"],
                 COMPLETED:       [],
@@ -316,6 +319,14 @@ export const orderService = {
 
             // ✅ ຖ້າ verify ເປັນ PAID → update payment status ດ້ວຍ
             if (status === "PAID" && order.payment) {
+                await tx.payment.update({
+                    where: { order_id: orderId },
+                    data:  { status: "VERIFIED" },
+                })
+            }
+
+            // ✅ COD — ຢືນຢັນວ່າເກັບເງິນສົດແລ້ວ ຕອນອໍເດີ້ສຳເລັດ (ຂ້າມຂັ້ນ PAID ມາກ່ອນໜ້ານີ້)
+            if (status === "COMPLETED" && isCOD && order.payment?.status !== "VERIFIED") {
                 await tx.payment.update({
                     where: { order_id: orderId },
                     data:  { status: "VERIFIED" },
