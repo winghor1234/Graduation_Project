@@ -44,7 +44,15 @@ export const productApi = {
 
 
     getAlls: async (filters?: ProductListFilters): Promise<ProductListResponse> => {
-        const res = await axiosInstance.get("/product", { params: filters })
+        // ✅ colors / category_ids ສົ່ງເປັນ comma-separated string — backend split ດ້ວຍ ","
+        // (axios default serializes arrays as colors[]=... ເຊິ່ງ backend ບໍ່ໄດ້ຮອງຮັບ)
+        const { colors, category_ids, ...rest } = filters ?? {}
+        const params = {
+            ...rest,
+            ...(colors?.length ? { colors: colors.join(",") } : {}),
+            ...(category_ids?.length ? { category_ids: category_ids.join(",") } : {}),
+        }
+        const res = await axiosInstance.get("/product", { params })
         return res?.data?.data
     },
 

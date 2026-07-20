@@ -1,9 +1,11 @@
 "use client"
 
 import { Slider } from "@/components/ui/slider"
-import { SlidersHorizontal, X } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { CategoryItem } from "./shop.types"
+import { CLOTHING_SIZES, SHOE_SIZES } from "./constants"
+import { getColorHex } from "./colorHex"
 
 type Props = {
     categories: CategoryItem[] | undefined
@@ -13,17 +15,13 @@ type Props = {
     priceBounds: { min: number; max: number } | undefined
     priceRange: [number, number]
     setPriceRange: (v: [number, number]) => void
-    colors: string[] | undefined
-    isLoadingColors: boolean
-    selectedColors: string[]
-    toggleColor: (color: string) => void
-    isFiltered: boolean
-    onReset: () => void
     availableColors: string[]
-    selectedSizes: string[]
-    onSizesChange: (sizes: string[]) => void
     selectedColors: string[]
     onColorsChange: (colors: string[]) => void
+    selectedSizes: string[]
+    onSizesChange: (sizes: string[]) => void
+    isFiltered: boolean
+    onReset: () => void
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -35,8 +33,11 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function FilterPanel({
-    categories, isLoadingCategories, categoryId, setCategoryId,
-    priceBounds, priceRange, setPriceRange, isFiltered, onReset,
+    categories, isLoadingCategories, categoryIds, onCategoryToggle,
+    priceBounds, priceRange, setPriceRange,
+    availableColors, selectedColors, onColorsChange,
+    selectedSizes, onSizesChange,
+    isFiltered, onReset,
 }: Props) {
 
     const toggleSize = (s: string) =>
@@ -51,6 +52,19 @@ export function FilterPanel({
 
     return (
         <div className="space-y-7">
+
+            <div className="flex items-center justify-between">
+                <p className="text-sm font-bold text-brand-white">ຕົວກອງ</p>
+                {isFiltered && (
+                    <button
+                        type="button"
+                        onClick={onReset}
+                        className="text-xs text-brand-muted hover:text-brand-white underline underline-offset-2 transition-colors"
+                    >
+                        ລ້າງທັງໝົດ
+                    </button>
+                )}
+            </div>
 
             {/* ── Categories ── */}
             <div>
@@ -79,7 +93,6 @@ export function FilterPanel({
                                     )}
                                 >
                                     <div className="flex items-center gap-2.5">
-                                        {/* Checkbox square indicator */}
                                         <span className={cn(
                                             "size-3.5 rounded border transition-all shrink-0",
                                             active
@@ -108,7 +121,6 @@ export function FilterPanel({
             <div className="pt-5 border-t border-brand-divider">
                 <SectionLabel>ຂະໜາດ</SectionLabel>
 
-                {/* Clothing sizes */}
                 <p className="text-[10px] text-brand-muted mb-2">ເສື້ອຜ້າ</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                     {CLOTHING_SIZES.map(s => {
@@ -131,7 +143,6 @@ export function FilterPanel({
                     })}
                 </div>
 
-                {/* Shoe sizes */}
                 <p className="text-[10px] text-brand-muted mb-2">ເບີເກີບ</p>
                 <div className="flex flex-wrap gap-1.5">
                     {SHOE_SIZES.map(s => {

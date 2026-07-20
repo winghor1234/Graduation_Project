@@ -69,6 +69,14 @@ export const productService = {
       page_size = 20,
     } = filters
 
+    // ✅ category_ids (multi-select) ມີບຸລິມະສິດກ່ອນ category_id ດຽວ (back-compat)
+    const categoryWhere =
+      category_ids && category_ids.length > 0
+        ? { category_id: { in: category_ids } }
+        : category_id && category_id !== "all"
+          ? { category_id }
+          : {}
+
     // 🔍 ກອງດ້ວຍ category / search ກ່ອນ (ເຮັດໄດ້ໃນ Prisma query ໂດຍກົງ)
     const products = await prisma.product.findMany({
       where: {

@@ -3,11 +3,10 @@
 import { useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 
-import { useGetAllProducts, useGetPriceRange, useGetAvailableColors } from "@/app/features/hooks/Product"
+import { useGetAllProducts, useGetPriceRange } from "@/app/features/hooks/Product"
 import { useGetAllCategories } from "@/app/features/hooks/Category"
 import { useGetAllPromotions } from "@/app/features/hooks/promotion"
 import { Promotion } from "@/modules/promotion/promotion.types"
-import { PAGE_SIZE } from "@/components/customerComponent/shop/constants"
 import { CategoryItem, ProductListItem, SortBy } from "@/components/customerComponent/shop/shop.types"
 import { FilterPanel } from "@/components/customerComponent/shop/FilterPanel"
 import { MobileFilterDrawer } from "@/components/customerComponent/shop/MobileFilterDrawer"
@@ -28,24 +27,23 @@ export default function HomePage() {
     const [sortBy, setSortBy] = useState<SortBy>("featured")
     const [page, setPage] = useState(1)
     const [userPriceRange, setUserPriceRange] = useState<[number, number] | null>(null)
+    const [selectedSizes, setSelectedSizes] = useState<string[]>([])
     const [selectedColors, setSelectedColors] = useState<string[]>([])
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [pickerProduct, setPickerProduct] = useState<ProductListItem | null>(null)
-    const [selectedSizes, setSelectedSizes] = useState<string[]>([])
-    const [selectedColors, setSelectedColors] = useState<string[]>([])
 
     const debouncedSearch = useDebouncedValue(searchInput)
     const { data: priceBounds } = useGetPriceRange()
     const { data, isLoading, isFetching, isError, refetch } = useGetAllProducts(
         useMemo(() => ({
-            category_id: categoryId === ALL_CATEGORY_ID ? undefined : categoryId,
+            category_ids: categoryIds.length > 0 ? categoryIds : undefined,
             search: debouncedSearch || undefined,
             min_price: userPriceRange && priceBounds && userPriceRange[0] > priceBounds.min ? userPriceRange[0] : undefined,
             max_price: userPriceRange && priceBounds && userPriceRange[1] < priceBounds.max ? userPriceRange[1] : undefined,
             sort_by: sortBy,
             page,
-            page_size: PAGE_SIZE,
-        }), [categoryId, debouncedSearch, userPriceRange, priceBounds, sortBy, page])
+            page_size: 12,
+        }), [categoryIds, debouncedSearch, userPriceRange, priceBounds, sortBy, page])
     )
 
     const { data: categories, isLoading: isLoadingCategories } = useGetAllCategories()
@@ -55,14 +53,14 @@ export default function HomePage() {
     const rawItems = useMemo(() => (data?.items ?? []) as ProductListItem[], [data])
     const meta = data?.meta
 
-    // Collect unique colors from current page for the swatch filter
+    // ✅ ສີທີ່ມີໃຫ້ເລືອກ — ອີງຈາກສິນຄ້າໜ້າປັດຈຸບັນ (ບໍ່ດຶງແຍກຕ່າງຫາກ)
     const availableColors = useMemo(() => {
         const seen = new Set<string>()
         rawItems.forEach(p => p.variants?.forEach(v => { if (v.color) seen.add(v.color) }))
         return Array.from(seen)
     }, [rawItems])
 
-    // Client-side size + color filter
+    // ✅ ກອງຂະໜາດ + ສີ ຝັ່ງ client (category/search/price ຖືກກອງຢູ່ server ແລ້ວ)
     const items = useMemo(() => {
         let result = rawItems
         if (selectedSizes.length > 0)
@@ -72,7 +70,7 @@ export default function HomePage() {
         return result
     }, [rawItems, selectedSizes, selectedColors])
 
-    // Promotion map
+    // Promotion map — product_id → active Promotion
     const promotionMap = useMemo(() => {
         const now = new Date()
         const map = new Map<string, Promotion>()
@@ -95,7 +93,6 @@ export default function HomePage() {
         return map
     }, [allPromotions, rawItems])
 
-    // Active categories (for chips + heading)
     const allCategories = categories as CategoryItem[] | undefined
     const activeCategories = useMemo(
         () => (allCategories ?? []).filter(c => categoryIds.includes(c.category_id)),
@@ -105,31 +102,53 @@ export default function HomePage() {
     const isFiltered =
         categoryIds.length > 0 ||
         debouncedSearch !== "" ||
-        userPriceRange !== null
+        userPriceRange !== null ||
+        selectedSizes.length > 0 ||
+        selectedColors.length > 0
 
     // Handlers always reset page alongside the filter change
-    const handleCategoryChange = (id: string) => { setCategoryId(id); setPage(1) }
+    const handleCategoryToggle = (id: string) => {
+        setCategoryIds(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id])
+        setPage(1)
+    }
     const handleSearchChange = (v: string) => { setSearchInput(v); setPage(1) }
     const handleSortChange = (v: SortBy) => { setSortBy(v); setPage(1) }
     const handlePriceChange = (v: [number, number]) => { setUserPriceRange(v); setPage(1) }
     const handleRemovePrice = () => { setUserPriceRange(null); setPage(1) }
+    const handleSizesChange = (sizes: string[]) => { setSelectedSizes(sizes); setPage(1) }
+    const handleColorsChange = (colors: string[]) => { setSelectedColors(colors); setPage(1) }
+    const handleRemoveSize = (size: string) => {
+        setSelectedSizes(prev => prev.filter(s => s !== size))
+        setPage(1)
+    }
+    const handleRemoveColor = (color: string) => {
+        setSelectedColors(prev => prev.filter(c => c !== color))
+        setPage(1)
+    }
 
     const resetFilters = () => {
         setCategoryIds([])
         setSearchInput("")
         setSortBy("featured")
         setUserPriceRange(null)
+        setSelectedSizes([])
+        setSelectedColors([])
         setPage(1)
     }
 
     const panelProps = {
-        categories:         allCategories,
+        categories: allCategories,
         isLoadingCategories,
         categoryIds,
-        onCategoryToggle:   handleCategoryToggle,
+        onCategoryToggle: handleCategoryToggle,
         priceBounds,
         priceRange,
         setPriceRange: handlePriceChange,
+        availableColors,
+        selectedColors,
+        onColorsChange: handleColorsChange,
+        selectedSizes,
+        onSizesChange: handleSizesChange,
         isFiltered: !!isFiltered,
         onReset: resetFilters,
     }
@@ -140,13 +159,19 @@ export default function HomePage() {
 
                 {/* Header */}
                 <div className="flex flex-col gap-1 mb-8">
-                    <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">ສິນຄ້າທັງໝົດ</h1>
-                    <p className="text-sm text-gray-400">
+                    <h1 className="text-3xl font-extrabold tracking-tight text-brand-white">ສິນຄ້າທັງໝົດ</h1>
+                    <p className="text-sm text-brand-muted">
                         {meta ? `ພົບ ${meta.total} ລາຍການ` : "ກຳລັງໂຫຼດ..."}
                     </p>
                 </div>
 
+                {/* Best sellers rail — real sales data, hidden entirely if none yet */}
+                <BestSellersRail />
+
+                <div className="mb-6">
                     <ShopSearchBar
+                        searchInput={searchInput}
+                        onSearchChange={handleSearchChange}
                         sortBy={sortBy}
                         onSortChange={handleSortChange}
                         isFiltered={!!isFiltered}
@@ -158,7 +183,7 @@ export default function HomePage() {
                 <div className="flex gap-10 items-start">
 
                     {/* Sidebar desktop */}
-                    <aside className="hidden md:block w-48 shrink-0 sticky top-6">
+                    <aside className="hidden md:block w-56 shrink-0 sticky top-6">
                         <FilterPanel {...panelProps} />
                     </aside>
 
@@ -170,9 +195,12 @@ export default function HomePage() {
                             debouncedSearch={debouncedSearch}
                             priceBounds={priceBounds}
                             priceRange={priceRange}
-                            onRemoveCategory={() => handleCategoryChange(ALL_CATEGORY_ID)}
+                            selectedSizes={selectedSizes}
+                            selectedColors={selectedColors}
+                            onRemoveCategory={handleCategoryToggle}
                             onRemoveSearch={() => handleSearchChange("")}
                             onRemovePrice={handleRemovePrice}
+                            onRemoveSize={handleRemoveSize}
                             onRemoveColor={handleRemoveColor}
                             onResetAll={resetFilters}
                         />

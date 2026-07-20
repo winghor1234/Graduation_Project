@@ -9,9 +9,9 @@ import { formatCurrency } from "@/utils/FormatCurrency"
 function BestSellerSkeleton() {
     return (
         <div className="w-44 sm:w-52 shrink-0 space-y-3 animate-pulse">
-            <div className="aspect-square bg-gray-100 rounded-xl" />
-            <div className="h-4 bg-gray-100 rounded w-3/4" />
-            <div className="h-3 bg-gray-100 rounded w-1/2" />
+            <div className="aspect-square bg-brand-card-dark rounded-xl" />
+            <div className="h-4 bg-brand-divider rounded w-3/4" />
+            <div className="h-3 bg-brand-divider rounded w-1/2" />
         </div>
     )
 }
@@ -28,7 +28,7 @@ export function BestSellersRail() {
                 <div className="size-8 rounded-lg bg-brand-orange/10 flex items-center justify-center">
                     <Flame className="size-4 text-brand-orange" />
                 </div>
-                <h2 className="text-xl font-extrabold tracking-tight text-gray-900">ສິນຄ້າຂາຍດີ</h2>
+                <h2 className="text-xl font-extrabold tracking-tight text-brand-white">ສິນຄ້າຂາຍດີ</h2>
             </div>
 
             <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-none">
