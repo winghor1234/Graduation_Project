@@ -12,16 +12,18 @@ type Props = {
     debouncedSearch: string
     priceBounds: { min: number; max: number } | undefined
     priceRange: [number, number]
+    selectedColors: string[]
     onRemoveCategory: () => void
     onRemoveSearch: () => void
     onRemovePrice: () => void
+    onRemoveColor: (color: string) => void
     onResetAll: () => void
 }
 
 export function ShopActiveFilters({
     isFiltered, categoryId, activeCategory, debouncedSearch,
-    priceBounds, priceRange,
-    onRemoveCategory, onRemoveSearch, onRemovePrice, onResetAll,
+    priceBounds, priceRange, selectedColors,
+    onRemoveCategory, onRemoveSearch, onRemovePrice, onRemoveColor, onResetAll,
 }: Props) {
     if (!isFiltered) return null
 
@@ -39,6 +41,9 @@ export function ShopActiveFilters({
                     onRemove={onRemovePrice}
                 />
             )}
+            {selectedColors.map(color => (
+                <FilterChip key={color} label={color} onRemove={() => onRemoveColor(color)} />
+            ))}
             <button
                 onClick={onResetAll}
                 className="text-xs text-gray-400 hover:text-gray-900 underline underline-offset-2 ml-1 transition-colors"

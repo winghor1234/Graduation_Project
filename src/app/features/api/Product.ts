@@ -13,6 +13,13 @@ export type ProductListResponse = {
     }
 }
 
+export type BestSellerItem = Product & {
+    min_price: number
+    max_price: number
+    total_stock: number
+    sold_count: number
+}
+
 export const productApi = {
 
     getAll: async (params?: UseGetParams): Promise<{
@@ -37,12 +44,25 @@ export const productApi = {
 
 
     getAlls: async (filters?: ProductListFilters): Promise<ProductListResponse> => {
-        const res = await axiosInstance.get("/product", { params: filters })
+        // ✅ colors ສົ່ງເປັນ comma-separated string — backend split ດ້ວຍ ","
+        const { colors, ...rest } = filters ?? {}
+        const params = { ...rest, ...(colors?.length ? { colors: colors.join(",") } : {}) }
+        const res = await axiosInstance.get("/product", { params })
         return res?.data?.data
     },
 
     getPriceRange: async (): Promise<{ min: number; max: number }> => {
         const res = await axiosInstance.get("/product/price-range")
+        return res?.data?.data
+    },
+
+    getAvailableColors: async (): Promise<string[]> => {
+        const res = await axiosInstance.get("/product/colors")
+        return res?.data?.data
+    },
+
+    getBestSellers: async (limit?: number): Promise<BestSellerItem[]> => {
+        const res = await axiosInstance.get("/product/bestsellers", { params: { limit } })
         return res?.data?.data
     },
 

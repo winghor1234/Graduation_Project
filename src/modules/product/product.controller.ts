@@ -80,6 +80,9 @@ export const productController = {
                 max_price: searchParams.get("max_price")
                     ? Number(searchParams.get("max_price"))
                     : undefined,
+                colors: searchParams.get("colors")
+                    ? searchParams.get("colors")!.split(",").filter(Boolean)
+                    : undefined,
                 sort_by: (searchParams.get("sort_by") as any) ?? undefined,
                 page: searchParams.get("page")
                     ? Number(searchParams.get("page"))
@@ -102,6 +105,26 @@ export const productController = {
         try {
             const range = await productService.getPriceRange()
             return successResponse(range, "Get price range successfully", 200)
+        } catch (error) {
+            return handleError(error)
+        }
+    },
+
+    async getAvailableColors(req: NextRequest) {
+        try {
+            const colors = await productService.getAvailableColors()
+            return successResponse(colors, "Get available colors successfully", 200)
+        } catch (error) {
+            return handleError(error)
+        }
+    },
+
+    async getBestSellers(req: NextRequest) {
+        try {
+            const { searchParams } = req.nextUrl
+            const limit = searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined
+            const products = await productService.getBestSellers(limit)
+            return successResponse(products, "Get best sellers successfully", 200)
         } catch (error) {
             return handleError(error)
         }
@@ -165,7 +188,7 @@ export const productController = {
                 files: fd.getAll("images") as File[],
                 variants,
             }
-            console.log("body:", body)
+            // console.log("body:", body)
 
             const product = await productService.createProduct(body)
             return successResponse(product, "Product created successfully", 201)

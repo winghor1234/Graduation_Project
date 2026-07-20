@@ -41,10 +41,11 @@ const DEFAULT_VARIANT = {
   stock_qty: 0,
 }
 
-// ✅ Map ProductVariant → form shape (ຕັດ field ເກີນອອກ)
+// ✅ Map ProductVariant → form shape — ຮັກສາ variant_id ໄວ້ (ຕ້ອງໃຊ້ຕອນ update ບໍ່ໃຫ້ FK ພັງ)
 const mapVariantsToForm = (product?: Product): ProductFormValues["variants"] => {
   if (!product?.variants?.length) return []
   return product.variants.map((v) => ({
+    variant_id: v.variant_id,
     sku: v.sku,
     color: v.color,
     size: v.size,

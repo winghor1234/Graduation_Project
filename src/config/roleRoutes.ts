@@ -11,7 +11,7 @@ export const roleRoutes = {
         "/api/checkout",
         "/api/cart",
         "/api/order-history",
-        // "/api/product",
+        "/api/product",
         "/api/location/province",
         "/api/location/district",
         "/api/location/branch",

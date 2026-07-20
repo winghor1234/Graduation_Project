@@ -2,11 +2,12 @@
 
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { SlidersHorizontal, X } from "lucide-react"
+import { SlidersHorizontal, X, Check } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { cn } from "@/lib/utils"
 import { ALL_CATEGORY_ID } from "./constants"
 import { CategoryItem } from "./shop.types"
+import { getSwatchColor } from "./colorSwatch"
 
 type Props = {
     categories: CategoryItem[] | undefined
@@ -16,13 +17,19 @@ type Props = {
     priceBounds: { min: number; max: number } | undefined
     priceRange: [number, number]
     setPriceRange: (v: [number, number]) => void
+    colors: string[] | undefined
+    isLoadingColors: boolean
+    selectedColors: string[]
+    toggleColor: (color: string) => void
     isFiltered: boolean
     onReset: () => void
 }
 
 export function FilterPanel({
     categories, isLoadingCategories, categoryId, setCategoryId,
-    priceBounds, priceRange, setPriceRange, isFiltered, onReset,
+    priceBounds, priceRange, setPriceRange,
+    colors, isLoadingColors, selectedColors, toggleColor,
+    isFiltered, onReset,
 }: Props) {
     return (
         <div className="border border-gray-200/60 bg-white rounded-xl p-6 space-y-6">
@@ -120,6 +127,56 @@ export function FilterPanel({
                     )
                 ) : (
                     <div className="h-6 bg-gray-100 rounded animate-pulse" />
+                )}
+            </div>
+
+            {/* ສີ */}
+            <div className="space-y-3 pt-1 border-t border-gray-100">
+                <Label className="text-sm font-bold text-gray-900 block pt-4">ສີ</Label>
+                {isLoadingColors ? (
+                    <div className="flex flex-wrap gap-2">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <div key={i} className="size-8 rounded-full bg-gray-100 animate-pulse" />
+                        ))}
+                    </div>
+                ) : !colors?.length ? (
+                    <p className="text-xs text-gray-400">ບໍ່ມີສີໃຫ້ເລືອກ</p>
+                ) : (
+                    <div className="flex flex-wrap gap-2.5">
+                        {colors.map(color => {
+                            const isActive = selectedColors.includes(color)
+                            const swatch = getSwatchColor(color)
+                            return (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    title={color}
+                                    onClick={() => toggleColor(color)}
+                                    className={cn(
+                                        "relative size-8 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                        isActive ? "border-gray-900 scale-105" : "border-gray-200 hover:border-gray-400"
+                                    )}
+                                    style={swatch ? { backgroundColor: swatch } : undefined}
+                                >
+                                    {!swatch && (
+                                        <span className="text-[9px] font-bold text-gray-500 uppercase leading-none">
+                                            {color.slice(0, 2)}
+                                        </span>
+                                    )}
+                                    {isActive && (
+                                        <Check
+                                            className={cn(
+                                                "size-3.5 absolute",
+                                                swatch && ["#f5f5f5", "#fef3c7", "#e7dcc8", "#c0c0c0"].includes(swatch)
+                                                    ? "text-gray-900"
+                                                    : "text-white"
+                                            )}
+                                        />
+                                    )}
+                                </button>
+                            )
+                        })}
+                    </div>
                 )}
             </div>
         </div>

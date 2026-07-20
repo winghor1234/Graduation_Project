@@ -43,6 +43,22 @@ export const useGetPriceRange = () => {
         staleTime: 5 * 60 * 1000, // 5 ນາທີ — ບໍ່ປ່ຽນເລື້ອຍ, ບໍ່ຕ້ອງ fetch ໃໝ່ທຸກຄັ້ງ
     })
 }
+
+export const useGetAvailableColors = () => {
+    return useQuery({
+        queryKey: ["product", "colors"],
+        queryFn: productApi.getAvailableColors,
+        staleTime: 5 * 60 * 1000,
+    })
+}
+
+export const useGetBestSellers = (limit?: number) => {
+    return useQuery({
+        queryKey: ["product", "bestsellers", limit],
+        queryFn: () => productApi.getBestSellers(limit),
+        staleTime: 60 * 1000,
+    })
+}
  
 
 export function useGetProduct(id: string) {

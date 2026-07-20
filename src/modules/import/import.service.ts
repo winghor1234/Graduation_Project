@@ -190,6 +190,7 @@ export const importService = {
             if (!purchase) {
                 throw new NotFoundError("Purchase not found");
             }
+            
 
             // ❗ 1 Import only
             if (purchase.import) {
@@ -197,16 +198,17 @@ export const importService = {
                     "This purchase already has an import"
                 );
             }
-
+            
             if (purchase.status !== PurchaseOrderStatus.PENDING) {
                 throw new BadRequestError(
                     "Only pending purchase can be imported"
                 );
             }
-
+            
+            // ✅ key ດ້ວຍ variant_id — ບໍ່ແມ່ນ product_id, ເພາະ 1 ອໍເດີ້ອາດມີສິນຄ້າດຽວກັນຫຼາຍ variant (ສີ/ໄຊສ໌)
             const detailMap = new Map(
                 purchase.purchase_details.map(d => [
-                    d.product_id,
+                    d.variant_id,
                     d
                 ])
             );
@@ -214,9 +216,9 @@ export const importService = {
             // ✅ validate (ALLOW ANY QUANTITY <= or flexible)
             for (const item of data.import_details) {
 
-                const purchaseDetail = detailMap.get(item.product_id);
+                const purchaseDetail = detailMap.get(item.variant_id);
 
-                if (!purchaseDetail) {
+                if (!purchaseDetail || purchaseDetail.product_id !== item.product_id) {
                     throw new NotFoundError(
                         "Product not in purchase"
                     );
@@ -254,10 +256,12 @@ export const importService = {
             // 🔁 update stock + received_qty
             for (const item of data.import_details) {
 
+                // ✅ ຕ້ອງ match ດ້ວຍ variant_id ນຳ — ບໍ່ດັ່ງນັ້ນ product ດຽວກັນທີ່ມີຫຼາຍ variant
+                // ໃນອໍເດີ້ດຽວກັນຈະຖືກຂຽນທັບ received_qty ຂອງກັນແລະກັນ
                 await tx.purchaseDetail.updateMany({
                     where: {
                         purchase_id: data.purchase_id,
-                        product_id: item.product_id
+                        variant_id: item.variant_id
                     },
                     data: {
                         received_qty: item.quantity
@@ -327,6 +331,12 @@ export const importService = {
                 await tx.productVariant.update({
                     where: { variant_id: item.variant_id },
                     data: { stock_qty: { decrement: item.quantity } }
+                })
+
+                // ✅ reset received_qty — ບໍ່ດັ່ງນັ້ນ payment summary ຈະຄິດຈາກ import ທີ່ຍົກເລີກໄປແລ້ວ
+                await tx.purchaseDetail.updateMany({
+                    where: { purchase_id: existing.purchase_id, variant_id: item.variant_id },
+                    data:  { received_qty: 0 }
                 })
             }
 

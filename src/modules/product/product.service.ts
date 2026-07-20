@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 import { uploadMultipleImages, convertFileToBase64, deleteImages } from "@/utils/cloudinary";
 import { CreateProductInput, ProductImageInput, UpdateProductInput } from "./product.types";
-import { NotFoundError } from "@/utils/response";
+import { BadRequestError, NotFoundError } from "@/utils/response";
 import { generateProductCode } from "@/utils/generateCode";
 
 export type ProductListFilters = {
@@ -10,6 +10,7 @@ export type ProductListFilters = {
     search?: string
     min_price?: number
     max_price?: number
+    colors?: string[]
     sort_by?: "featured" | "price-low" | "price-high" | "name"
     page?: number
     page_size?: number
@@ -60,12 +61,13 @@ export const productService = {
       search,
       min_price,
       max_price,
+      colors,
       sort_by = "featured",
       page = 1,
       page_size = 20,
     } = filters
 
-    // 🔍 ກອງດ້ວຍ category / search ກ່ອນ (ເຮັດໄດ້ໃນ Prisma query ໂດຍກົງ)
+    // 🔍 ກອງດ້ວຍ category / search / color ກ່ອນ (ເຮັດໄດ້ໃນ Prisma query ໂດຍກົງ)
     const products = await prisma.product.findMany({
       where: {
         ...(category_id && category_id !== "all" && { category_id }),
@@ -74,6 +76,9 @@ export const productService = {
             contains: search,
             mode: "insensitive",
           },
+        }),
+        ...(colors && colors.length > 0 && {
+          variants: { some: { color: { in: colors } } },
         }),
       },
       include: {
@@ -144,6 +149,56 @@ export const productService = {
       min: result._min.sale_price ?? 0,
       max: result._max.sale_price ?? 0,
     }
+  },
+
+  /**
+   * ໃຊ້ສະແດງ swatch ໃນ filter ຂອງ shop — ຄ່າສີທັງໝົດທີ່ມີຢູ່ຈິງ (ບໍ່ຊ້ຳກັນ)
+   */
+  async getAvailableColors() {
+    const variants = await prisma.productVariant.findMany({
+      distinct: ["color"],
+      select: { color: true },
+      orderBy: { color: "asc" },
+    })
+    return variants.map((v) => v.color).filter(Boolean)
+  },
+
+  /**
+   * ສິນຄ້າຂາຍດີ — ອີງຈາກຍອດຂາຍຈິງ (Sale/SaleDetail), ບໍ່ແມ່ນຈາກການເລືອກມືອດ
+   */
+  async getBestSellers(limit = 8) {
+    const topRaw = await prisma.saleDetail.groupBy({
+      by: ["product_id"],
+      _sum: { quantity: true },
+      orderBy: { _sum: { quantity: "desc" } },
+      take: limit,
+    })
+
+    const productIds = topRaw.map((p) => p.product_id)
+    if (!productIds.length) return []
+
+    const products = await prisma.product.findMany({
+      where: { product_id: { in: productIds } },
+      include: { category: true, images: true, variants: true },
+    })
+    const productMap = new Map(products.map((p) => [p.product_id, p]))
+    const soldMap = new Map(topRaw.map((p) => [p.product_id, Number(p._sum.quantity ?? 0)]))
+
+    // ✅ ຮັກສາລຳດັບຂາຍດີ → ໜ້ອຍ ຈາກ topRaw (Map ຂ້າງເທິງບໍ່ຮັບປະກັນລຳດັບ)
+    return productIds
+      .map((id) => productMap.get(id))
+      .filter((p): p is NonNullable<typeof p> => !!p)
+      .map((p) => {
+        const prices = p.variants.map((v) => v.sale_price)
+        const total_stock = p.variants.reduce((sum, v) => sum + v.stock_qty, 0)
+        return {
+          ...p,
+          min_price: prices.length ? Math.min(...prices) : 0,
+          max_price: prices.length ? Math.max(...prices) : 0,
+          total_stock,
+          sold_count: soldMap.get(p.product_id) ?? 0,
+        }
+      })
   },
 
   async getProduct(id: string) {
@@ -236,8 +291,8 @@ export const productService = {
       }))
     }
 
-    // 3. ອັບເດດສິນຄ້າ
-    const updatedProduct = await prisma.product.update({
+    // 3. ອັບເດດສິນຄ້າ + ຮູບ
+    await prisma.product.update({
       where: { product_id: productId },
       data: {
         product_name: data.product_name,
@@ -250,32 +305,65 @@ export const productService = {
             createMany: { data: newImages }
           }
         }),
-
-        // ອັບເດດ variants — ລຶບເກົ່າ ແລ້ວສ້າງໃໝ່
-        ...(data.variants && {
-          variants: {
-            deleteMany: {}, // ລຶບ variants ເກົ່າທັງໝົດ
-            createMany: {
-              data: data.variants.map(v => ({
-                sku: v.sku,
-                color: v.color,
-                size: v.size,
-                purchase_price: v.purchase_price,
-                sale_price: v.sale_price,
-                stock_qty: v.stock_qty ?? 0,
-              }))
-            }
-          }
-        }),
-      },
-      include: {
-        images: true,
-        variants: true,
-        category: true,
       },
     })
 
-    return updatedProduct
+    // 4. ຄືນຄ່າ variants — update ອັນເກົ່າທີ່ຍັງຢູ່ (ຮັກສາ variant_id ບໍ່ໃຫ້ FK ພັງ),
+    //    ສ້າງໃໝ່ສະເພາະອັນທີ່ບໍ່ມີ variant_id, ລຶບສະເພາະອັນທີ່ຖືກເອົາອອກໄປແທ້ໆ
+    // ⚠️ ແກ້ bug ເກົ່າ: deleteMany({}) + createMany ລຶບ variant_id ເກົ່າໝົດທຸກຄັ້ງທີ່ແກ້ໄຂ —
+    //    ພັງທັນທີຖ້າ variant ນັ້ນເຄີຍຖືກອ້າງອີງໃນ Purchase/Import/Sale/Order ມາກ່ອນ
+    if (data.variants) {
+      const incomingIds = new Set(
+        data.variants.filter(v => v.variant_id).map(v => v.variant_id!)
+      )
+      const toDelete = existing.variants.filter(v => !incomingIds.has(v.variant_id))
+
+      try {
+        for (const v of toDelete) {
+          await prisma.productVariant.delete({ where: { variant_id: v.variant_id } })
+        }
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
+          throw new BadRequestError(
+            "ບໍ່ສາມາດລຶບບາງ variant ໄດ້ ເພາະມີການຊື້/ຂາຍ ຫຼື ນຳເຂົ້າອ້າງອີງຢູ່ແລ້ວ"
+          )
+        }
+        throw err
+      }
+
+      for (const v of data.variants) {
+        if (v.variant_id) {
+          await prisma.productVariant.update({
+            where: { variant_id: v.variant_id },
+            data: {
+              sku: v.sku,
+              color: v.color,
+              size: v.size,
+              purchase_price: v.purchase_price,
+              sale_price: v.sale_price,
+              stock_qty: v.stock_qty ?? 0,
+            },
+          })
+        } else {
+          await prisma.productVariant.create({
+            data: {
+              product_id: productId,
+              sku: v.sku,
+              color: v.color,
+              size: v.size,
+              purchase_price: v.purchase_price,
+              sale_price: v.sale_price,
+              stock_qty: v.stock_qty ?? 0,
+            },
+          })
+        }
+      }
+    }
+
+    return prisma.product.findUniqueOrThrow({
+      where: { product_id: productId },
+      include: { images: true, variants: true, category: true },
+    })
   },
 
 

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 
-import { useGetAllProducts, useGetPriceRange } from "@/app/features/hooks/Product"
+import { useGetAllProducts, useGetPriceRange, useGetAvailableColors } from "@/app/features/hooks/Product"
 import { useGetAllCategories } from "@/app/features/hooks/Category"
 import { useGetAllPromotions } from "@/app/features/hooks/promotion"
 import { Promotion } from "@/modules/promotion/promotion.types"
@@ -16,6 +16,7 @@ import { ShopSearchBar } from "@/components/customerComponent/shop/ShopSearchBar
 import { ShopActiveFilters } from "@/components/customerComponent/shop/ShopActiveFilters"
 import { ShopProductGrid } from "@/components/customerComponent/shop/ShopProductGrid"
 import { useDebouncedValue } from "@/components/customerComponent/shop/useDebouncedValue"
+import { BestSellersRail } from "@/components/customerComponent/home/BestSellersRail"
 
 export default function HomePage() {
     const searchParams = useSearchParams()
@@ -25,21 +26,24 @@ export default function HomePage() {
     const [sortBy, setSortBy] = useState<SortBy>("featured")
     const [page, setPage] = useState(1)
     const [userPriceRange, setUserPriceRange] = useState<[number, number] | null>(null)
+    const [selectedColors, setSelectedColors] = useState<string[]>([])
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [pickerProduct, setPickerProduct] = useState<ProductListItem | null>(null)
 
     const debouncedSearch = useDebouncedValue(searchInput)
     const { data: priceBounds } = useGetPriceRange()
+    const { data: availableColors, isLoading: isLoadingColors } = useGetAvailableColors()
     const { data, isLoading, isFetching, isError, refetch } = useGetAllProducts(
         useMemo(() => ({
             category_id: categoryId === ALL_CATEGORY_ID ? undefined : categoryId,
             search: debouncedSearch || undefined,
             min_price: userPriceRange && priceBounds && userPriceRange[0] > priceBounds.min ? userPriceRange[0] : undefined,
             max_price: userPriceRange && priceBounds && userPriceRange[1] < priceBounds.max ? userPriceRange[1] : undefined,
+            colors: selectedColors.length > 0 ? selectedColors : undefined,
             sort_by: sortBy,
             page,
             page_size: PAGE_SIZE,
-        }), [categoryId, debouncedSearch, userPriceRange, priceBounds, sortBy, page])
+        }), [categoryId, debouncedSearch, userPriceRange, priceBounds, selectedColors, sortBy, page])
     )
     const { data: categories, isLoading: isLoadingCategories } = useGetAllCategories()
     const { data: allPromotions = [] } = useGetAllPromotions()
@@ -82,7 +86,8 @@ export default function HomePage() {
     const isFiltered =
         categoryId !== ALL_CATEGORY_ID ||
         debouncedSearch !== "" ||
-        userPriceRange !== null
+        userPriceRange !== null ||
+        selectedColors.length > 0
 
     // Handlers always reset page alongside the filter change
     const handleCategoryChange = (id: string) => { setCategoryId(id); setPage(1) }
@@ -90,12 +95,21 @@ export default function HomePage() {
     const handleSortChange = (v: SortBy) => { setSortBy(v); setPage(1) }
     const handlePriceChange = (v: [number, number]) => { setUserPriceRange(v); setPage(1) }
     const handleRemovePrice = () => { setUserPriceRange(null); setPage(1) }
+    const toggleColor = (color: string) => {
+        setSelectedColors(prev => prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color])
+        setPage(1)
+    }
+    const handleRemoveColor = (color: string) => {
+        setSelectedColors(prev => prev.filter(c => c !== color))
+        setPage(1)
+    }
 
     const resetFilters = () => {
         setCategoryId(ALL_CATEGORY_ID)
         setSearchInput("")
         setSortBy("featured")
         setUserPriceRange(null)
+        setSelectedColors([])
         setPage(1)
     }
 
@@ -107,6 +121,10 @@ export default function HomePage() {
         priceBounds,
         priceRange,
         setPriceRange: handlePriceChange,
+        colors: availableColors,
+        isLoadingColors,
+        selectedColors,
+        toggleColor,
         isFiltered: !!isFiltered,
         onReset: resetFilters,
     }
@@ -116,8 +134,16 @@ export default function HomePage() {
             <div className="container mx-auto px-6 max-w-7xl py-10">
 
                 {/* Header */}
-                <div className="flex flex-col gap-1 mb-8">
-                    <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">ສິນຄ້າທັງໝົດ</h1>
+                <div className="flex flex-col gap-1 mb-6">
+                    <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">ເຄື່ອງກີລາຄຸນະພາບ</h1>
+                    <p className="text-sm text-gray-400">ຄົ້ນຫາ ແລະ ເລືອກຊື້ສິນຄ້າກີລາທີ່ທ່ານມັກ</p>
+                </div>
+
+                {/* Best sellers rail — real sales data, hidden entirely if none yet */}
+                <BestSellersRail />
+
+                <div className="flex flex-col gap-1 mb-6">
+                    <h2 className="text-xl font-extrabold tracking-tight text-gray-900">ສິນຄ້າທັງໝົດ</h2>
                     <p className="text-sm text-gray-400">
                         {meta ? `ພົບ ${meta.total} ລາຍການ` : "ກຳລັງໂຫຼດ..."}
                     </p>
@@ -148,9 +174,11 @@ export default function HomePage() {
                             debouncedSearch={debouncedSearch}
                             priceBounds={priceBounds}
                             priceRange={priceRange}
+                            selectedColors={selectedColors}
                             onRemoveCategory={() => handleCategoryChange(ALL_CATEGORY_ID)}
                             onRemoveSearch={() => handleSearchChange("")}
                             onRemovePrice={handleRemovePrice}
+                            onRemoveColor={handleRemoveColor}
                             onResetAll={resetFilters}
                         />
 

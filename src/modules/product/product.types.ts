@@ -5,6 +5,7 @@ import { Category } from "@/modules/category/category.type"
 // ─── Variant ───────────────────────────────────────────────
 
 export type ProductVariantInput = {
+  variant_id?: string  // ✅ ມີ = variant ເກົ່າ (update ໃນທີ່), ບໍ່ມີ = variant ໃໝ່ (create)
   sku: string
   color: string
   size: string

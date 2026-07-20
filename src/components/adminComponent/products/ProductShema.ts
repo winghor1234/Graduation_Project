@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 export const variantSchema = z.object({
+  variant_id:     z.string().optional(), // ✅ ມີ = variant ເກົ່າ, ບໍ່ມີ = variant ໃໝ່
   sku:            z.string().min(1, "ກະລຸນາໃສ່ SKU"),
   color:          z.string().min(1, "ກະລຸນາໃສ່ສີ"),
   size:           z.string().min(1, "ກະລຸນາໃສ່ຂະໜາດ"),
