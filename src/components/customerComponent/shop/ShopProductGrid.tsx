@@ -38,7 +38,7 @@ export function ShopProductGrid({
 
     return (
         <div className="space-y-8">
-            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10 transition-opacity duration-200 ${isFetching ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
+            <div className={`grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10 transition-opacity duration-200 ${isFetching ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
                 {items.map((product, index) => (
                     <ProductCard
                         key={product.product_id}

@@ -7,6 +7,7 @@ import { generateProductCode } from "@/utils/generateCode";
 
 export type ProductListFilters = {
     category_id?: string
+    category_ids?: string[]   // multi-select
     search?: string
     min_price?: number
     max_price?: number
@@ -58,6 +59,7 @@ export const productService = {
   async getAllProducts(filters: ProductListFilters = {}) {
     const {
       category_id,
+      category_ids,
       search,
       min_price,
       max_price,
@@ -67,10 +69,10 @@ export const productService = {
       page_size = 20,
     } = filters
 
-    // 🔍 ກອງດ້ວຍ category / search / color ກ່ອນ (ເຮັດໄດ້ໃນ Prisma query ໂດຍກົງ)
+    // 🔍 ກອງດ້ວຍ category / search ກ່ອນ (ເຮັດໄດ້ໃນ Prisma query ໂດຍກົງ)
     const products = await prisma.product.findMany({
       where: {
-        ...(category_id && category_id !== "all" && { category_id }),
+        ...categoryWhere,
         ...(search && {
           product_name: {
             contains: search,
@@ -268,17 +270,14 @@ export const productService = {
     return product
   },
 
-  /* 🔥 UPDATE (replace images) */
+  /* 🔥 UPDATE */
   async updateProduct(productId: string, data: UpdateProductInput) {
     // 1. ກວດວ່າສິນຄ້າມີຢູ່
     const existing = await prisma.product.findUnique({
       where: { product_id: productId },
       include: { images: true, variants: true },
     })
-
-    if (!existing) {
-      throw new NotFoundError("Product not found")
-    }
+    if (!existing) throw new NotFoundError("Product not found")
 
     // 2. ອັບໂຫຼດຮູບໃໝ່ (ຖ້າມີ)
     let newImages: ProductImageInput[] = []
@@ -291,78 +290,41 @@ export const productService = {
       }))
     }
 
-    // 3. ອັບເດດສິນຄ້າ + ຮູບ
-    await prisma.product.update({
+    // 3. ອັບເດດສິນຄ້າ
+    const updatedProduct = await prisma.product.update({
       where: { product_id: productId },
       data: {
         product_name: data.product_name,
-        description: data.description,
-        category_id: data.category_id,
-
-        // ເພີ່ມຮູບໃໝ່ (ບໍ່ລຶບຮູບເກົ່າທີ່ຍັງຢູ່)
+        description:  data.description,
+        category_id:  data.category_id,
         ...(newImages.length > 0 && {
           images: {
             createMany: { data: newImages }
           }
         }),
+
+        // ອັບເດດ variants — ລຶບເກົ່າ ແລ້ວສ້າງໃໝ່
+        ...(data.variants && {
+          variants: {
+            deleteMany: {}, // ລຶບ variants ເກົ່າທັງໝົດ
+            createMany: {
+              data: data.variants.map(v => ({
+                sku: v.sku,
+                color: v.color,
+                size: v.size,
+                purchase_price: v.purchase_price,
+                sale_price: v.sale_price,
+                stock_qty: v.stock_qty ?? 0,
+              }))
+            }
+          }
+        }),
       },
-    })
-
-    // 4. ຄືນຄ່າ variants — update ອັນເກົ່າທີ່ຍັງຢູ່ (ຮັກສາ variant_id ບໍ່ໃຫ້ FK ພັງ),
-    //    ສ້າງໃໝ່ສະເພາະອັນທີ່ບໍ່ມີ variant_id, ລຶບສະເພາະອັນທີ່ຖືກເອົາອອກໄປແທ້ໆ
-    // ⚠️ ແກ້ bug ເກົ່າ: deleteMany({}) + createMany ລຶບ variant_id ເກົ່າໝົດທຸກຄັ້ງທີ່ແກ້ໄຂ —
-    //    ພັງທັນທີຖ້າ variant ນັ້ນເຄີຍຖືກອ້າງອີງໃນ Purchase/Import/Sale/Order ມາກ່ອນ
-    if (data.variants) {
-      const incomingIds = new Set(
-        data.variants.filter(v => v.variant_id).map(v => v.variant_id!)
-      )
-      const toDelete = existing.variants.filter(v => !incomingIds.has(v.variant_id))
-
-      try {
-        for (const v of toDelete) {
-          await prisma.productVariant.delete({ where: { variant_id: v.variant_id } })
-        }
-      } catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
-          throw new BadRequestError(
-            "ບໍ່ສາມາດລຶບບາງ variant ໄດ້ ເພາະມີການຊື້/ຂາຍ ຫຼື ນຳເຂົ້າອ້າງອີງຢູ່ແລ້ວ"
-          )
-        }
-        throw err
-      }
-
-      for (const v of data.variants) {
-        if (v.variant_id) {
-          await prisma.productVariant.update({
-            where: { variant_id: v.variant_id },
-            data: {
-              sku: v.sku,
-              color: v.color,
-              size: v.size,
-              purchase_price: v.purchase_price,
-              sale_price: v.sale_price,
-              stock_qty: v.stock_qty ?? 0,
-            },
-          })
-        } else {
-          await prisma.productVariant.create({
-            data: {
-              product_id: productId,
-              sku: v.sku,
-              color: v.color,
-              size: v.size,
-              purchase_price: v.purchase_price,
-              sale_price: v.sale_price,
-              stock_qty: v.stock_qty ?? 0,
-            },
-          })
-        }
-      }
-    }
-
-    return prisma.product.findUniqueOrThrow({
-      where: { product_id: productId },
-      include: { images: true, variants: true, category: true },
+      include: {
+        images: true,
+        variants: true,
+        category: true,
+      },
     })
   },
 

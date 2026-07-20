@@ -71,8 +71,12 @@ export const productController = {
         try {
             const { searchParams } = req.nextUrl
 
+            const rawIds = searchParams.get("category_ids")
             const filters = {
-                category_id: searchParams.get("category_id") ?? undefined,
+                category_id:  searchParams.get("category_id") ?? undefined,
+                category_ids: rawIds
+                    ? rawIds.split(",").filter(Boolean)
+                    : undefined,
                 search: searchParams.get("search") ?? undefined,
                 min_price: searchParams.get("min_price")
                     ? Number(searchParams.get("min_price"))

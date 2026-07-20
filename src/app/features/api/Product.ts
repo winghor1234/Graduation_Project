@@ -44,10 +44,7 @@ export const productApi = {
 
 
     getAlls: async (filters?: ProductListFilters): Promise<ProductListResponse> => {
-        // ✅ colors ສົ່ງເປັນ comma-separated string — backend split ດ້ວຍ ","
-        const { colors, ...rest } = filters ?? {}
-        const params = { ...rest, ...(colors?.length ? { colors: colors.join(",") } : {}) }
-        const res = await axiosInstance.get("/product", { params })
+        const res = await axiosInstance.get("/product", { params: filters })
         return res?.data?.data
     },
 

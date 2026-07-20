@@ -1,19 +1,15 @@
 "use client"
 
-import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { SlidersHorizontal, X, Check } from "lucide-react"
+import { SlidersHorizontal, X } from "lucide-react"
 import { formatCurrency } from "@/utils/FormatCurrency"
-import { cn } from "@/lib/utils"
-import { ALL_CATEGORY_ID } from "./constants"
 import { CategoryItem } from "./shop.types"
-import { getSwatchColor } from "./colorSwatch"
 
 type Props = {
     categories: CategoryItem[] | undefined
     isLoadingCategories: boolean
-    categoryId: string
-    setCategoryId: (id: string) => void
+    categoryIds: string[]
+    onCategoryToggle: (id: string) => void
     priceBounds: { min: number; max: number } | undefined
     priceRange: [number, number]
     setPriceRange: (v: [number, number]) => void
@@ -23,90 +19,182 @@ type Props = {
     toggleColor: (color: string) => void
     isFiltered: boolean
     onReset: () => void
+    availableColors: string[]
+    selectedSizes: string[]
+    onSizesChange: (sizes: string[]) => void
+    selectedColors: string[]
+    onColorsChange: (colors: string[]) => void
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+    return (
+        <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-brand-muted mb-3">
+            {children}
+        </p>
+    )
 }
 
 export function FilterPanel({
     categories, isLoadingCategories, categoryId, setCategoryId,
-    priceBounds, priceRange, setPriceRange,
-    colors, isLoadingColors, selectedColors, toggleColor,
-    isFiltered, onReset,
+    priceBounds, priceRange, setPriceRange, isFiltered, onReset,
 }: Props) {
-    return (
-        <div className="border border-gray-200/60 bg-white rounded-xl p-6 space-y-6">
 
-            <div className="flex items-center justify-between text-gray-900">
-                <div className="flex items-center gap-2">
-                    <SlidersHorizontal className="size-4 stroke-[2.5]" />
-                    <h3 className="text-base font-bold tracking-tight">ການຕັ້ງຄ່າ</h3>
-                </div>
-                {isFiltered && (
-                    <button
-                        type="button"
-                        onClick={onReset}
-                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-900 transition-colors"
-                    >
-                        <X className="size-3" /> ລ້າງ
-                    </button>
+    const toggleSize = (s: string) =>
+        onSizesChange(selectedSizes.includes(s)
+            ? selectedSizes.filter(x => x !== s)
+            : [...selectedSizes, s])
+
+    const toggleColor = (c: string) =>
+        onColorsChange(selectedColors.includes(c)
+            ? selectedColors.filter(x => x !== c)
+            : [...selectedColors, c])
+
+    return (
+        <div className="space-y-7">
+
+            {/* ── Categories ── */}
+            <div>
+                <SectionLabel>ໝວດໝູ່</SectionLabel>
+                {isLoadingCategories ? (
+                    <div className="space-y-3">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="h-4 bg-brand-divider rounded animate-pulse w-3/4" />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="space-y-0.5">
+                        {(categories ?? []).map(item => {
+                            const active = categoryIds.includes(item.category_id)
+                            const count = item._count?.products
+                            return (
+                                <button
+                                    key={item.category_id}
+                                    type="button"
+                                    onClick={() => onCategoryToggle(item.category_id)}
+                                    className={cn(
+                                        "w-full flex items-center justify-between px-0 py-2 text-sm transition-colors text-left group",
+                                        active
+                                            ? "text-brand-white font-semibold"
+                                            : "text-brand-muted hover:text-brand-white"
+                                    )}
+                                >
+                                    <div className="flex items-center gap-2.5">
+                                        {/* Checkbox square indicator */}
+                                        <span className={cn(
+                                            "size-3.5 rounded border transition-all shrink-0",
+                                            active
+                                                ? "bg-brand-orange border-brand-orange"
+                                                : "border-brand-divider group-hover:border-brand-white/40"
+                                        )}>
+                                            {active && (
+                                                <svg viewBox="0 0 10 10" className="w-full h-full text-white" fill="none">
+                                                    <path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            )}
+                                        </span>
+                                        <span>{item.category_name}</span>
+                                    </div>
+                                    {typeof count === "number" && (
+                                        <span className="text-[11px] text-brand-muted tabular-nums">{count}</span>
+                                    )}
+                                </button>
+                            )
+                        })}
+                    </div>
                 )}
             </div>
 
-            {/* ໝວດໝູ່ */}
-            <div className="space-y-2">
-                <Label className="text-sm font-bold text-gray-900 block">ໝວດໝູ່</Label>
-                <div className="flex flex-col space-y-2.5 pt-1">
-                    {isLoadingCategories ? (
-                        <div className="space-y-2">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="h-4 bg-gray-100 rounded w-2/3 animate-pulse" />
-                            ))}
-                        </div>
-                    ) : (
-                        [{ category_id: ALL_CATEGORY_ID, category_name: "ສິນຄ້າທັງໝົດ" }, ...(categories ?? [])]
-                            .map(item => {
-                                const isActive = categoryId === item.category_id
-                                const count = (item as CategoryItem)._count?.products
-                                return (
-                                    <button
-                                        key={item.category_id}
-                                        type="button"
-                                        onClick={() => setCategoryId(item.category_id)}
-                                        className="flex items-center justify-between text-left transition-all duration-150 group"
-                                    >
-                                        <span className="flex items-center">
-                                            <span className={`text-xl leading-none mr-2 transition-all ${
-                                                isActive ? "text-black opacity-100 scale-100" : "text-transparent opacity-0 scale-50"
-                                            }`}>
-                                                •
-                                            </span>
-                                            <span className={`text-sm transition-colors ${
-                                                isActive ? "text-black font-bold" : "text-gray-600 font-medium group-hover:text-black"
-                                            }`}>
-                                                {item.category_name}
-                                            </span>
-                                        </span>
-                                        {typeof count === "number" && (
-                                            <span className="text-xs text-gray-400">{count}</span>
-                                        )}
-                                    </button>
-                                )
-                            })
-                    )}
+            {/* ── Size ── */}
+            <div className="pt-5 border-t border-brand-divider">
+                <SectionLabel>ຂະໜາດ</SectionLabel>
+
+                {/* Clothing sizes */}
+                <p className="text-[10px] text-brand-muted mb-2">ເສື້ອຜ້າ</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                    {CLOTHING_SIZES.map(s => {
+                        const active = selectedSizes.includes(s)
+                        return (
+                            <button
+                                key={s}
+                                type="button"
+                                onClick={() => toggleSize(s)}
+                                className={cn(
+                                    "h-8 min-w-9 px-2.5 rounded-lg border text-xs font-semibold transition-all",
+                                    active
+                                        ? "bg-brand-white border-brand-white text-brand-black"
+                                        : "bg-transparent border-brand-divider text-brand-muted hover:border-brand-white/40 hover:text-brand-white"
+                                )}
+                            >
+                                {s}
+                            </button>
+                        )
+                    })}
+                </div>
+
+                {/* Shoe sizes */}
+                <p className="text-[10px] text-brand-muted mb-2">ເບີເກີບ</p>
+                <div className="flex flex-wrap gap-1.5">
+                    {SHOE_SIZES.map(s => {
+                        const active = selectedSizes.includes(s)
+                        return (
+                            <button
+                                key={s}
+                                type="button"
+                                onClick={() => toggleSize(s)}
+                                className={cn(
+                                    "h-8 min-w-9 px-2 rounded-lg border text-xs font-semibold transition-all",
+                                    active
+                                        ? "bg-brand-white border-brand-white text-brand-black"
+                                        : "bg-transparent border-brand-divider text-brand-muted hover:border-brand-white/40 hover:text-brand-white"
+                                )}
+                            >
+                                {s}
+                            </button>
+                        )
+                    })}
                 </div>
             </div>
 
-            {/* ຊ່ວງລາຄາ */}
-            <div className="space-y-3 pt-1 border-t border-gray-100">
-                <Label className="text-sm font-bold text-gray-900 block pt-4">ຊ່ວງລາຄາ</Label>
+            {/* ── Color ── */}
+            {availableColors.length > 0 && (
+                <div className="pt-5 border-t border-brand-divider">
+                    <SectionLabel>ສີ</SectionLabel>
+                    <div className="flex flex-wrap gap-2.5">
+                        {availableColors.map(c => {
+                            const hex = getColorHex(c)
+                            const active = selectedColors.includes(c)
+                            return (
+                                <button
+                                    key={c}
+                                    type="button"
+                                    title={c}
+                                    onClick={() => toggleColor(c)}
+                                    className={cn(
+                                        "size-7 rounded-full transition-all",
+                                        active
+                                            ? "ring-2 ring-brand-white ring-offset-2 ring-offset-brand-black scale-110"
+                                            : "ring-1 ring-brand-divider hover:scale-110"
+                                    )}
+                                    style={{ backgroundColor: hex }}
+                                />
+                            )
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* ── Price ── */}
+            <div className="pt-5 border-t border-brand-divider">
+                <SectionLabel>ລາຄາ</SectionLabel>
                 {priceBounds ? (
                     priceBounds.min === priceBounds.max ? (
-                        <p className="text-xs text-gray-400">
-                            ທຸກສິນຄ້າມີລາຄາ {formatCurrency(priceBounds.min)}
-                        </p>
+                        <p className="text-xs text-brand-muted">{formatCurrency(priceBounds.min)}</p>
                     ) : (
-                        <>
-                            <p className="text-xs text-gray-500 font-medium">
-                                {formatCurrency(priceRange[0])} – {formatCurrency(priceRange[1])}
-                            </p>
+                        <div className="space-y-4">
+                            <div className="flex justify-between text-xs text-brand-muted">
+                                <span>{formatCurrency(priceRange[0])}</span>
+                                <span>{formatCurrency(priceRange[1])}</span>
+                            </div>
                             <Slider
                                 min={priceBounds.min}
                                 max={priceBounds.max}
@@ -114,69 +202,19 @@ export function FilterPanel({
                                 value={priceRange}
                                 onValueChange={v => setPriceRange(v as [number, number])}
                                 className={cn(
-                                    "py-2 cursor-pointer",
-                                    "**:data-[slot=slider-track]:bg-gray-200!",
-                                    "**:data-[slot=slider-range]:bg-gray-900!",
+                                    "py-1 cursor-pointer",
+                                    "**:data-[slot=slider-track]:bg-brand-divider!",
+                                    "**:data-[slot=slider-range]:bg-brand-orange!",
                                     "**:data-[slot=slider-thumb]:bg-white!",
                                     "**:data-[slot=slider-thumb]:border-2!",
-                                    "**:data-[slot=slider-thumb]:border-gray-900!",
-                                    "**:data-[slot=slider-thumb]:shadow-sm!",
+                                    "**:data-[slot=slider-thumb]:border-brand-orange!",
+                                    "**:data-[slot=slider-thumb]:shadow-none!",
                                 )}
                             />
-                        </>
+                        </div>
                     )
                 ) : (
-                    <div className="h-6 bg-gray-100 rounded animate-pulse" />
-                )}
-            </div>
-
-            {/* ສີ */}
-            <div className="space-y-3 pt-1 border-t border-gray-100">
-                <Label className="text-sm font-bold text-gray-900 block pt-4">ສີ</Label>
-                {isLoadingColors ? (
-                    <div className="flex flex-wrap gap-2">
-                        {[1, 2, 3, 4, 5].map(i => (
-                            <div key={i} className="size-8 rounded-full bg-gray-100 animate-pulse" />
-                        ))}
-                    </div>
-                ) : !colors?.length ? (
-                    <p className="text-xs text-gray-400">ບໍ່ມີສີໃຫ້ເລືອກ</p>
-                ) : (
-                    <div className="flex flex-wrap gap-2.5">
-                        {colors.map(color => {
-                            const isActive = selectedColors.includes(color)
-                            const swatch = getSwatchColor(color)
-                            return (
-                                <button
-                                    key={color}
-                                    type="button"
-                                    title={color}
-                                    onClick={() => toggleColor(color)}
-                                    className={cn(
-                                        "relative size-8 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
-                                        isActive ? "border-gray-900 scale-105" : "border-gray-200 hover:border-gray-400"
-                                    )}
-                                    style={swatch ? { backgroundColor: swatch } : undefined}
-                                >
-                                    {!swatch && (
-                                        <span className="text-[9px] font-bold text-gray-500 uppercase leading-none">
-                                            {color.slice(0, 2)}
-                                        </span>
-                                    )}
-                                    {isActive && (
-                                        <Check
-                                            className={cn(
-                                                "size-3.5 absolute",
-                                                swatch && ["#f5f5f5", "#fef3c7", "#e7dcc8", "#c0c0c0"].includes(swatch)
-                                                    ? "text-gray-900"
-                                                    : "text-white"
-                                            )}
-                                        />
-                                    )}
-                                </button>
-                            )
-                        })}
-                    </div>
+                    <div className="h-5 bg-brand-divider rounded animate-pulse" />
                 )}
             </div>
         </div>

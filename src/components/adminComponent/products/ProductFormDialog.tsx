@@ -45,13 +45,12 @@ const DEFAULT_VARIANT = {
 const mapVariantsToForm = (product?: Product): ProductFormValues["variants"] => {
   if (!product?.variants?.length) return []
   return product.variants.map((v) => ({
-    variant_id: v.variant_id,
     sku: v.sku,
     color: v.color,
     size: v.size,
     purchase_price: v.purchase_price,
-    sale_price: v.sale_price,
-    stock_qty: v.stock_qty,
+    sale_price:     v.sale_price,
+    stock_qty:      v.stock_qty,
   }))
 }
 
