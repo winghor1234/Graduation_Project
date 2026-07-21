@@ -26,17 +26,6 @@ export function Header({ onOpenSidebar, user, onLogout }: Props) {
                 >
                     <Menu className="size-5" />
                 </button>
-
-                {/* Search */}
-                <div className="flex items-center w-full rounded-xl px-3 py-2 bg-gray-50 border border-admin-border focus-within:border-brand-blue focus-within:ring-1 focus-within:ring-brand-blue/20 transition-all duration-200">
-                    <Search className="size-4 text-admin-muted shrink-0" />
-                    <input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="ຄົ້ນຫາ..."
-                        className="bg-transparent outline-none ml-2 w-full text-sm text-admin-text placeholder:text-admin-muted"
-                    />
-                </div>
             </div>
 
             {/* Right */}

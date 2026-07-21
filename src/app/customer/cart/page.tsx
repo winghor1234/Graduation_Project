@@ -375,7 +375,7 @@ export default function CartPage() {
                                 </>
                             ) : (
                                 <div className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                                    ທ່ານຈະຈ່າຍເງິນສົດ {formatCurrency(total)} ໃຫ້ພະນັກງານຂົນສົ່ງເມື່ອໄດ້ຮັບສິນຄ້າ
+                                    ທ່ານຈະຈ່າຍເງິນສົດ {formatCurrency(total)} ເມື່ອຂົນສົ່ງຮອດປາຍທາງ
                                 </div>
                             )}
                         </div>

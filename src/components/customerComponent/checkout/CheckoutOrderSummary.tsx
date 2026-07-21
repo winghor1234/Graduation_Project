@@ -93,10 +93,10 @@ export function CheckoutOrderSummary({
                         <span>ຍອດສິນຄ້າ</span>
                         <span className="text-gray-900">{formatCurrency(cartTotal)}</span>
                     </div>
-                    <div className="flex justify-between text-gray-400 text-xs">
+                    {/* <div className="flex justify-between text-gray-400 text-xs">
                         <span>ຄ່າຂົນສົ່ງ</span>
                         <span>ລູກຄ້າຮັບຜິດຊອບເອງ</span>
-                    </div>
+                    </div> */}
                     {discount > 0 && (
                         <div className="flex justify-between text-green-600">
                             <span>ສ່ວນຫຼຸດທັງໝົດ</span>

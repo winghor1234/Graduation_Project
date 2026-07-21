@@ -18,15 +18,15 @@ export function CheckoutPaymentCard({ total }: Props) {
                 <div className="border border-gray-200 rounded-lg divide-y divide-gray-100 text-sm">
                     <div className="flex justify-between px-4 py-2.5">
                         <span className="text-gray-500">ທະນາຄານ</span>
-                        <span className="font-medium text-gray-900">SportPro Bank</span>
+                        <span className="font-medium text-gray-900">BCEL ONE Bank</span>
                     </div>
                     <div className="flex justify-between px-4 py-2.5">
                         <span className="text-gray-500">ເລກທີບັນຊີ</span>
-                        <span className="font-mono font-semibold text-gray-900">123-456-7890</span>
+                        <span className="font-mono font-semibold text-gray-900">1631243388522</span>
                     </div>
                     <div className="flex justify-between px-4 py-2.5">
                         <span className="text-gray-500">ຊື່ບັນຊີ</span>
-                        <span className="font-medium text-gray-900">SportPro Co., Ltd.</span>
+                        <span className="font-medium text-gray-900">VANXAYSPORTWARE</span>
                     </div>
                     <div className="flex justify-between px-4 py-2.5 bg-gray-50 rounded-b-lg">
                         <span className="font-semibold text-gray-700">ຍອດທີ່ຕ້ອງໂອນ</span>
@@ -34,9 +34,9 @@ export function CheckoutPaymentCard({ total }: Props) {
                     </div>
                 </div>
 
-                <p className="text-xs text-gray-500 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2.5">
+                {/* <p className="text-xs text-gray-500 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2.5">
                     ກະລຸນາແນບສະລິບທຸກຄັ້ງ · ລະບົບຈະກວດສອບ ແລະ ອະນຸມັດພາຍໃນ 24 ຊົ່ວໂມງ
-                </p>
+                </p> */}
             </CardContent>
         </Card>
     )
