@@ -26,13 +26,13 @@ export function Pagination({ page, totalPages, onChange }: {
             <button
                 disabled={page <= 1}
                 onClick={() => onChange(page - 1)}
-                className="size-9 flex items-center justify-center rounded-lg border border-brand-divider text-brand-muted disabled:opacity-30 hover:border-brand-white/30 hover:text-brand-white transition-colors"
+                className="size-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 disabled:opacity-30 hover:border-gray-400 hover:text-gray-900 transition-colors"
             >
                 <ChevronLeft className="size-4" />
             </button>
 
             {pages.map((p, i) => p === "..." ? (
-                <span key={`e-${i}`} className="px-2 text-brand-muted text-sm select-none">…</span>
+                <span key={`e-${i}`} className="px-2 text-gray-400 text-sm select-none">…</span>
             ) : (
                 <button
                     key={p}
@@ -40,7 +40,7 @@ export function Pagination({ page, totalPages, onChange }: {
                     className={`size-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                         p === page
                             ? "bg-brand-orange text-white border border-brand-orange"
-                            : "border border-brand-divider text-brand-muted hover:border-brand-white/30 hover:text-brand-white"
+                            : "border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900"
                     }`}
                 >
                     {p}
@@ -50,7 +50,7 @@ export function Pagination({ page, totalPages, onChange }: {
             <button
                 disabled={page >= totalPages}
                 onClick={() => onChange(page + 1)}
-                className="size-9 flex items-center justify-center rounded-lg border border-brand-divider text-brand-muted disabled:opacity-30 hover:border-brand-white/30 hover:text-brand-white transition-colors"
+                className="size-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 disabled:opacity-30 hover:border-gray-400 hover:text-gray-900 transition-colors"
             >
                 <ChevronRight className="size-4" />
             </button>

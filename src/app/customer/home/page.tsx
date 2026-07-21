@@ -16,6 +16,7 @@ import { ShopActiveFilters } from "@/components/customerComponent/shop/ShopActiv
 import { ShopProductGrid } from "@/components/customerComponent/shop/ShopProductGrid"
 import { useDebouncedValue } from "@/components/customerComponent/shop/useDebouncedValue"
 import { BestSellersRail } from "@/components/customerComponent/home/BestSellersRail"
+import { HeroSlider } from "@/components/customerComponent/home/HeroSlider"
 
 export default function HomePage() {
     const searchParams = useSearchParams()
@@ -154,21 +155,14 @@ export default function HomePage() {
     }
 
     return (
-        <div className="min-h-screen bg-brand-black">
-            <div className="container mx-auto px-4 md:px-8 max-w-7xl py-8 md:py-12">
+        <div className="relative min-h-screen overflow-hidden bg-white">
+            {/* Ambient accents — subtle on white, purely decorative */}
+            <div className="pointer-events-none absolute -top-32 -left-32 w-125 h-125 rounded-full bg-brand-orange/5 blur-[140px]" />
+            <div className="pointer-events-none absolute top-1/2 -right-40 w-125 h-125 rounded-full bg-brand-orange/5 blur-[160px]" />
 
-                {/* Header */}
-                <div className="flex flex-col gap-1 mb-8">
-                    <h1 className="text-3xl font-extrabold tracking-tight text-brand-white">ສິນຄ້າທັງໝົດ</h1>
-                    <p className="text-sm text-brand-muted">
-                        {meta ? `ພົບ ${meta.total} ລາຍການ` : "ກຳລັງໂຫຼດ..."}
-                    </p>
-                </div>
+            <div className="container relative mx-auto px-4 md:px-8 max-w-7xl py-8 md:py-12">
 
-                {/* Best sellers rail — real sales data, hidden entirely if none yet */}
-                <BestSellersRail />
-
-                <div className="mb-6">
+                <div className="sticky top-0 z-30 -mx-4 md:-mx-8 px-4 md:px-8 py-3 mb-6 bg-white/90 backdrop-blur-md border-b border-gray-100">
                     <ShopSearchBar
                         searchInput={searchInput}
                         onSearchChange={handleSearchChange}
@@ -178,32 +172,48 @@ export default function HomePage() {
                         onOpenDrawer={() => setDrawerOpen(true)}
                     />
                 </div>
+                {/* Hero image slider — real featured products */}
+                <HeroSlider />
+
+                {/* Header */}
+                <div className="flex flex-col gap-1 mb-8">
+                    <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">ສິນຄ້າທັງໝົດ</h1>
+                    <p className="text-sm text-gray-400">
+                        {meta ? `ພົບ ${meta.total} ລາຍການ` : "ກຳລັງໂຫຼດ..."}
+                    </p>
+                </div>
+
+                {/* Best sellers rail — real sales data, hidden entirely if none yet */}
+                <BestSellersRail />
+
 
                 {/* ── Body: sidebar + grid ── */}
                 <div className="flex gap-10 items-start">
 
                     {/* Sidebar desktop */}
-                    <aside className="hidden md:block w-56 shrink-0 sticky top-6">
+                    <aside className="hidden md:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto">
                         <FilterPanel {...panelProps} />
                     </aside>
 
                     {/* Main */}
                     <div className="flex-1 min-w-0 space-y-6">
-                        <ShopActiveFilters
-                            isFiltered={!!isFiltered}
-                            activeCategories={activeCategories}
-                            debouncedSearch={debouncedSearch}
-                            priceBounds={priceBounds}
-                            priceRange={priceRange}
-                            selectedSizes={selectedSizes}
-                            selectedColors={selectedColors}
-                            onRemoveCategory={handleCategoryToggle}
-                            onRemoveSearch={() => handleSearchChange("")}
-                            onRemovePrice={handleRemovePrice}
-                            onRemoveSize={handleRemoveSize}
-                            onRemoveColor={handleRemoveColor}
-                            onResetAll={resetFilters}
-                        />
+                        <div className="sticky top-24 z-20 bg-white/90 backdrop-blur-md py-2 -mx-1 px-1">
+                            <ShopActiveFilters
+                                isFiltered={!!isFiltered}
+                                activeCategories={activeCategories}
+                                debouncedSearch={debouncedSearch}
+                                priceBounds={priceBounds}
+                                priceRange={priceRange}
+                                selectedSizes={selectedSizes}
+                                selectedColors={selectedColors}
+                                onRemoveCategory={handleCategoryToggle}
+                                onRemoveSearch={() => handleSearchChange("")}
+                                onRemovePrice={handleRemovePrice}
+                                onRemoveSize={handleRemoveSize}
+                                onRemoveColor={handleRemoveColor}
+                                onResetAll={resetFilters}
+                            />
+                        </div>
 
                         <ShopProductGrid
                             items={items}

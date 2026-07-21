@@ -28,7 +28,7 @@ export function BestSellersRail() {
                 <div className="size-8 rounded-lg bg-brand-orange/10 flex items-center justify-center">
                     <Flame className="size-4 text-brand-orange" />
                 </div>
-                <h2 className="text-xl font-extrabold tracking-tight text-brand-white">ສິນຄ້າຂາຍດີ</h2>
+                <h2 className="text-xl font-extrabold tracking-tight text-gray-900">ສິນຄ້າຂາຍດີ</h2>
             </div>
 
             <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-none">

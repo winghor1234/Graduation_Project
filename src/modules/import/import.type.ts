@@ -53,3 +53,13 @@ export type CreateImportInput = {
 }
 
 export type UpdateImportInput = Partial<CreateImportInput>
+
+// ✅ ຢືນຢັນນຳເຂົ້າ ພ້ອມແກ້ໄຂຈຳນວນທີ່ໄດ້ຮັບຕົວຈິງ (ຖ້າຕ່າງຈາກຕອນສ້າງ)
+export type ConfirmImportDetailInput = {
+    import_detail_id: string
+    quantity:         number
+}
+
+export type ConfirmImportInput = {
+    import_details?: ConfirmImportDetailInput[]
+}

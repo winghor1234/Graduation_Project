@@ -26,7 +26,7 @@ type Props = {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-brand-muted mb-3">
+        <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-gray-400 mb-3">
             {children}
         </p>
     )
@@ -51,15 +51,15 @@ export function FilterPanel({
             : [...selectedColors, c])
 
     return (
-        <div className="space-y-7">
+        <div className="space-y-7 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
 
             <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-brand-white">ຕົວກອງ</p>
+                <p className="text-sm font-bold text-gray-900">ຕົວກອງ</p>
                 {isFiltered && (
                     <button
                         type="button"
                         onClick={onReset}
-                        className="text-xs text-brand-muted hover:text-brand-white underline underline-offset-2 transition-colors"
+                        className="text-xs text-gray-400 hover:text-gray-900 underline underline-offset-2 transition-colors"
                     >
                         ລ້າງທັງໝົດ
                     </button>
@@ -72,7 +72,7 @@ export function FilterPanel({
                 {isLoadingCategories ? (
                     <div className="space-y-3">
                         {[1, 2, 3].map(i => (
-                            <div key={i} className="h-4 bg-brand-divider rounded animate-pulse w-3/4" />
+                            <div key={i} className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
                         ))}
                     </div>
                 ) : (
@@ -88,8 +88,8 @@ export function FilterPanel({
                                     className={cn(
                                         "w-full flex items-center justify-between px-0 py-2 text-sm transition-colors text-left group",
                                         active
-                                            ? "text-brand-white font-semibold"
-                                            : "text-brand-muted hover:text-brand-white"
+                                            ? "text-gray-900 font-semibold"
+                                            : "text-gray-500 hover:text-gray-900"
                                     )}
                                 >
                                     <div className="flex items-center gap-2.5">
@@ -97,7 +97,7 @@ export function FilterPanel({
                                             "size-3.5 rounded border transition-all shrink-0",
                                             active
                                                 ? "bg-brand-orange border-brand-orange"
-                                                : "border-brand-divider group-hover:border-brand-white/40"
+                                                : "border-gray-300 group-hover:border-gray-400"
                                         )}>
                                             {active && (
                                                 <svg viewBox="0 0 10 10" className="w-full h-full text-white" fill="none">
@@ -108,7 +108,7 @@ export function FilterPanel({
                                         <span>{item.category_name}</span>
                                     </div>
                                     {typeof count === "number" && (
-                                        <span className="text-[11px] text-brand-muted tabular-nums">{count}</span>
+                                        <span className="text-[11px] text-gray-400 tabular-nums">{count}</span>
                                     )}
                                 </button>
                             )
@@ -118,10 +118,10 @@ export function FilterPanel({
             </div>
 
             {/* ── Size ── */}
-            <div className="pt-5 border-t border-brand-divider">
+            <div className="pt-5 border-t border-gray-100">
                 <SectionLabel>ຂະໜາດ</SectionLabel>
 
-                <p className="text-[10px] text-brand-muted mb-2">ເສື້ອຜ້າ</p>
+                <p className="text-[10px] text-gray-400 mb-2">ເສື້ອຜ້າ</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                     {CLOTHING_SIZES.map(s => {
                         const active = selectedSizes.includes(s)
@@ -133,8 +133,8 @@ export function FilterPanel({
                                 className={cn(
                                     "h-8 min-w-9 px-2.5 rounded-lg border text-xs font-semibold transition-all",
                                     active
-                                        ? "bg-brand-white border-brand-white text-brand-black"
-                                        : "bg-transparent border-brand-divider text-brand-muted hover:border-brand-white/40 hover:text-brand-white"
+                                        ? "bg-gray-900 border-gray-900 text-white"
+                                        : "bg-transparent border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900"
                                 )}
                             >
                                 {s}
@@ -143,7 +143,7 @@ export function FilterPanel({
                     })}
                 </div>
 
-                <p className="text-[10px] text-brand-muted mb-2">ເບີເກີບ</p>
+                <p className="text-[10px] text-gray-400 mb-2">ເບີເກີບ</p>
                 <div className="flex flex-wrap gap-1.5">
                     {SHOE_SIZES.map(s => {
                         const active = selectedSizes.includes(s)
@@ -155,8 +155,8 @@ export function FilterPanel({
                                 className={cn(
                                     "h-8 min-w-9 px-2 rounded-lg border text-xs font-semibold transition-all",
                                     active
-                                        ? "bg-brand-white border-brand-white text-brand-black"
-                                        : "bg-transparent border-brand-divider text-brand-muted hover:border-brand-white/40 hover:text-brand-white"
+                                        ? "bg-gray-900 border-gray-900 text-white"
+                                        : "bg-transparent border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900"
                                 )}
                             >
                                 {s}
@@ -168,7 +168,7 @@ export function FilterPanel({
 
             {/* ── Color ── */}
             {availableColors.length > 0 && (
-                <div className="pt-5 border-t border-brand-divider">
+                <div className="pt-5 border-t border-gray-100">
                     <SectionLabel>ສີ</SectionLabel>
                     <div className="flex flex-wrap gap-2.5">
                         {availableColors.map(c => {
@@ -183,8 +183,8 @@ export function FilterPanel({
                                     className={cn(
                                         "size-7 rounded-full transition-all",
                                         active
-                                            ? "ring-2 ring-brand-white ring-offset-2 ring-offset-brand-black scale-110"
-                                            : "ring-1 ring-brand-divider hover:scale-110"
+                                            ? "ring-2 ring-gray-900 ring-offset-2 ring-offset-white scale-110"
+                                            : "ring-1 ring-gray-200 hover:scale-110"
                                     )}
                                     style={{ backgroundColor: hex }}
                                 />
@@ -195,14 +195,14 @@ export function FilterPanel({
             )}
 
             {/* ── Price ── */}
-            <div className="pt-5 border-t border-brand-divider">
+            <div className="pt-5 border-t border-gray-100">
                 <SectionLabel>ລາຄາ</SectionLabel>
                 {priceBounds ? (
                     priceBounds.min === priceBounds.max ? (
-                        <p className="text-xs text-brand-muted">{formatCurrency(priceBounds.min)}</p>
+                        <p className="text-xs text-gray-400">{formatCurrency(priceBounds.min)}</p>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex justify-between text-xs text-brand-muted">
+                            <div className="flex justify-between text-xs text-gray-500">
                                 <span>{formatCurrency(priceRange[0])}</span>
                                 <span>{formatCurrency(priceRange[1])}</span>
                             </div>
@@ -214,18 +214,18 @@ export function FilterPanel({
                                 onValueChange={v => setPriceRange(v as [number, number])}
                                 className={cn(
                                     "py-1 cursor-pointer",
-                                    "**:data-[slot=slider-track]:bg-brand-divider!",
+                                    "**:data-[slot=slider-track]:bg-gray-200!",
                                     "**:data-[slot=slider-range]:bg-brand-orange!",
                                     "**:data-[slot=slider-thumb]:bg-white!",
                                     "**:data-[slot=slider-thumb]:border-2!",
                                     "**:data-[slot=slider-thumb]:border-brand-orange!",
-                                    "**:data-[slot=slider-thumb]:shadow-none!",
+                                    "**:data-[slot=slider-thumb]:shadow-sm!",
                                 )}
                             />
                         </div>
                     )
                 ) : (
-                    <div className="h-5 bg-brand-divider rounded animate-pulse" />
+                    <div className="h-5 bg-gray-100 rounded animate-pulse" />
                 )}
             </div>
         </div>

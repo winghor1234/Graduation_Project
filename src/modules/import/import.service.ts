@@ -294,21 +294,54 @@ export const importService = {
 
 
     // ─── Confirm (PENDING → COMPLETED) ────────────────────
-    async confirmImport(id: string) {
+    // ✅ ອະນຸຍາດແກ້ໄຂ "ຈຳນວນທີ່ໄດ້ຮັບຕົວຈິງ" ຕອນຢືນຢັນ — ຖ້າຕ່າງຈາກຕອນສ້າງ import
+    async confirmImport(id: string, updates?: { import_detail_id: string; quantity: number }[]) {
         return prisma.$transaction(async (tx) => {
 
             const existing = await tx.import.findUnique({
-                where: { import_id: id }
+                where: { import_id: id },
+                include: { import_details: true }
             })
             if (!existing) throw new NotFoundError("Import not found")
 
             if (existing.status !== ImportStatus.PENDING)
                 throw new BadRequestError("Only PENDING import can be confirmed")
 
+            if (updates?.length) {
+                const updateMap = new Map(updates.map(u => [u.import_detail_id, u.quantity]))
+
+                for (const detail of existing.import_details) {
+                    const newQty = updateMap.get(detail.import_detail_id)
+                    if (newQty === undefined || newQty === detail.quantity) continue
+
+                    if (newQty < 0) throw new BadRequestError("ຈຳນວນຕ້ອງບໍ່ຕິດລົບ")
+
+                    // ✅ ຕ້ອງປັບ stock ຕາມ "ຄວາມແຕກຕ່າງ" — ບໍ່ແມ່ນຕັ້ງໃໝ່ໝົດ ເພາະ stock ຖືກເພີ່ມແລ້ວຕອນສ້າງ import
+                    const diff = newQty - detail.quantity
+
+                    await tx.importDetail.update({
+                        where: { import_detail_id: detail.import_detail_id },
+                        data: { quantity: newQty }
+                    })
+
+                    await tx.productVariant.update({
+                        where: { variant_id: detail.variant_id },
+                        data: { stock_qty: { increment: diff } }
+                    })
+
+                    // ✅ sync received_qty ໃນ PurchaseDetail ໃຫ້ກົງກັບຈຳນວນທີ່ຢືນຢັນ — ຜົນຕໍ່ payment calculation
+                    await tx.purchaseDetail.updateMany({
+                        where: { purchase_id: existing.purchase_id, variant_id: detail.variant_id },
+                        data: { received_qty: newQty }
+                    })
+                }
+            }
+
             // ✅ PENDING → COMPLETED
             return tx.import.update({
                 where: { import_id: id },
-                data: { status: ImportStatus.COMPLETED }
+                data: { status: ImportStatus.COMPLETED },
+                include: { import_details: true }
             })
         })
     },

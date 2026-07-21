@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance"
-import { CreateImportInput, Import } from "@/modules/import/import.type"
+import { CreateImportInput, ConfirmImportInput, Import } from "@/modules/import/import.type"
 import { UseGetParams } from "../types"
 
 export const importApi = {
@@ -32,13 +32,13 @@ export const importApi = {
 
     create: async (data: CreateImportInput): Promise<Import> => {
         const res = await axiosInstance.post("/import", data)
-        return res.data.data.data
+        return res.data.data
     },
     cancel: async (id: string): Promise<void> => {
         await axiosInstance.put(`/import/cancel/${id}`)
     },
-    confirm: async (id: string): Promise<void> => {
-        await axiosInstance.put(`/import/confirm/${id}`)
+    confirm: async (id: string, data?: ConfirmImportInput): Promise<void> => {
+        await axiosInstance.put(`/import/confirm/${id}`, data ?? {})
     },
 
     delete: async (id: string): Promise<void> => {

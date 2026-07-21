@@ -1,22 +1,23 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Loader2, CheckCircle2, XCircle } from "lucide-react"
+import { Loader2, CheckCircle2, XCircle, FileDown } from "lucide-react"
 import { toast } from "sonner"
 import { formatCurrency } from "@/utils/FormatCurrency"
 import { formatDate } from "@/utils/FormatDate"
-import { CreateImportInput, Import } from "@/modules/import/import.type"
+import { CreateImportInput, ConfirmImportInput, Import } from "@/modules/import/import.type"
 import { PurchaseOrder } from "../purchase/PurchaseType"
 import SearchSelect from "@/components/SearchSelectOption"
 import { NumericFormat } from "react-number-format"
 import { BadgeComponent } from "../StatusComponent"
 import { UseMutationResult } from "@tanstack/react-query"
+import { handlePDFExport } from "../../ExportToReport"
 
 // ─── Create-mode schema (ຍ້າຍມາຈາກ ImportFormDialog.tsx ທີ່ຖືກລຶບ) ──
 const importDetailSchema = z.object({
@@ -41,7 +42,7 @@ type Props = {
     onOpenChange: (open: boolean) => void
     // ✅ ບໍ່ມີ data = ໂໝດສ້າງໃໝ່ (create), ມີ data = ໂໝດເບິ່ງ/ຢືນຢັນ/ຍົກເລີກ (view)
     data?: Import
-    confirm: UseMutationResult<void, Error, string>
+    confirm: UseMutationResult<void, Error, { id: string; data?: ConfirmImportInput }>
     cancel: UseMutationResult<void, Error, string>
     // ✅ ຕ້ອງການສະເພາະຕອນໃຊ້ໂໝດສ້າງໃໝ່ — ບໍ່ຈຳເປັນຕອນເປີດຈາກ ImportTable ເພື່ອເບິ່ງລາຍການເກົ່າ
     create?: UseMutationResult<Import, Error, CreateImportInput>
@@ -53,6 +54,16 @@ type Props = {
 export function ImportViewDialog({
     open, onOpenChange, data, confirm, cancel, create, purchases, initialPurchaseId,
 }: Props) {
+
+    // ── ຈຳນວນທີ່ຢືນຢັນ (ໂໝດເບິ່ງ, ແກ້ໄຂໄດ້ຕອນ PENDING) ──
+    const [editedQuantities, setEditedQuantities] = useState<Record<string, number>>({})
+
+    useEffect(() => {
+        if (!data) return
+        const initial: Record<string, number> = {}
+        for (const d of data.import_details ?? []) initial[d.import_detail_id] = d.quantity
+        setEditedQuantities(initial)
+    }, [data])
 
     // ── ຟອມສ້າງໃໝ່ (ໃຊ້ສະເພາະຕອນ !data) ──
     const {
@@ -108,10 +119,13 @@ export function ImportViewDialog({
                     cost_price,
                 }))
 
-            await create.mutateAsync({
+            const newImport = await create.mutateAsync({
                 purchase_id: values.purchase_id,
                 import_details: cleanDetails,
             })
+
+            // ✅ ຢືນຢັນທັນທີຫຼັງສ້າງ — ຈຳນວນຖືກແກ້ໄຂໄດ້ຢູ່ແລ້ວໃນຟອມນີ້ ບໍ່ຈຳເປັນຕ້ອງລໍຖ້າ confirm ແຍກຕ່າງຫາກອີກຂັ້ນ
+            await confirm.mutateAsync({ id: newImport.import_id })
 
             toast.success("ສ້າງລາຍການນຳເຂົ້າສຳເລັດ")
             onOpenChange(false)
@@ -134,18 +148,58 @@ export function ImportViewDialog({
     // ══════════════════════════════════════════════════════
     if (data) {
         const details = data.import_details ?? []
-        const grandTotal = details.reduce((sum, d) => sum + d.quantity * d.cost_price, 0)
         const isPending = data.status === "PENDING"
 
+        // ✅ ຢືນຢັນແລ້ວ (COMPLETED/CANCELLED) ໃຫ້ໃຊ້ຈຳນວນເດີມ, PENDING ໃຫ້ໃຊ້ຈຳນວນທີ່ແກ້ໄຂ (ຖ້າມີ)
+        const getQty = (d: (typeof details)[number]) =>
+            isPending ? (editedQuantities[d.import_detail_id] ?? d.quantity) : d.quantity
+
+        const grandTotal = details.reduce((sum, d) => sum + getQty(d) * d.cost_price, 0)
+
+        const handleQtyChange = (importDetailId: string, value: number) => {
+            setEditedQuantities(prev => ({ ...prev, [importDetailId]: value }))
+        }
+
         const handleConfirm = () => {
-            confirm.mutate(data.import_id, {
-                onSuccess: () => onOpenChange(false)
-            })
+            const updates = details
+                .map(d => ({ import_detail_id: d.import_detail_id, quantity: getQty(d) }))
+                .filter(u => u.quantity !== details.find(d => d.import_detail_id === u.import_detail_id)?.quantity)
+
+            confirm.mutate(
+                { id: data.import_id, data: updates.length ? { import_details: updates } : undefined },
+                { onSuccess: () => onOpenChange(false) }
+            )
         }
 
         const handleCancel = () => {
             cancel.mutate(data.import_id, {
                 onSuccess: () => onOpenChange(false)
+            })
+        }
+
+        // ✅ ຍ້າຍມາຈາກ ImportDetailDialog.tsx ທີ່ຖືກລຶບ
+        const handleExportPDF = () => {
+            handlePDFExport({
+                title: `ໃບນຳເຂົ້າ ${data.import_code}`,
+                fileName: data.import_code,
+                sheetName: "Import",
+                columns: [
+                    { header: "#", key: "__index" },
+                    { header: "ລະຫັດສິນຄ້າ", key: "product_code" },
+                    { header: "ສິນຄ້າ", key: "product_name" },
+                    { header: "Variant", key: "variant_info" },
+                    { header: "ຈຳນວນ", key: "quantity" },
+                    { header: "ລາຄາ", key: "cost_price" },
+                    { header: "ລວມ", key: "total" },
+                ],
+                data: details.map(d => ({
+                    product_code: d.product?.product_code ?? "—",
+                    product_name: d.product?.product_name ?? "—",
+                    variant_info: d.variant ? `${d.variant.color} / ${d.variant.size}` : "—",
+                    quantity: d.quantity,
+                    cost_price: d.cost_price,
+                    total: d.quantity * d.cost_price,
+                })),
             })
         }
 
@@ -156,7 +210,13 @@ export function ImportViewDialog({
                     <DialogHeader>
                         <div className="flex items-center justify-between pr-6">
                             <DialogTitle>ລາຍລະອຽດການນຳເຂົ້າ</DialogTitle>
-                            <BadgeComponent status={data.status} />
+                            <div className="flex items-center gap-2">
+                                <Button variant="outline" size="sm" className="gap-2" onClick={handleExportPDF}>
+                                    <FileDown className="w-4 h-4" />
+                                    Export PDF
+                                </Button>
+                                <BadgeComponent status={data.status} />
+                            </div>
                         </div>
                     </DialogHeader>
 
@@ -183,6 +243,12 @@ export function ImportViewDialog({
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">ວັນທີນຳເຂົ້າ:</span>
                             <span>{formatDate(data.import_date)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">ວັນທີສັ່ງຊື້:</span>
+                            <span>
+                                {data.purchase?.purchase_date ? formatDate(data.purchase.purchase_date) : "—"}
+                            </span>
                         </div>
                     </div>
 
@@ -222,11 +288,23 @@ export function ImportViewDialog({
                                     </div>
 
                                     <div className="col-span-2">
-                                        <Input
-                                            value={d.quantity}
-                                            disabled
-                                            className="bg-background text-sm text-right"
-                                        />
+                                        {isPending ? (
+                                            <NumericFormat
+                                                customInput={Input}
+                                                value={getQty(d)}
+                                                thousandSeparator
+                                                allowNegative={false}
+                                                decimalScale={0}
+                                                className="text-right"
+                                                onValueChange={v => handleQtyChange(d.import_detail_id, v.value === "" ? 0 : Number(v.value))}
+                                            />
+                                        ) : (
+                                            <Input
+                                                value={d.quantity}
+                                                disabled
+                                                className="bg-background text-sm text-right"
+                                            />
+                                        )}
                                     </div>
 
                                     <div className="col-span-3 space-y-1">
@@ -234,17 +312,26 @@ export function ImportViewDialog({
                                             {formatCurrency(d.cost_price)} / ໜ່ວຍ
                                         </div>
                                         <div className="px-3 py-1 text-xs text-right font-medium">
-                                            = {formatCurrency(d.quantity * d.cost_price)}
+                                            = {formatCurrency(getQty(d) * d.cost_price)}
                                         </div>
                                     </div>
                                 </div>
                             ))}
 
-                            <div className="flex justify-between items-center border-t pt-3 px-1">
-                                <span className="text-sm font-medium">ຍອດລວມທັງໝົດ</span>
-                                <span className="text-lg font-semibold text-green-600">
-                                    {formatCurrency(grandTotal)} ກີບ
-                                </span>
+                            <div className="flex justify-end">
+                                <div className="w-full sm:w-[300px] rounded-xl border p-4 space-y-2 mt-2">
+                                    <div className="flex justify-between text-sm text-muted-foreground">
+                                        <span>ຍອດສັ່ງຊື້</span>
+                                        <span>{formatCurrency(data.purchase?.total_amount ?? 0)} ກີບ</span>
+                                    </div>
+                                    <div className="border-t" />
+                                    <div className="flex justify-between text-sm font-bold">
+                                        <span>ຍອດນຳເຂົ້າຕົວຈິງ</span>
+                                        <span className="text-green-600">
+                                            {formatCurrency(grandTotal)} ກີບ
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ) : (

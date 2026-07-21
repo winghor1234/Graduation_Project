@@ -6,7 +6,7 @@ import { getSortingParams } from "@/utils/sorting"
 import {  successResponse } from "@/utils/response"
 import { Prisma } from "@prisma/client"
 import { NextRequest } from "next/server"
-import { CreateImportInput } from "./import.type"
+import { CreateImportInput, ConfirmImportInput } from "./import.type"
 import { getUserFromToken } from "@/utils/cookie"
 import { handleError } from "@/utils/handleError"
 export const importController = {
@@ -78,9 +78,15 @@ export const importController = {
 
 
 
-    async confirmImport(id: string) {
+    async confirmImport(req: NextRequest, id: string) {
         try {
-            const result = await importService.confirmImport(id)
+            let body: ConfirmImportInput = {}
+            try {
+                body = await req.json()
+            } catch {
+                // ✅ ບໍ່ມີ body ກໍ່ໄດ້ — ຢືນຢັນຕາມຈຳນວນເດີມ
+            }
+            const result = await importService.confirmImport(id, body.import_details)
             return successResponse(result, "Import confirmed", 200)
         } catch (error) {
             return handleError(error)

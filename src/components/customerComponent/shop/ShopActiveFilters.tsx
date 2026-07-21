@@ -59,7 +59,7 @@ export function ShopActiveFilters({
 
             <button
                 onClick={onResetAll}
-                className="text-xs text-brand-muted hover:text-brand-white underline underline-offset-2 ml-1 transition-colors"
+                className="text-xs text-gray-400 hover:text-gray-900 underline underline-offset-2 ml-1 transition-colors"
             >
                 ລ້າງທັງໝົດ
             </button>

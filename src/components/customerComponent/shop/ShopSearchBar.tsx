@@ -22,7 +22,7 @@ export function ShopSearchBar({
             <Button
                 variant="outline"
                 onClick={onOpenDrawer}
-                className="md:hidden h-11 px-4 rounded-xl flex items-center gap-2 shrink-0 border-brand-divider bg-transparent text-brand-white hover:bg-brand-card-dark hover:text-brand-white"
+                className="md:hidden h-11 px-4 rounded-xl flex items-center gap-2 shrink-0 border-gray-200 bg-transparent text-gray-900 hover:bg-gray-50 hover:text-gray-900"
             >
                 <SlidersHorizontal className="size-4" />
                 ກອງ
@@ -30,19 +30,19 @@ export function ShopSearchBar({
             </Button>
 
             <div className="flex-1 relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-brand-muted pointer-events-none" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
                 <Input
                     placeholder="ຄົ້ນຫາສິນຄ້າ..."
                     value={searchInput}
                     onChange={e => onSearchChange(e.target.value)}
-                    className="pl-10 h-11 bg-brand-card-dark border border-brand-divider rounded-xl focus-visible:ring-0 text-sm shadow-none text-brand-white placeholder:text-brand-muted"
+                    className="pl-10 h-11 bg-[#f1f3f5] border-none rounded-xl focus-visible:ring-0 text-sm shadow-none text-gray-900 placeholder:text-gray-400"
                 />
             </div>
 
             <select
                 value={sortBy}
                 onChange={e => onSortChange(e.target.value as SortBy)}
-                className="h-11 px-4 border border-brand-divider rounded-xl bg-brand-card-dark text-sm text-brand-white font-medium focus:outline-none cursor-pointer min-w-[150px]"
+                className="h-11 px-4 border border-gray-200 rounded-xl bg-white text-sm text-gray-900 font-medium focus:outline-none cursor-pointer min-w-[150px]"
             >
                 <option value="featured">ແນະນຳ</option>
                 <option value="price-low">ລາຄາ: ຕ່ຳ → ສູງ</option>
