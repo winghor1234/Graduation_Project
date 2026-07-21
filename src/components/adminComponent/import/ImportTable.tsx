@@ -5,9 +5,11 @@ import { useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Eye, Trash2 } from "lucide-react"
-import { Import } from "@/modules/import/import.type"
+import { Eye, Trash2, PackagePlus } from "lucide-react"
+import { Import, CreateImportInput } from "@/modules/import/import.type"
+import { PurchaseOrder } from "../purchase/PurchaseType"
 import { formatDate } from "@/utils/FormatDate"
+import { formatCurrency } from "@/utils/FormatCurrency"
 import { BadgeComponent } from "../StatusComponent"
 import { ImportViewDialog } from "./ImportViewDialog"
 import { FaCheckSquare, FaTimesCircle } from "react-icons/fa"
@@ -19,24 +21,84 @@ type Props = {
     isLoading: boolean
     onDelete: (id: string) => void
     onView: (i: Import) => void
-     confirm: UseMutationResult<void, Error, string>;
-    cancel: UseMutationResult<void, Error, string>;
+    confirm: UseMutationResult<void, Error, string>
+    cancel: UseMutationResult<void, Error, string>
+    purchases: PurchaseOrder[]
+    create: UseMutationResult<Import, Error, CreateImportInput>
 }
 
-export function ImportTable({ imports, isLoading, onView, onDelete, confirm, cancel }: Props) {
+export function ImportTable({ imports, isLoading, onView, onDelete, confirm, cancel, purchases, create }: Props) {
 
     const [selected, setSelected] = useState<Import | null>(null)
     const [viewOpen, setViewOpen] = useState(false)
 
+    const [createOpen, setCreateOpen] = useState(false)
+    const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | undefined>()
+
+    // ✅ ໃບສັ່ງຊື້ທີ່ PENDING ແລະ ຍັງບໍ່ທັນມີ import — ລໍຖ້ານຳເຂົ້າ
+    const pendingPurchases = purchases.filter(p => p.status === "PENDING" && !p.import)
+
+    const handleInsertImport = (purchaseId: string) => {
+        setSelectedPurchaseId(purchaseId)
+        setCreateOpen(true)
+    }
+
     if (isLoading) {
         return <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><div className="animate-pulse">ກຳລັງໂຫຼດ...</div></Card>
-    }
-    if (!imports?.length) {
-        return <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><p>ຍັງບໍ່ມີຂໍ້ມູນການນຳເຂົ້າ</p></Card>
     }
 
     return (
         <>
+            {/* ✅ ໃບສັ່ງຊື້ລໍຖ້ານຳເຂົ້າ (PENDING, ຍັງບໍ່ມີ import) */}
+            {pendingPurchases.length > 0 && (
+                <Card className="overflow-hidden rounded-2xl border border-admin-border bg-admin-card shadow-sm">
+                    <div className="px-4 pt-4">
+                        <h3 className="text-sm font-semibold text-admin-text">ໃບສັ່ງຊື້ລໍຖ້ານຳເຂົ້າ</h3>
+                    </div>
+                    <div className="w-full overflow-x-auto">
+                        <Table className="min-w-[640px]">
+                            <TableHeader>
+                                <TableRow className="bg-muted/50">
+                                    <TableHead className="w-10">#</TableHead>
+                                    <TableHead>ລະຫັດສັ່ງຊື້</TableHead>
+                                    <TableHead>ຜູ້ສະໜອງ</TableHead>
+                                    <TableHead className="text-center">ວັນທີສັ່ງຊື້</TableHead>
+                                    <TableHead className="text-right">ຍອດລວມ</TableHead>
+                                    <TableHead className="text-center">ການຈັດການ</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pendingPurchases.map((p, index) => (
+                                    <TableRow key={p.purchase_id}>
+                                        <TableCell className="text-muted-foreground text-xs">{index + 1}</TableCell>
+                                        <TableCell className="font-mono text-sm">{p.purchase_code}</TableCell>
+                                        <TableCell>{p.supplier?.supplier_name ?? "—"}</TableCell>
+                                        <TableCell className="text-center text-sm">{formatDate(p.purchase_date)}</TableCell>
+                                        <TableCell className="text-right text-sm">{formatCurrency(p.total_amount ?? 0)}</TableCell>
+                                        <TableCell>
+                                            <div className="flex justify-center">
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="gap-1.5 hover:bg-brand-blue-soft hover:text-brand-blue"
+                                                    onClick={() => handleInsertImport(p.purchase_id)}
+                                                >
+                                                    <PackagePlus className="w-4 h-4" />
+                                                    ນຳເຂົ້າ
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </Card>
+            )}
+
+            {!imports?.length ? (
+                <Card className="p-12 text-center text-sm text-admin-muted rounded-2xl border border-admin-border bg-admin-card"><p>ຍັງບໍ່ມີຂໍ້ມູນການນຳເຂົ້າ</p></Card>
+            ) : (
             <Card className="overflow-hidden rounded-2xl border border-admin-border bg-admin-card shadow-sm">
                 <div className="w-full overflow-x-auto">
                     <Table className="min-w-[760px]">
@@ -148,6 +210,7 @@ export function ImportTable({ imports, isLoading, onView, onDelete, confirm, can
                     </Table>
                 </div>
             </Card>
+            )}
 
             {/* ✅ View + action dialog */}
             <ImportViewDialog
@@ -156,6 +219,17 @@ export function ImportTable({ imports, isLoading, onView, onDelete, confirm, can
                 data={selected ?? undefined}
                 confirm={confirm}
                 cancel={cancel}
+            />
+
+            {/* ✅ Create dialog — ເປີດຈາກແຖວໃບສັ່ງຊື້ລໍຖ້ານຳເຂົ້າ, ເລືອກໃບສັ່ງຊື້ໄວ້ລ່ວງໜ້າ */}
+            <ImportViewDialog
+                open={createOpen}
+                onOpenChange={setCreateOpen}
+                confirm={confirm}
+                cancel={cancel}
+                create={create}
+                purchases={purchases}
+                initialPurchaseId={selectedPurchaseId}
             />
         </>
     )

@@ -7,7 +7,7 @@ import { useGetImports, useCreateImport, useDeleteImport, useConfirmImport, useC
 import { Import } from "@/modules/import/import.type"
 import { ImportToolbar } from "@/components/adminComponent/import/ImportToolbar"
 import { ImportTable } from "@/components/adminComponent/import/ImportTable"
-import { ImportFormDialog } from "@/components/adminComponent/import/ImportFormDialog"
+import { ImportViewDialog } from "@/components/adminComponent/import/ImportViewDialog"
 import { useGetAllPurchaseOrders } from "@/app/features/hooks/Purchase"
 import { ImportDetailDialog } from "@/components/adminComponent/import/ImportDetailDialog"
 
@@ -69,11 +69,15 @@ export default function ImportPage() {
                 onDelete={handleDelete}
                 confirm={confirmImport}
                 cancel={cancelImport}
+                purchases={purchases ?? []}
+                create={createImport}
             />
 
-            <ImportFormDialog
+            <ImportViewDialog
                 open={openForm}
                 onOpenChange={setOpenForm}
+                confirm={confirmImport}
+                cancel={cancelImport}
                 create={createImport}
                 purchases={purchases ?? []}
             />
