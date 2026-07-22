@@ -9,6 +9,7 @@ import { AppPagination } from "@/components/AppPagination"
 import { Order } from "@/modules/order/order.type"
 import { OrderDetailDialog } from "@/components/adminComponent/order/OrderDetail"
 import { OrderTable } from "@/components/adminComponent/order/OrderTable"
+import { OrderToolbar } from "@/components/adminComponent/order/OrderToolbar"
 
 
 export default function UnifiedOrderPage() {
@@ -32,6 +33,8 @@ export default function UnifiedOrderPage() {
 
     return (
         <div className="space-y-4">
+
+            <OrderToolbar table={table} onAdd={() => {}} />
 
             <OrderTable
                 data={data?.data ?? []}

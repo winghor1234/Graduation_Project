@@ -1,19 +1,28 @@
 "use client"
 
-import { useState } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Order } from "@/modules/order/order.type"
-import { DeliveryStatus, OrderStatus } from "@prisma/client"
+import { OrderStatus } from "@prisma/client"
 import { formatDate } from "@/utils/FormatDate"
 import Image from "next/image"
 import { BadgeComponent } from "../StatusComponent"
 import { useUpdateOrderStatus } from "@/app/features/hooks/Order"
-import { useUpdateDelivery } from "@/app/features/hooks/Delivery"
 import { toast } from "sonner"
+import { Phone } from "lucide-react"
+
+// ແປງເບີໂທເປັນ format WhatsApp
+function toWhatsAppNumber(phone: string): string {
+    const cleaned = phone.replace(/\D/g, "")
+    if (cleaned.startsWith("856")) return cleaned
+    if (cleaned.startsWith("0")) return "856" + cleaned.slice(1)
+    return "856" + cleaned
+}
 
 // ────────────────────────────────────────────────────────────
 // Order status transitions
 // ────────────────────────────────────────────────────────────
+// ✅ ອັບເດດສະຖານະອໍເດີ້ຢ່າງດຽວ — Delivery ຈະ sync ຕາມອັດຕະໂນມັດຢູ່ backend
+// (SHIPPED → Delivery SHIPPED, COMPLETED → Delivery DELIVERED, CANCELLED → Delivery CANCELLED)
 
 const NEXT_ORDER_STATUSES: Partial<Record<OrderStatus, { status: OrderStatus; label: string; className: string }[]>> = {
     WAITING_PAYMENT: [
@@ -45,24 +54,6 @@ const NEXT_ORDER_STATUSES_COD: Partial<Record<OrderStatus, { status: OrderStatus
 }
 
 // ────────────────────────────────────────────────────────────
-// Delivery status transitions
-// ────────────────────────────────────────────────────────────
-
-const NEXT_DELIVERY_STATUSES: Partial<Record<DeliveryStatus, { status: DeliveryStatus; label: string; className: string; needsTracking?: boolean }[]>> = {
-    PENDING: [
-        { status: "PROCESSING", label: "ກຽມຈັດສົ່ງ", className: "bg-violet-500 hover:bg-violet-600 text-white" },
-        { status: "CANCELLED",  label: "ຍົກເລີກການສົ່ງ", className: "bg-red-500 hover:bg-red-600 text-white" },
-    ],
-    PROCESSING: [
-        { status: "SHIPPED",   label: "ສົ່ງອອກ", className: "bg-blue-500 hover:bg-blue-600 text-white", needsTracking: true },
-        { status: "CANCELLED", label: "ຍົກເລີກການສົ່ງ", className: "bg-red-500 hover:bg-red-600 text-white" },
-    ],
-    SHIPPED: [
-        { status: "DELIVERED", label: "ສົ່ງເຖິງແລ້ວ", className: "bg-emerald-500 hover:bg-emerald-600 text-white" },
-    ],
-}
-
-// ────────────────────────────────────────────────────────────
 
 type Props = {
     open: boolean
@@ -71,19 +62,12 @@ type Props = {
 }
 
 export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
-    const { mutate: updateOrderStatus, isPending: orderPending } = useUpdateOrderStatus()
-    const { mutate: updateDelivery,    isPending: deliveryPending } = useUpdateDelivery()
-
-    const [trackingNumber, setTrackingNumber] = useState("")
-    const [pendingDeliveryStatus, setPendingDeliveryStatus] = useState<DeliveryStatus | null>(null)
+    const { mutate: updateOrderStatus, isPending } = useUpdateOrderStatus()
 
     if (!data) return null
 
     const isCOD = data.payment?.method === "CASH"
     const nextOrderStatuses = (isCOD ? NEXT_ORDER_STATUSES_COD : NEXT_ORDER_STATUSES)[data.status] ?? []
-    const nextDeliveryStatuses = data.delivery
-        ? (NEXT_DELIVERY_STATUSES[data.delivery.status] ?? [])
-        : []
 
     const handleUpdateOrderStatus = (status: OrderStatus) => {
         if (!confirm(`ຢືນຢັນການປ່ຽນສະຖານະອໍເດີ້ເປັນ "${status}"?`)) return
@@ -98,36 +82,6 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
             }
         )
     }
-
-    const handleDeliveryStatusClick = (next: { status: DeliveryStatus; needsTracking?: boolean }) => {
-        if (next.needsTracking) {
-            // show tracking number input inline
-            setPendingDeliveryStatus(next.status)
-            return
-        }
-        confirmDeliveryUpdate(next.status)
-    }
-
-    const confirmDeliveryUpdate = (status: DeliveryStatus, tracking?: string) => {
-        if (!data.delivery) return
-        updateDelivery(
-            {
-                id:   data.delivery.delivery_id,
-                data: { status, ...(tracking ? { tracking_number: tracking } : {}) },
-            },
-            {
-                onSuccess: () => {
-                    toast.success("ອັບເດດສະຖານະການຈັດສົ່ງສຳເລັດ")
-                    setPendingDeliveryStatus(null)
-                    setTrackingNumber("")
-                    onOpenChange(false)
-                },
-                onError: () => toast.error("ເກີດຂໍ້ຜິດພາດໃນການອັບເດດການຈັດສົ່ງ"),
-            }
-        )
-    }
-
-    const isPending = orderPending || deliveryPending
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -164,7 +118,20 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
                             </div>
                             <div>
                                 <p className="text-gray-500 text-xs">ເບີໂທ</p>
-                                <p className="font-medium">{data.customer.phone}</p>
+                                {data.customer.phone ? (
+                                    <a
+                                        href={`https://wa.me/${toWhatsAppNumber(data.customer.phone)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-[#25D366] hover:underline font-medium"
+                                        title="ເປີດ WhatsApp ເພື່ອສົ່ງບິນຮັບເຄື່ອງໃຫ້ລູກຄ້າ"
+                                    >
+                                        <Phone className="size-3.5" />
+                                        {data.customer.phone}
+                                    </a>
+                                ) : (
+                                    <p className="font-medium">-</p>
+                                )}
                             </div>
                             <div>
                                 <p className="text-gray-500 text-xs">ອີເມວ</p>
@@ -204,7 +171,7 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
                         ) : null}
                     </div>
 
-                    {/* DELIVERY */}
+                    {/* DELIVERY — read-only, sync ຕາມສະຖານະອໍເດີ້ອັດຕະໂນມັດ */}
                     <div className="border rounded-lg p-4 space-y-3">
                         <h3 className="font-semibold">ການຈັດສົ່ງ</h3>
                         <BadgeComponent status={data.delivery?.status} />
@@ -219,58 +186,11 @@ export function OrderDetailDialog({ open, onOpenChange, data }: Props) {
                             <p>ເມືອງ: {data.delivery?.address?.district?.district_name ?? "-"}</p>
                             <p>ສາຂາ: {data.delivery?.address?.branch?.branch_name ?? "-"}</p>
                         </div>
-
-                        {/* Delivery status actions */}
-                        {nextDeliveryStatuses.length > 0 && (
-                            <div className="pt-2 border-t space-y-2">
-                                <p className="text-xs text-gray-500 font-medium">ອັບເດດການຈັດສົ່ງ:</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {nextDeliveryStatuses.map(({ status, label, className, needsTracking }) => (
-                                        <button
-                                            key={status}
-                                            disabled={isPending}
-                                            onClick={() => handleDeliveryStatusClick({ status, needsTracking })}
-                                            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors disabled:opacity-50 ${className}`}
-                                        >
-                                            {label}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                {/* Tracking number input — shown only when SHIPPED selected */}
-                                {pendingDeliveryStatus === "SHIPPED" && (
-                                    <div className="mt-2 space-y-2">
-                                        <input
-                                            type="text"
-                                            placeholder="ໝາຍເລກຕິດຕາມ (tracking number)"
-                                            value={trackingNumber}
-                                            onChange={e => setTrackingNumber(e.target.value)}
-                                            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        />
-                                        <div className="flex gap-2">
-                                            <button
-                                                disabled={isPending}
-                                                onClick={() => confirmDeliveryUpdate("SHIPPED", trackingNumber || undefined)}
-                                                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50"
-                                            >
-                                                {deliveryPending ? "ກຳລັງອັບເດດ..." : "ຢືນຢັນສົ່ງອອກ"}
-                                            </button>
-                                            <button
-                                                onClick={() => { setPendingDeliveryStatus(null); setTrackingNumber("") }}
-                                                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700"
-                                            >
-                                                ຍົກເລີກ
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
 
                 </div>
 
-                {/* Order status actions */}
+                {/* Order status actions — ອັບເດດອອເດີ້ຢ່າງດຽວ, delivery sync ໃຫ້ອັດຕະໂນມັດ */}
                 {nextOrderStatuses.length > 0 && (
                     <div className="mt-5 pt-4 border-t flex items-center gap-3 flex-wrap">
                         <span className="text-sm text-gray-500 font-medium">ອັບເດດສະຖານະອໍເດີ້:</span>

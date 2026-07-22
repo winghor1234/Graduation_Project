@@ -354,6 +354,21 @@ export const orderService = {
                 }
             }
 
+            // ✅ Sync ສະຖານະ Delivery ໃຫ້ກົງກັບ Order ອັດຕະໂນມັດ —
+            // admin ບໍ່ຕ້ອງກົດອັບເດດແຍກກັນສອງບ່ອນ (order ແລະ delivery) ອີກຕໍ່ໄປ
+            const DELIVERY_SYNC: Partial<Record<OrderStatus, DeliveryStatus>> = {
+                SHIPPED:   DeliveryStatus.SHIPPED,
+                COMPLETED: DeliveryStatus.DELIVERED,
+                CANCELLED: DeliveryStatus.CANCELLED,
+            }
+            const deliverySyncStatus = DELIVERY_SYNC[status]
+            if (deliverySyncStatus) {
+                await tx.delivery.updateMany({
+                    where: { order_id: orderId },
+                    data:  { status: deliverySyncStatus },
+                })
+            }
+
             const updated = await tx.order.update({
                 where:   { order_id: orderId },
                 data:    { status },

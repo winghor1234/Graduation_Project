@@ -106,7 +106,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                 <TableHead className={theme.subText}>ການຊຳລະ</TableHead>
                                 <TableHead className={theme.subText}>ສລິບ</TableHead>
                                 <TableHead className={theme.subText}>ຈັດສົ່ງ</TableHead>
-                                <TableHead className={theme.subText}>ເລກຕິດຕາມ</TableHead>
+                                {/* <TableHead className={theme.subText}>ເລກຕິດຕາມ</TableHead> */}
                                 <TableHead className={theme.subText}>ການຈັດການ</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -136,9 +136,9 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                         ) : null}
                                     </TableCell>
                                     <TableCell><BadgeComponent status={o.delivery?.status} /></TableCell>
-                                    <TableCell className={cn("font-mono text-xs", theme.subText)}>
+                                    {/* <TableCell className={cn("font-mono text-xs", theme.subText)}>
                                         {o.delivery?.tracking_number || "-"}
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell>
                                         <div className="flex gap-1.5">
                                             <Button

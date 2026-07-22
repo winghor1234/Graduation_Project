@@ -32,6 +32,15 @@ export function OrderToolbar({ table }: PropsTable) {
                         <DropdownMenuItem onClick={() => table.setSort("createdAt", "desc")}>
                             ໃໝ່ສຸດ
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => table.setSort("createdAt", "asc")}>
+                            ເກົ່າສຸດ
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => table.setSort("total_amount", "desc")}>
+                            ຍອດລວມ: ສູງ → ຕ່ຳ
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => table.setSort("total_amount", "asc")}>
+                            ຍອດລວມ: ຕ່ຳ → ສູງ
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
