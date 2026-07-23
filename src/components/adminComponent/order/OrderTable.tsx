@@ -39,6 +39,13 @@ export function OrderTable({ data, isLoading, onView }: Props) {
     //     setOpenDialog(true)
     // }
 
+    // ✅ ARRIVED ເກີນ 1 ມື້ ແຕ່ຍັງບໍ່ COMPLETED — highlight ໃຫ້ admin ເຫັນວ່າຕ້ອງຮີບອັບເດດ
+    const getOverdueDays = (order: Order) => {
+        if (order.status !== "ARRIVED" || !order.arrived_at) return 0
+        const days = Math.floor((Date.now() - new Date(order.arrived_at).getTime()) / (24 * 60 * 60 * 1000))
+        return days >= 1 ? days : 0
+    }
+
     const handleSubmitVerify = (status: "VERIFIED" | "REJECTED") => {
         if (!selectedPayment) return
         verifyPayment.mutate(
@@ -55,7 +62,7 @@ export function OrderTable({ data, isLoading, onView }: Props) {
     //     setOpenDeliveryDialog(true)
     // }
 
-    const handleUpdateDelivery = (status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED") => {
+    const handleUpdateDelivery = (status: "PENDING" | "PROCESSING" | "SHIPPED" | "ARRIVED" | "DELIVERED" | "CANCELLED") => {
         if (!selectedDelivery?.delivery_id) return
         updateDelivery.mutate(
             { id: selectedDelivery.delivery_id, data: { status } },
@@ -135,7 +142,14 @@ export function OrderTable({ data, isLoading, onView }: Props) {
                                             <span className={cn("text-xs", theme.subText)}>ຈ່າຍປາຍທາງ</span>
                                         ) : null}
                                     </TableCell>
-                                    <TableCell><BadgeComponent status={o.delivery?.status} /></TableCell>
+                                    <TableCell>
+                                        <BadgeComponent status={o.delivery?.status} />
+                                        {getOverdueDays(o) > 0 && (
+                                            <p className="text-[11px] font-semibold text-red-600 mt-1">
+                                                ⚠ ເກີນກຳນົດ {getOverdueDays(o)} ມື້
+                                            </p>
+                                        )}
+                                    </TableCell>
                                     {/* <TableCell className={cn("font-mono text-xs", theme.subText)}>
                                         {o.delivery?.tracking_number || "-"}
                                     </TableCell> */}

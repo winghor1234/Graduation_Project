@@ -7,6 +7,8 @@ export const translateStatus = (status?: string) => {
             return "ກຳລັງດຳເນີນການ"
         case "SHIPPED":
             return "ກຳລັງຈັດສົ່ງ"
+        case "ARRIVED":
+            return "ຮອດປາຍທາງແລ້ວ"
         case "DELIVERED":
             return "ສົ່ງສຳເລັດ"
         case "CANCELLED":
@@ -40,6 +42,8 @@ export const statusColor = (status?: string) => {
             return "bg-blue-100 text-blue-700"
         case "SHIPPED":
             return "bg-indigo-100 text-indigo-700"
+        case "ARRIVED":
+            return "bg-violet-100 text-violet-700"
         case "DELIVERED":
             return "bg-green-100 text-green-700"
         case "COMPLETED":

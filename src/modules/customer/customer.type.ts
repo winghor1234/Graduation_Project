@@ -79,7 +79,7 @@ export interface Customer {
   totalSpent: number;
   loyaltyPoints: number;
   isActive: boolean;
-  points: Point[];
+  point: number;
   orders: CustomerOrder[];
   pointsHistory: PointsTransaction[];
 }

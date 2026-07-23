@@ -287,6 +287,17 @@ export const productService = {
     })
     if (!existing) throw new NotFoundError("Product not found")
 
+    // 1.5 ລຶບຮູບເກົ່າທີ່ຖືກເອົາອອກໃນຟອມ (Cloudinary + DB) — ບໍ່ດັ່ງນັ້ນມັນຄ້າງຢູ່ຖາວອນ
+    if (data.deletedImageIds?.length) {
+      const toDelete = existing.images.filter(img => data.deletedImageIds!.includes(img.image_id))
+      if (toDelete.length) {
+        await deleteImages(toDelete.map(img => img.public_id))
+        await prisma.productImage.deleteMany({
+          where: { image_id: { in: toDelete.map(img => img.image_id) } },
+        })
+      }
+    }
+
     // 2. ອັບໂຫຼດຮູບໃໝ່ (ຖ້າມີ)
     let newImages: ProductImageInput[] = []
     if (data.files?.length) {
@@ -298,8 +309,8 @@ export const productService = {
       }))
     }
 
-    // 3. ອັບເດດສິນຄ້າ
-    const updatedProduct = await prisma.product.update({
+    // 3. ອັບເດດສິນຄ້າ + ຮູບ
+    await prisma.product.update({
       where: { product_id: productId },
       data: {
         product_name: data.product_name,
@@ -310,29 +321,64 @@ export const productService = {
             createMany: { data: newImages }
           }
         }),
+      },
+    })
 
-        // ອັບເດດ variants — ລຶບເກົ່າ ແລ້ວສ້າງໃໝ່
-        ...(data.variants && {
-          variants: {
-            deleteMany: {}, // ລຶບ variants ເກົ່າທັງໝົດ
-            createMany: {
-              data: data.variants.map(v => ({
-                sku: v.sku,
-                color: v.color,
-                size: v.size,
-                purchase_price: v.purchase_price,
-                sale_price: v.sale_price,
-                stock_qty: v.stock_qty ?? 0,
-              }))
-            }
-          }
-        }),
-      },
-      include: {
-        images: true,
-        variants: true,
-        category: true,
-      },
+    // 4. ຄືນຄ່າ variants — update ອັນເກົ່າທີ່ຍັງຢູ່ (ຮັກສາ variant_id ບໍ່ໃຫ້ FK ພັງ),
+    //    ສ້າງໃໝ່ສະເພາະອັນທີ່ບໍ່ມີ variant_id, ລຶບສະເພາະອັນທີ່ຖືກເອົາອອກໄປແທ້ໆ
+    // ⚠️ ຢ່າປ່ຽນກັບເປັນ deleteMany({}) + createMany ອີກ — ມັນລຶບ variant_id ເກົ່າໝົດທຸກຄັ້ງທີ່ແກ້ໄຂ
+    //    ພັງທັນທີຖ້າ variant ນັ້ນເຄີຍຖືກອ້າງອີງໃນ Purchase/Import/Sale/Order ມາກ່ອນ (P2003 FK constraint)
+    if (data.variants) {
+      const incomingIds = new Set(
+        data.variants.filter(v => v.variant_id).map(v => v.variant_id!)
+      )
+      const toDelete = existing.variants.filter(v => !incomingIds.has(v.variant_id))
+
+      try {
+        for (const v of toDelete) {
+          await prisma.productVariant.delete({ where: { variant_id: v.variant_id } })
+        }
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
+          throw new BadRequestError(
+            "ບໍ່ສາມາດລຶບບາງ variant ໄດ້ ເພາະມີການຊື້/ຂາຍ ຫຼື ນຳເຂົ້າອ້າງອີງຢູ່ແລ້ວ"
+          )
+        }
+        throw err
+      }
+
+      for (const v of data.variants) {
+        if (v.variant_id) {
+          await prisma.productVariant.update({
+            where: { variant_id: v.variant_id },
+            data: {
+              sku: v.sku,
+              color: v.color,
+              size: v.size,
+              purchase_price: v.purchase_price,
+              sale_price: v.sale_price,
+              stock_qty: v.stock_qty ?? 0,
+            },
+          })
+        } else {
+          await prisma.productVariant.create({
+            data: {
+              product_id: productId,
+              sku: v.sku,
+              color: v.color,
+              size: v.size,
+              purchase_price: v.purchase_price,
+              sale_price: v.sale_price,
+              stock_qty: v.stock_qty ?? 0,
+            },
+          })
+        }
+      }
+    }
+
+    return prisma.product.findUniqueOrThrow({
+      where: { product_id: productId },
+      include: { images: true, variants: true, category: true },
     })
   },
 

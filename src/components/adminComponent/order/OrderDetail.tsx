@@ -34,6 +34,9 @@ const NEXT_ORDER_STATUSES: Partial<Record<OrderStatus, { status: OrderStatus; la
         { status: "CANCELLED", label: "ຍົກເລີກ",   className: "bg-red-500 hover:bg-red-600 text-white" },
     ],
     SHIPPED: [
+        { status: "ARRIVED",   label: "ຮອດປາຍທາງແລ້ວ", className: "bg-violet-500 hover:bg-violet-600 text-white" },
+    ],
+    ARRIVED: [
         { status: "COMPLETED", label: "ສຳເລັດ", className: "bg-emerald-500 hover:bg-emerald-600 text-white" },
     ],
 }
@@ -49,6 +52,9 @@ const NEXT_ORDER_STATUSES_COD: Partial<Record<OrderStatus, { status: OrderStatus
         { status: "CANCELLED", label: "ຍົກເລີກ", className: "bg-red-500 hover:bg-red-600 text-white" },
     ],
     SHIPPED: [
+        { status: "ARRIVED",   label: "ຮອດປາຍທາງແລ້ວ", className: "bg-violet-500 hover:bg-violet-600 text-white" },
+    ],
+    ARRIVED: [
         { status: "COMPLETED", label: "ຢືນຢັນເກັບເງິນສົດແລ້ວ", className: "bg-emerald-500 hover:bg-emerald-600 text-white" },
     ],
 }

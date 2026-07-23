@@ -52,6 +52,7 @@ export function DeliveryUpdateDialog({ open, onOpenChange, delivery, onSubmit }:
                                 <SelectItem value="PENDING">ລໍຖ້າດຳເນີນການ</SelectItem>
                                 <SelectItem value="PROCESSING">ກຳລັງດຳເນີນການ</SelectItem>
                                 <SelectItem value="SHIPPED">ກຳລັງຈັດສົ່ງ</SelectItem>
+                                <SelectItem value="ARRIVED">ຮອດປາຍທາງແລ້ວ</SelectItem>
                                 <SelectItem value="DELIVERED">ຈັດສົ່ງສຳເລັດ</SelectItem>
                                 <SelectItem value="CANCELLED">ຍົກເລີກແລ້ວ</SelectItem>
                             </SelectContent>

@@ -86,7 +86,7 @@ export function CustomerTable({ customers, isLoading, onEdit, onChange }: Props)
                                 <TableCell className={theme.subText}>{customer.email}</TableCell>
                                 <TableCell className={theme.subText}>{customer.phone}</TableCell>
                                 <TableCell className={cn("font-semibold", theme.primary)}>
-                                    {customer.points?.map((p) => p.point_amount).reduce((a, b) => a + b, 0) || 0}
+                                    {customer.point || 0}
                                 </TableCell>
                                 <TableCell>
                                     {customer.isActive

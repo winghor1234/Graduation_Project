@@ -5,21 +5,22 @@ import { useRouter, usePathname } from "next/navigation"
 import { getRedirectPath } from "@/utils/auth"
 import {
     LayoutDashboard, ShoppingCart, ShoppingBag, Package,
-    Store, Users, UserCog, BarChart3, Settings,
+    Store, Users, UserCog, BarChart3, Settings, RotateCcw,
 } from "lucide-react"
 
 import { useAuthMe, useEmployeeLogout } from "../features/hooks/Auth"
-import { useGetPendingOrderCount } from "../features/hooks/Order"
+import { useGetPendingOrderCount, useGetOverdueArrivedCount } from "../features/hooks/Order"
 import { Sidebar } from "@/components/adminComponent/adminLayout/Sidebar"
 import { Header } from "@/components/adminComponent/adminLayout/Header"
 
 const navigation = [
     { name: "ໜ້າຫຼັກ",          href: "/admin/dashboard", icon: LayoutDashboard, roles: ["ADMIN"] },
-    { name: "ການສັ່ງຊື້ສິນຄ້າ",  href: "/admin/purchase",  icon: ShoppingBag,    roles: ["ADMIN", "STAFF"] },
-    { name: "ນຳເຂົ້າສິນຄ້າ",     href: "/admin/import",    icon: Package,        roles: ["ADMIN", "STAFF"] },
+    { name: "ການສັ່ງຊື້ສິນຄ້າ",  href: "/admin/purchase",  icon: ShoppingBag,    roles: ["ADMIN"] },
+    { name: "ນຳເຂົ້າສິນຄ້າ",     href: "/admin/import",    icon: Package,        roles: ["ADMIN"] },
     { name: "ຜູ້ສະໜອງ",          href: "/admin/supplier",  icon: Users,          roles: ["ADMIN"] },
     { name: "ໝວດໝູ່ສິນຄ້າ",      href: "/admin/category",  icon: Store,          roles: ["ADMIN"] },
     { name: "ໜ້າຂາຍໜ້າຮ້ານ",    href: "/admin/POS",       icon: ShoppingCart,   roles: ["ADMIN", "STAFF"] },
+    { name: "ຄືນສິນຄ້າ",          href: "/admin/refund",    icon: RotateCcw,      roles: ["ADMIN"] },
     { name: "ຄຳສັ່ງຊື້",          href: "/admin/order",     icon: ShoppingBag,    roles: ["ADMIN", "STAFF"] },
     { name: "ຈັດການສິນຄ້າ",       href: "/admin/product",   icon: Package,        roles: ["ADMIN"] },
     { name: "ຈັດການໂປໂມຊັນ",     href: "/admin/promotion", icon: ShoppingCart,   roles: ["ADMIN"] },
@@ -37,6 +38,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const { user, isLoading } = useAuthMe()
     const { mutate: logout } = useEmployeeLogout()
     const { data: pendingCount = 0 } = useGetPendingOrderCount({ enabled: !isLoading && !!user })
+    // ✅ ອໍເດີ້ ARRIVED ເກີນ 1 ມື້ ແຕ່ຍັງບໍ່ COMPLETED — ຕ້ອງແຈ້ງເຕືອນ admin ນຳ
+    const { data: overdueArrivedCount = 0 } = useGetOverdueArrivedCount({ enabled: !isLoading && !!user })
     const [collapsed, setCollapsed] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -60,7 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 setCollapsed={setCollapsed}
                 setMobileOpen={setMobileOpen}
                 onLogout={() => { if (confirm("ຕ້ອງການອອກຈາກລະບົບ?")) logout() }}
-                badges={{ "/admin/order": pendingCount }}
+                badges={{ "/admin/order": pendingCount + overdueArrivedCount }}
             />
 
             {/* Mobile overlay */}

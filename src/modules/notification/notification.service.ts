@@ -5,6 +5,7 @@ const ORDER_STATUS_LABELS: Record<string, { title: string; message: (code: strin
     WAITING_PAYMENT: { title: "ລໍຖ້າການຊຳລະ",    message: (c) => `ອໍເດີ້ #${c} ກຳລັງລໍຖ້າການຊຳລະ ກະລຸນາຊຳລະພາຍໃນເວລາທີ່ກຳນົດ` },
     PAID:            { title: "ຢືນຢັນການຊຳລະ",    message: (c) => `ອໍເດີ້ #${c} ຢືນຢັນການຊຳລະແລ້ວ ຂອງທ່ານກຳລັງຖືກດຳເນີນການ` },
     SHIPPED:         { title: "ສິນຄ້າຖືກສົ່ງອອກ",  message: (c) => `ອໍເດີ້ #${c} ຖືກສົ່ງອອກແລ້ວ ກະລຸນາລໍຖ້າຮັບສິນຄ້າ` },
+    ARRIVED:         { title: "ເຄື່ອງຮອດປາຍທາງແລ້ວ", message: (c) => `ອໍເດີ້ #${c} ເຄື່ອງຮອດປາຍທາງແລ້ວ ກະລຸນາລໍຮັບສິນຄ້າໃນໄວໆນີ້` },
     COMPLETED:       { title: "ສຳເລັດ",            message: (c) => `ອໍເດີ້ #${c} ສຳເລັດແລ້ວ ຂອບໃຈທີ່ໃຊ້ບໍລິການ` },
     CANCELLED:       { title: "ອໍເດີ້ຖືກຍົກເລີກ",  message: (c) => `ອໍເດີ້ #${c} ຖືກຍົກເລີກ ກະລຸນາຕິດຕໍ່ເຮົາຖ້າມີຂໍ້ສົງໄສ` },
 }
@@ -12,6 +13,7 @@ const ORDER_STATUS_LABELS: Record<string, { title: string; message: (code: strin
 const DELIVERY_STATUS_LABELS: Record<string, { title: string; message: (code: string) => string }> = {
     PROCESSING: { title: "ກຳລັງກຽມຈັດສົ່ງ",  message: (c) => `ອໍເດີ້ #${c} ກຳລັງຖືກກຽມຈັດສົ່ງ ກະລຸນາລໍຖ້າ` },
     SHIPPED:    { title: "ສິນຄ້າກຳລັງຖືກສົ່ງ", message: (c) => `ອໍເດີ້ #${c} ກຳລັງຖືກຈັດສົ່ງ ກະລຸນາລໍຮັບທີ່ສາຂາ` },
+    ARRIVED:    { title: "ເຄື່ອງຮອດປາຍທາງແລ້ວ", message: (c) => `ອໍເດີ້ #${c} ເຄື່ອງຮອດປາຍທາງແລ້ວ ກະລຸນາລໍຮັບສິນຄ້າໃນໄວໆນີ້` },
     DELIVERED:  { title: "ສົ່ງເຖິງແລ້ວ",        message: (c) => `ອໍເດີ້ #${c} ສົ່ງເຖິງສາຂາແລ້ວ ກະລຸນາໄປຮັບສິນຄ້າ` },
     CANCELLED:  { title: "ຍົກເລີກການຈັດສົ່ງ",   message: (c) => `ອໍເດີ້ #${c} ຖືກຍົກເລີກການຈັດສົ່ງ ກະລຸນາຕິດຕໍ່ເຮົາ` },
 }
@@ -32,6 +34,28 @@ export const notificationService = {
                 order_id:    orderId,
                 title:       label.title,
                 message:     label.message(orderCode),
+            },
+        })
+    },
+
+    // ✅ ແຈ້ງເຕືອນລູກຄ້າຊ້ຳຖ້າສິນຄ້າຄ້າງຢູ່ປາຍທາງດົນເກີນໄປ (day=1 ເຕືອນທຳອິດ, day=5 ເຕືອນດ່ວນ)
+    async createArrivedReminderNotification(
+        customerId: string,
+        orderId: string,
+        orderCode: string,
+        day: 1 | 5,
+        tx: typeof prisma
+    ) {
+        if (!customerId) return
+        const isUrgent = day === 5
+        await (tx as typeof prisma).notification.create({
+            data: {
+                customer_id: customerId,
+                order_id:    orderId,
+                title:       isUrgent ? "ກະລຸນາຮັບສິນຄ້າດ່ວນ" : "ສິນຄ້າລໍຖ້າຢູ່ປາຍທາງ",
+                message:     isUrgent
+                    ? `ອໍເດີ້ #${orderCode} ລໍຖ້າຢູ່ປາຍທາງມາແລ້ວ 5 ມື້ ກະລຸນາຕິດຕໍ່ຮັບສິນຄ້າໂດຍໄວ`
+                    : `ອໍເດີ້ #${orderCode} ຮອດປາຍທາງມາແລ້ວ 1 ມື້ ກະລຸນາໄປຮັບສິນຄ້າ`,
             },
         })
     },

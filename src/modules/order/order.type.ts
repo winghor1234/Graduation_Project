@@ -25,6 +25,7 @@ export type Order = {
     order_date:    string
     order_code:    string
     status:        OrderStatus
+    arrived_at?:   string | null   // ✅ ເວລາທີ່ status ປ່ຽນເປັນ ARRIVED — ໃຊ້ນັບມື້ເກີນກຳນົດ
     total_amount:  number | null   // ✅ Schema: Int? (optional)
     customer_id:   string
     customer?:     Customer

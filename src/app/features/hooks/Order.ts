@@ -29,6 +29,18 @@ export const useGetPendingOrderCount = (options?: { enabled?: boolean }) => {
     })
 }
 
+// ✅ ໃໝ່ — badge ແຈ້ງເຕືອນ admin: ອໍເດີ້ ARRIVED ເກີນ 1 ມື້ ແຕ່ຍັງບໍ່ COMPLETED
+export const useGetOverdueArrivedCount = (options?: { enabled?: boolean }) => {
+    return useQuery({
+        queryKey: ["orders-overdue-arrived-count"],
+        queryFn:  orderApi.getOverdueArrivedCount,
+        enabled:         options?.enabled ?? true,
+        retry:           false,
+        refetchInterval: 30_000,
+        staleTime:       20_000,
+    })
+}
+
 export const useGetAllOrders = () => {
     return useQuery({
         queryKey: ["orders"],

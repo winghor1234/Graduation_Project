@@ -67,6 +67,17 @@ export const orderService = {
         })
     },
 
+    // ✅ ນັບອໍເດີ້ທີ່ ARRIVED ມາແລ້ວເກີນ 1 ມື້ ແຕ່ admin ຍັງບໍ່ອັບເດດເປັນ COMPLETED — ໃຊ້ສະແດງ badge ແຈ້ງເຕືອນ admin
+    async getOverdueArrivedCount() {
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+        return prisma.order.count({
+            where: {
+                status:     "ARRIVED",
+                arrived_at: { lte: oneDayAgo },
+            },
+        })
+    },
+
     async getAllOrders() {   // ✅ ແກ້ typo ຈາກ gerAllOrders
         return prisma.order.findMany({
             include: orderInclude,
@@ -296,7 +307,8 @@ export const orderService = {
             const validTransitions: Record<OrderStatus, OrderStatus[]> = {
                 WAITING_PAYMENT: isCOD ? ["SHIPPED", "CANCELLED"] : ["PAID", "CANCELLED"],
                 PAID:            ["SHIPPED", "CANCELLED"],
-                SHIPPED:         ["COMPLETED"],
+                SHIPPED:         ["ARRIVED"],
+                ARRIVED:         ["COMPLETED"],
                 COMPLETED:       [],
                 CANCELLED:       [],
             }
@@ -358,6 +370,7 @@ export const orderService = {
             // admin ບໍ່ຕ້ອງກົດອັບເດດແຍກກັນສອງບ່ອນ (order ແລະ delivery) ອີກຕໍ່ໄປ
             const DELIVERY_SYNC: Partial<Record<OrderStatus, DeliveryStatus>> = {
                 SHIPPED:   DeliveryStatus.SHIPPED,
+                ARRIVED:   DeliveryStatus.ARRIVED,
                 COMPLETED: DeliveryStatus.DELIVERED,
                 CANCELLED: DeliveryStatus.CANCELLED,
             }
@@ -371,12 +384,13 @@ export const orderService = {
 
             const updated = await tx.order.update({
                 where:   { order_id: orderId },
-                data:    { status },
+                // ✅ ບັນທຶກເວລາ ARRIVED — ໃຊ້ນັບມື້ສຳລັບ background reminder job
+                data:    { status, ...(status === "ARRIVED" ? { arrived_at: new Date() } : {}) },
                 include: orderInclude,
             })
 
             // ✅ ສ້າງ notification ໃຫ້ລູກຄ້າທຸກຄັ້ງທີ່ status ປ່ຽນ
-            console.log("[NOTIF] order.customer_id =", order.customer_id, "| status =", status)
+            // console.log("[NOTIF] order.customer_id =", order.customer_id, "| status =", status)
             if (order.customer_id) {
                 await notificationService.createOrderStatusNotification(
                     order.customer_id,

@@ -209,12 +209,16 @@ export const productController = {
             const variantsRaw = formData.get("variants") as string | null
             const variants = variantsRaw ? JSON.parse(variantsRaw) : undefined
 
+            const deletedImageIdsRaw = formData.get("deletedImageIds") as string | null
+            const deletedImageIds = deletedImageIdsRaw ? JSON.parse(deletedImageIdsRaw) : undefined
+
             const product = await productService.updateProduct(id, {
                 product_name: formDataParser.string(formData, "product_name"),
                 description: formDataParser.string(formData, "description"),
                 category_id: formDataParser.string(formData, "category_id"),
                 files: formData.getAll("images") as File[],
                 variants,
+                deletedImageIds,
             })
 
             return successResponse(product, "Product updated successfully", 200)

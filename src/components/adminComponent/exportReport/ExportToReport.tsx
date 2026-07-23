@@ -311,6 +311,7 @@ export const handleSalePDFExport = (sales: Sale[]) => {
         fileName: "sale-quantity-report",
         columns: [
             { header: "ລຳດັບ", key: "__index" },
+            { header: "ຊ່ອງທາງ", key: "source" },
             { header: "ລູກຄ້າ", key: "customer" },
             { header: "ພະນັກງານຂາຍ", key: "employee" },
             { header: "ລາຍການສິນຄ້າ", key: "products" },
@@ -320,6 +321,7 @@ export const handleSalePDFExport = (sales: Sale[]) => {
         ],
         data: sales.map((s, index) => ({
             __index: index + 1,
+            source: s.source === "ONLINE" ? "ອອນລາຍ" : "ໜ້າຮ້ານ",
             customer: s.customer?.customer_name ?? "-",
             employee: s.employee?.employee_name ?? "-",
             products: s.sale_details?.map((d) => `${d.product?.product_name ?? "-"} x ${d.quantity}`).join(", ") ?? "-",
@@ -339,6 +341,7 @@ export const handleSaleExcelExport = (sales: Sale[]) => {
         sheetName: "Sales",
         columns: [
             { header: "ລຳດັບ", key: "__index" },
+            { header: "ຊ່ອງທາງ", key: "source" },
             { header: "ລູກຄ້າ", key: "customer" },
             { header: "ພະນັກງານຂາຍ", key: "employee" },
             { header: "ລາຍການສິນຄ້າ", key: "products" },
@@ -348,6 +351,7 @@ export const handleSaleExcelExport = (sales: Sale[]) => {
         ],
         data: sales.map((s, index) => ({
             __index: index + 1,
+            source: s.source === "ONLINE" ? "ອອນລາຍ" : "ໜ້າຮ້ານ",
             customer: s.customer?.customer_name ?? "-",
             employee: s.employee?.employee_name ?? "-",
             products: s.sale_details?.map((d) => `${d.product?.product_name ?? "-"} x${d.quantity}`).join(", ") ?? "-",

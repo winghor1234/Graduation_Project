@@ -8,20 +8,14 @@ import { formatCurrency } from "@/utils/FormatCurrency"
 import { BackButton } from "@/utils/BackButton"
 
 import jsPDF from "jspdf"
-import autoTable, { RowInput } from "jspdf-autotable"
-import { generateInvoiceCode } from "@/utils/generateCode"
-import { NotoSansLaoBase64 } from "@/lib/fonts/NotoSansLao"
+// ✅ html2canvas ທຳມະດາບໍ່ຮອງຮັບ oklch() (Tailwind v4 ໃຊ້ເປັນ default) — ໃຊ້ fork ນີ້ແທນ
+import html2canvas from "html2canvas-pro"
 
-// ປະກາດ type ໃຫ້ jsPDF instance ທີ່ມີ lastAutoTable (ແທນການໃຊ້ `as any`)
-type jsPDFWithAutoTable = jsPDF & {
-    lastAutoTable: { finalY: number }
-}
-
-function registerLaoFont(doc: jsPDF) {
-    doc.addFileToVFS("NotoSansLao-Regular.ttf", NotoSansLaoBase64)
-    doc.addFont("NotoSansLao-Regular.ttf", "NotoSansLao", "normal")
-    doc.setFont("NotoSansLao")
-}
+// ⚠️ ຫ້າມແກ້ກັບໄປໃຊ້ jsPDF.text() + custom font ອີກ — jsPDF ວາດ text ແບບ 1
+// codepoint = 1 glyph ຈາກ cmap ຢ່າງດຽວ, ບໍ່ຮອງຮັບ OpenType GSUB/GPOS shaping
+// ເຊິ່ງເປັນສິ່ງທີ່ພາສາລາວຕ້ອງການ (ວາງສະຫຼະ/ວັນນະຍຸດເທິງ-ລຸ່ມພະຍັນຊະນະ) — ໂຕໜັງສືຈະແຕກ/
+// ວາງຜິດຕຳແໜ່ງສະເໝີ ບໍ່ວ່າ font ຈະຖືກຕ້ອງສໍ່າໃດ. ແທນທີ່ຈະແຕ້ມ text ດ້ວຍ jsPDF ໂດຍກົງ,
+// ໃຫ້ html2canvas ຖ່າຍຮູບ DOM ທີ່ browser render ຖືກຕ້ອງແລ້ວ (#invoice) ແລ້ວຝັງເປັນຮູບໃນ PDF ແທນ.
 
 export default function ReceiptPage() {
     const { id } = useParams()
@@ -58,71 +52,38 @@ export default function ReceiptPage() {
         )
     }
 
-    const exportPDF = () => {
-        const doc = new jsPDF() as jsPDFWithAutoTable
+    const exportPDF = async () => {
+        const invoiceEl = document.getElementById("invoice")
+        if (!invoiceEl) return
 
-        registerLaoFont(doc)
-       const invoiceCode = generateInvoiceCode()
-
-        // -------------------
-        // HEADER
-        // -------------------
-        doc.setFontSize(20)
-        doc.text("ຮ້ານ ວັນໄຊ", 105, 15, { align: "center" })
-
-        doc.setFontSize(10)
-        doc.text("ນະຄອນຫຼວງວຽງຈັນ, ລາວ", 105, 22, { align: "center" })
-        doc.text("ໂທ: 020 98924536", 105, 28, { align: "center" })
-
-        // -------------------
-        // SALE INFO
-        // -------------------
-        doc.setFontSize(11)
-        doc.text(`ເລກບິນ : ${invoiceCode}`, 14, 40)
-        doc.text(`ວັນທີ : ${formatDate(data.sale_date)}`, 14, 47)
-        doc.text(
-            `ລູກຄ້າ : ${data.customer?.customer_name ?? "ລູກຄ້າທົ່ວໄປ"}`,
-            14,
-            54
-        )
-        doc.text(
-            `ພະນັກງານ : ${data.employee?.employee_name ?? "-"}`,
-            14,
-            61
-        )
-
-        // -------------------
-        // TABLE
-        // -------------------
-        const tableBody: RowInput[] = saleDetails.map((item, index) => [
-            index + 1,
-            item.variant
-                ? `${item.product?.product_name ?? "-"} (${item.variant.color}/${item.variant.size})`
-                : item.product?.product_name ?? "-",
-            item.quantity,
-            formatCurrency(item.price),
-            formatCurrency(Number(item.quantity) * Number(item.price)),
-        ])
-
-        autoTable(doc, {
-            startY: 70,
-            head: [["#", "ສິນຄ້າ", "ຈຳນວນ", "ລາຄາ", "ຈຳນວນເງິນ"]],
-            body: tableBody,
-            styles: {
-                fontSize: 9,
-                font: "NotoSansLao",
-            },
-            headStyles: {
-                fillColor: [41, 128, 185],
-                font: "NotoSansLao",
-            },
+        // ✅ ຖ່າຍຮູບ DOM ທີ່ browser render Lao text ຖືກຕ້ອງແລ້ວ — ບໍ່ໃຫ້ jsPDF ແຕ້ມ text ເອງ
+        const canvas = await html2canvas(invoiceEl, {
+            scale: 2, // ຄວາມລະອຽດສູງ ໃຫ້ໂຕໜັງສືຄົມ
+            useCORS: true,
+            backgroundColor: "#ffffff",
         })
 
-        const finalY = doc.lastAutoTable.finalY + 10
+        const imgData = canvas.toDataURL("image/png")
+        const doc = new jsPDF("p", "mm", "a4")
 
-        doc.setFontSize(12)
-        doc.text(`ຈຳນວນລາຍການ : ${saleDetails.length}`, 14, finalY)
-        doc.text(`ລວມທັງໝົດ : ${formatCurrency(totalAmount)}`, 140, finalY)
+        const pageWidth  = doc.internal.pageSize.getWidth()
+        const pageHeight = doc.internal.pageSize.getHeight()
+        const imgWidth   = pageWidth
+        const imgHeight  = (canvas.height * imgWidth) / canvas.width
+
+        // ✅ ຖ້າໃບບິນຍາວກວ່າ 1 ໜ້າ A4 — ແບ່ງເປັນຫຼາຍໜ້າ
+        let heightLeft = imgHeight
+        let position = 0
+
+        doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
+        heightLeft -= pageHeight
+
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight
+            doc.addPage()
+            doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
+            heightLeft -= pageHeight
+        }
 
         doc.save(`invoice-${data.sale_id}.pdf`)
     }
@@ -138,9 +99,9 @@ export default function ReceiptPage() {
                 >
                     {/* Header */}
                     <div className="text-center border-b pb-5">
-                        <h1 className="text-3xl font-bold">ຮ້ານຂອງຂ້ອຍ</h1>
-                        <p className="text-gray-500">ນະຄອນຫຼວງວຽງຈັນ, ລາວ</p>
-                        <p className="text-gray-500">ໂທ: 020 XXXXXXXX</p>
+                        <h1 className="text-3xl font-bold">ຮ້ານ ວັນໄຊ</h1>
+                        <p className="text-gray-500">ນະຄອນຫຼວງວຽງຈັນ, ເມືອງ ສີໂຄດຕະບອງ, ບ້ານ ວຽງຄຳ</p>
+                        <p className="text-gray-500">ໂທ: 020 98924536</p>
                     </div>
 
                     {/* Invoice Info */}
@@ -257,8 +218,8 @@ export default function ReceiptPage() {
                         ຂອບໃຈສຳລັບການຊື້ຂາຍ
                     </div>
 
-                    {/* Buttons */}
-                    <div className="flex gap-3 mt-8 print:hidden">
+                    {/* Buttons — data-html2canvas-ignore ກັນບໍ່ໃຫ້ຕິດໄປໃນຮູບ PDF ທີ່ຖ່າຍ */}
+                    <div className="flex gap-3 mt-8 print:hidden" data-html2canvas-ignore="true">
                         <button
                             onClick={() => window.print()}
                             className="px-5 py-2 rounded-lg border hover:bg-brand-blue-soft"

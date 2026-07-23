@@ -7,7 +7,7 @@ import { Delivery } from "@/modules/delivery/delivery.type"
 import { useState } from "react"
 import { BadgeComponent } from "../StatusComponent"
 
-type Status = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
+type Status = "PENDING" | "PROCESSING" | "SHIPPED" | "ARRIVED" | "DELIVERED" | "CANCELLED"
 
 type Props = {
     open: boolean
@@ -65,6 +65,7 @@ export function DeliveryUpdateDialog({
                             <SelectItem value="PENDING">ລໍຖ້າດຳເນີນການ</SelectItem>
                             <SelectItem value="PROCESSING">ກຳລັງດຳເນີນການ</SelectItem>
                             <SelectItem value="SHIPPED">ກຳລັງຈັດສົ່ງ</SelectItem>
+                            <SelectItem value="ARRIVED">ຮອດປາຍທາງແລ້ວ</SelectItem>
                             <SelectItem value="DELIVERED">ຈັດສົ່ງສຳເລັດ</SelectItem>
                             <SelectItem value="CANCELLED">ຍົກເລີກແລ້ວ</SelectItem>
                         </SelectContent>

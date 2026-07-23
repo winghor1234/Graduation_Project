@@ -32,9 +32,10 @@ export type Sale = {
     sale_id: string
     sale_date: string
     total_amount: number
-    employee?: Employee
+    employee?: Employee | null
     customer?: Customer
     sale_details?: SaleDetail[]
+    source?: "POS" | "ONLINE"
     createdAt: string
     updatedAt: string
 }
@@ -77,6 +78,13 @@ export default function SaleReportPage() {
     }, [report.data])
 
     const columns: Column<Sale>[] = [
+        {
+            key: "source",
+            title: "ຊ່ອງທາງ",
+            render: r => r.source === "ONLINE"
+                ? <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">ອອນລາຍ</span>
+                : <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">ໜ້າຮ້ານ</span>,
+        },
         {
             key: "customer",
             title: "ລູກຄ້າ",

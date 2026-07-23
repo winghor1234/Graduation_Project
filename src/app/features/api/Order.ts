@@ -22,6 +22,12 @@ export const orderApi = {
         return res.data.data   // ✅ ແກ້ — ກົງກັບ successResponse wrapper
     },
 
+    // ✅ ໃໝ່ — ນັບອໍເດີ້ທີ່ ARRIVED ເກີນ 1 ມື້ ແຕ່ຍັງບໍ່ COMPLETED (ໃຊ້ສະແດງ badge ແຈ້ງເຕືອນ admin)
+    getOverdueArrivedCount: async (): Promise<number> => {
+        const res = await axiosInstance.get("/order/overdue-count")
+        return res.data.data
+    },
+
     getById: async (id: string): Promise<Order> => {
         const res = await axiosInstance.get(`/order/${id}`)
         return res.data.data

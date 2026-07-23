@@ -405,6 +405,11 @@ model Order {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
+  // ✅ ຕິດຕາມເວລາ ARRIVED — ໃຊ້ນັບມື້ ແລະ ແຈ້ງເຕືອນຖ້າ admin ບໍ່ອັບເດດເປັນ COMPLETED
+  arrived_at            DateTime?
+  arrived_day1_notified Boolean   @default(false)
+  arrived_day5_notified Boolean   @default(false)
+
   customer_id  String
 
   customer Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
@@ -424,6 +429,7 @@ enum OrderStatus {
   WAITING_PAYMENT
   PAID
   SHIPPED
+  ARRIVED
   COMPLETED
   CANCELLED
 }
@@ -626,6 +632,7 @@ enum DeliveryStatus {
   PENDING
   PROCESSING
   SHIPPED
+  ARRIVED
   DELIVERED
   CANCELLED
 }

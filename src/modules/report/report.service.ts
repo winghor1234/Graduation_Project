@@ -333,7 +333,7 @@
 // }
 
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, OrderStatus } from "@prisma/client";
 import { ReportQueryDto, ReportType, ReportPeriod } from "./report.type";
 
 export class ReportService {
@@ -448,18 +448,59 @@ export class ReportService {
                 });
 
             // ================= SALE =================
-            case ReportType.SALE:
-                return this.prisma.sale.findMany({
-                    where: dateFilter
-                        ? { sale_date: dateFilter }
-                        : undefined,
-                    include: {
-                        customer: true,
-                        sale_details: {
-                            include: { product: true },
+            // ✅ ລວມທັງການຂາຍໜ້າຮ້ານ (Sale/POS) ແລະ ອໍເດີ້ອອນລາຍທີ່ສຳເລັດແລ້ວ (Order: COMPLETED)
+            // ເພາະ 2 ຕາຕະລາງນີ້ແຍກກັນ — ຖ້າເບິ່ງແຕ່ Sale ຢ່າງດຽວ ຍອດຂາຍອອນລາຍຈະຫາຍໄປໝົດ
+            case ReportType.SALE: {
+                const [sales, orders] = await Promise.all([
+                    this.prisma.sale.findMany({
+                        where: dateFilter
+                            ? { sale_date: dateFilter }
+                            : undefined,
+                        include: {
+                            customer: true,
+                            employee: true,
+                            sale_details: {
+                                include: { product: true },
+                            },
                         },
-                    },
-                });
+                    }),
+                    this.prisma.order.findMany({
+                        where: {
+                            status: OrderStatus.COMPLETED,
+                            ...(dateFilter ? { order_date: dateFilter } : {}),
+                        },
+                        include: {
+                            customer: true,
+                            order_details: {
+                                include: { product: true },
+                            },
+                        },
+                    }),
+                ]);
+
+                const posSales = sales.map((s) => ({ ...s, source: "POS" as const }));
+
+                const onlineAsSales = orders.map((o) => ({
+                    sale_id: o.order_id,
+                    sale_date: o.order_date,
+                    total_amount: o.total_amount,
+                    employee: null,
+                    customer: o.customer,
+                    source: "ONLINE" as const,
+                    sale_details: o.order_details.map((d) => ({
+                        sale_detail_id: d.order_detail_id,
+                        quantity: d.quantity,
+                        price: d.price,
+                        product: d.product,
+                    })),
+                    createdAt: o.createdAt,
+                    updatedAt: o.updatedAt,
+                }));
+
+                return [...posSales, ...onlineAsSales].sort(
+                    (a, b) => new Date(b.sale_date).getTime() - new Date(a.sale_date).getTime()
+                );
+            }
 
             // ================= ORDER =================
             case ReportType.ORDER:
@@ -476,39 +517,64 @@ export class ReportService {
                 });
 
             // ================= REVENUE =================
-            case ReportType.REVENUE:
-                return this.prisma.sale.aggregate({
-                    where: dateFilter
-                        ? { sale_date: dateFilter }
-                        : undefined,
+            // ✅ ລວມຍອດຂາຍ POS + ອໍເດີ້ອອນລາຍທີ່ສຳເລັດແລ້ວ
+            case ReportType.REVENUE: {
+                const [saleAgg, orderAgg] = await Promise.all([
+                    this.prisma.sale.aggregate({
+                        where: dateFilter
+                            ? { sale_date: dateFilter }
+                            : undefined,
+                        _sum: { total_amount: true },
+                    }),
+                    this.prisma.order.aggregate({
+                        where: {
+                            status: OrderStatus.COMPLETED,
+                            ...(dateFilter ? { order_date: dateFilter } : {}),
+                        },
+                        _sum: { total_amount: true },
+                    }),
+                ]);
+
+                return {
                     _sum: {
-                        total_amount: true,
+                        total_amount:
+                            Number(saleAgg._sum.total_amount ?? 0) +
+                            Number(orderAgg._sum.total_amount ?? 0),
                     },
-                });
+                };
+            }
 
             // ================= PROFIT =================
             case ReportType.PROFIT: {
-                const revenue = await this.prisma.sale.aggregate({
-                    where: dateFilter
-                        ? { sale_date: dateFilter }
-                        : undefined,
-                    _sum: { total_amount: true },
-                });
+                const [saleAgg, orderAgg, cost] = await Promise.all([
+                    this.prisma.sale.aggregate({
+                        where: dateFilter
+                            ? { sale_date: dateFilter }
+                            : undefined,
+                        _sum: { total_amount: true },
+                    }),
+                    this.prisma.order.aggregate({
+                        where: {
+                            status: OrderStatus.COMPLETED,
+                            ...(dateFilter ? { order_date: dateFilter } : {}),
+                        },
+                        _sum: { total_amount: true },
+                    }),
+                    this.prisma.importDetail.aggregate({
+                        where: dateFilter
+                            ? {
+                                import: {
+                                    import_date: dateFilter,
+                                },
+                            }
+                            : undefined,
+                        _sum: { cost_price: true },
+                    }),
+                ]);
 
-                const cost = await this.prisma.importDetail.aggregate({
-                    where: dateFilter
-                        ? {
-                            import: {
-                                import_date: dateFilter,
-                            },
-                        }
-                        : undefined,
-                    _sum: { cost_price: true },
-                });
-
-                const totalRevenue = Number(
-                    revenue._sum.total_amount ?? 0
-                );
+                const totalRevenue =
+                    Number(saleAgg._sum.total_amount ?? 0) +
+                    Number(orderAgg._sum.total_amount ?? 0);
 
                 const totalCost = Number(
                     cost._sum.cost_price ?? 0
@@ -536,10 +602,18 @@ export class ReportService {
     ) {
         const dateFilter = this.buildDateFilter(period, startDate, endDate);
 
-        const [sales, purchases] = await Promise.all([
+        // ✅ ລວມ Order ອອນລາຍທີ່ສຳເລັດແລ້ວເຂົ້າກັບ Sale POS ນຳ — ບໍ່ດັ່ງນັ້ນລາຍຮັບອອນລາຍຈະບໍ່ຖືກນັບ
+        const [sales, orders, purchases] = await Promise.all([
             this.prisma.sale.findMany({
                 where: dateFilter ? { sale_date: dateFilter } : undefined,
                 select: { sale_date: true, total_amount: true },
+            }),
+            this.prisma.order.findMany({
+                where: {
+                    status: OrderStatus.COMPLETED,
+                    ...(dateFilter ? { order_date: dateFilter } : {}),
+                },
+                select: { order_date: true, total_amount: true },
             }),
             this.prisma.purchaseOrder.findMany({
                 where: dateFilter ? { purchase_date: dateFilter } : undefined,
@@ -547,12 +621,19 @@ export class ReportService {
             }),
         ]);
 
-        // Group sales by YYYY-MM
+        // Group sales (POS) by YYYY-MM
         const revenueByMonth: Record<string, { total: number; count: number }> = {};
         for (const s of sales) {
             const key = new Date(s.sale_date).toISOString().slice(0, 7);
             if (!revenueByMonth[key]) revenueByMonth[key] = { total: 0, count: 0 };
             revenueByMonth[key].total += Number(s.total_amount);
+            revenueByMonth[key].count += 1;
+        }
+        // Group completed online orders by YYYY-MM
+        for (const o of orders) {
+            const key = new Date(o.order_date).toISOString().slice(0, 7);
+            if (!revenueByMonth[key]) revenueByMonth[key] = { total: 0, count: 0 };
+            revenueByMonth[key].total += Number(o.total_amount);
             revenueByMonth[key].count += 1;
         }
 
@@ -583,7 +664,9 @@ export class ReportService {
                 };
             });
 
-        const totalRevenue = sales.reduce((s, r) => s + Number(r.total_amount), 0);
+        const totalRevenue =
+            sales.reduce((s, r) => s + Number(r.total_amount), 0) +
+            orders.reduce((s, r) => s + Number(r.total_amount), 0);
         const totalCost = purchases.reduce((s, p) => s + Number(p.total_amount), 0);
         const totalProfit = totalRevenue - totalCost;
 
@@ -593,7 +676,7 @@ export class ReportService {
                 totalCost,
                 totalProfit,
                 profitMargin: totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0,
-                saleCount: sales.length,
+                saleCount: sales.length + orders.length,
                 purchaseCount: purchases.length,
                 monthCount: monthly.length,
                 avgMonthlyRevenue: monthly.length > 0 ? totalRevenue / monthly.length : 0,

@@ -54,8 +54,8 @@ export function Sidebar(props: Props) {
                             <Store className="size-4 text-white" />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-sm font-extrabold text-white tracking-wide leading-none">SportPro</p>
                             <p className="text-[10px] text-white/40 mt-0.5">ລະບົບຈັດການ</p>
+                            <p className="text-sm font-extrabold text-white tracking-wide leading-none">ຮ້ານ ວັນໄຊ</p>
                         </div>
                     </Link>
                 )}

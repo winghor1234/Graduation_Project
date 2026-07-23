@@ -56,6 +56,15 @@ export const orderController = {
         }
     },
 
+    async getOverdueArrivedCount(req: NextRequest) {
+        try {
+            const count = await orderService.getOverdueArrivedCount()
+            return successResponse(count, "Get overdue arrived count successfully", 200)
+        } catch (error) {
+            return handleError(error)
+        }
+    },
+
     async getAllOrders(req: NextRequest) {
         try {
             const orders = await orderService.getAllOrders()  // ✅ ແກ້ typo

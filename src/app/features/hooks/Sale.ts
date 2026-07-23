@@ -37,6 +37,9 @@ export const useCreateSale = () => {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["sales"] })
             qc.invalidateQueries({ queryKey: ["products"] })
+            // ✅ ຂາຍແລ້ວລູກຄ້າໄດ້ point ເພີ່ມ (sale.service.ts) — ຕ້ອງ invalidate ບໍ່ດັ່ງນັ້ນ dropdown/ໜ້າລູກຄ້າຈະສະແດງ point ເກົ່າຈາກ cache
+            qc.invalidateQueries({ queryKey: ["customers"] })
+            qc.invalidateQueries({ queryKey: ["customer"] })
         }
     })
 }

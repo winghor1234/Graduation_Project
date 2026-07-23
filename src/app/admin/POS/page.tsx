@@ -12,6 +12,7 @@ import ProductGrid from "@/components/adminComponent/POS/ProductGrid"
 import CartPanel from "@/components/adminComponent/POS/CartPanel"
 import ConfirmModal from "@/components/adminComponent/POS/ConfirmModal"
 import { CustomerSelect } from "@/components/adminComponent/POS/CustomerSelect"
+import { POSToolbar } from "@/components/adminComponent/POS/POSToolbar"
 import { useCreateSale } from "@/app/features/hooks/Sale"
 
 export default function POSPage() {
@@ -19,7 +20,8 @@ export default function POSPage() {
     const table = useDataTable()
     const router = useRouter()
 
-    const { data: products } = useGetAllProducts()
+    const [search, setSearch] = useState("")
+    const { data: products } = useGetAllProducts({ search, page_size: 100 })
     const productsData = products?.items ?? []
     const { data: customersData } = useGetCustomers(table.params)
     const customers = customersData?.data ?? []
@@ -58,6 +60,7 @@ export default function POSPage() {
 
                 {/* LEFT: Products */}
                 <div className="overflow-y-auto p-4">
+                    <POSToolbar search={search} onSearchChange={setSearch} />
                     <ProductGrid
                         products={productsData}
                         onAdd={add}
